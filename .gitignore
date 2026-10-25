@@ -1,0 +1,23 @@
+# Entsteht beim Bauen, wird nur auf GitHub Pages veröffentlicht
+data.json
+SC_Waren_Top_Handelsrouten.md
+SC_Waren_Handelsuebersicht.xlsx
+_site/
+
+# Entwicklungs-Cache (Rohdaten, damit star-head beim Testen nicht jedes Mal abgefragt wird)
+handel_cache.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ruff_cache/
+.mypy_cache/
+
+# OS / Editor
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,52 @@
+name: Build & Deploy
+
+# Baut die App neu (frische star-head-Preise) und veroeffentlicht sie als
+# Online-Version auf GitHub Pages: taeglich per Zeitplan, bei Push auf main und
+# manuell. star-head wird so einmal am Tag abgefragt; der Knopf in der App laedt
+# den fertigen Stand (data.json) von Pages, nicht star-head direkt.
+on:
+  schedule:
+    - cron: "0 5 * * *"   # taeglich 05:00 UTC
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: openpyxl (fuer die xlsx-Downloads)
+        run: pip install "openpyxl==3.1.*" --quiet
+      - name: Planer bauen (HTML, data.json, Routen-md, xlsx)
+        run: python handels_planer_bauen.py --xlsx
+      - name: Pages-Verzeichnis vorbereiten
+        run: |
+          mkdir -p _site
+          cp SC_Handels_Planer.html _site/index.html
+          cp data.json SC_Waren_Top_Handelsrouten.md SC_Waren_Handelsuebersicht.xlsx _site/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
