@@ -155,10 +155,6 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   @media (max-width:800px){.detail .inner{grid-template-columns:1fr}}
   .empty{padding:18px;color:var(--muted);text-align:center}
   .empty button{margin-left:8px}
-  .loc{margin:10px 0 0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  .loc summary{cursor:pointer;padding:9px 12px;font-family:var(--disp);font-weight:700;font-size:15px;background:var(--panel2);list-style:none;display:flex;gap:8px;align-items:center}
-  .loc summary::-webkit-details-marker{display:none} .loc summary::before{content:'▸';color:var(--accent);font-size:12px} .loc[open] summary::before{content:'▾'}
-  .loc summary .cnt{margin-left:auto;font-size:12px;color:var(--muted);font-weight:500}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:9}
   .toast.show{opacity:1}
   footer{margin-top:28px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
@@ -224,9 +220,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <section class="panel hide" id="view-sell">
     <div class="filters">
       <label><span class="de">Suche (Ort/Ware)</span><span class="en">Search (place/commodity)</span><input type="search" id="sQ"></label>
+      <label><span class="de">Verkaufsort</span><span class="en">Sell location</span><select id="sOrt"></select></label>
       <label><span class="de">System</span><span class="en">System</span><select id="sSys"></select></label>
     </div>
-    <p class="sub"><span class="de">Je Verkaufsort: was man dort mit Gewinn verkaufen kann (gegen den besten Kaufort der Ware). Orte nach bester Marge sortiert.</span><span class="en">Per sell location: what sells at a profit there (vs. the commodity's best buy place). Places sorted by best margin.</span></p>
+    <p class="sub"><span class="de">Eine Zeile je Verkaufsort und Ware: Verkaufspreis dort gegen den besten Kaufort der Ware. Spaltenköpfe anklicken zum Sortieren (z. B. Marge, Stand, Ort).</span><span class="en">One row per sell location and commodity: sell price there vs. the commodity's best buy place. Click column headers to sort (e.g. margin, date, place).</span></p>
     <div id="sell"></div>
   </section>
 
@@ -234,9 +231,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <section class="panel hide" id="view-buy">
     <div class="filters">
       <label><span class="de">Suche (Ort/Ware)</span><span class="en">Search (place/commodity)</span><input type="search" id="bQ"></label>
+      <label><span class="de">Kaufort</span><span class="en">Buy location</span><select id="bOrt"></select></label>
       <label><span class="de">System</span><span class="en">System</span><select id="bSys"></select></label>
     </div>
-    <p class="sub"><span class="de">Je Kaufort: was man dort mit guter Marge einladen kann (gegen den besten Verkaufsort der Ware), mit Kauf-Bestand.</span><span class="en">Per buy location: what loads there with a good margin (vs. the commodity's best sell place), with stock.</span></p>
+    <p class="sub"><span class="de">Eine Zeile je Kaufort und Ware: Kaufpreis und Bestand dort gegen den besten Verkaufsort der Ware. Spaltenköpfe anklicken zum Sortieren (z. B. Marge, Stand, Ort).</span><span class="en">One row per buy location and commodity: buy price and stock there vs. the commodity's best sell place. Click column headers to sort (e.g. margin, date, place).</span></p>
     <div id="buy"></div>
   </section>
 
@@ -258,24 +256,24 @@ let LANG = load(LS.lang)==='en' ? 'en' : 'de';
 const I18N = {
   de:{all:'alle',legalOnly:'nur legal',illegalOnly:'nur illegal',allSys:'alle Systeme',custom:'eigener Wert',
       ware:'Ware',buyAt:'Kaufen bei',buy:'~Kauf',sellAt:'Verkaufen bei',sell:'~Verk.',margin:'Marge/SCU',perLoad:'Gewinn/Ladung',cost:'Einsatz/Ladung',stock:'Bestand',
-      typ:'Typ',bestBuy:'Bester Kauf',bestSell:'Bester Verkauf',nPlaces:'#Orte',place:'Ort',price:'Preis',asOf:'Stand',cont:'Container',
+      typ:'Typ',sellPlace:'Verkaufsort',buyPlace:'Kaufort',allPlaces:'alle Orte',bestBuy:'Bester Kauf',bestSell:'Bester Verkauf',nPlaces:'#Orte',place:'Ort',price:'Preis',asOf:'Stand',cont:'Container',
       bulk:'Top legale Bulk-Routen',bulkSub:'Kauf-Bestand ≥ {n} SCU – Ware in Menge kaufbar, die praktikablen Frachtrouten.',
       legal:'Höchste Margen insgesamt',legalSub:'Inkl. Nischen- und Kleinmengen – teils nur in Kleinstmengen handelbar, Bestand prüfen.',
       illegal:'Illegale Routen',illegalSub:'Hohe Marge, hohes Risiko. Nur an versteckten Konsolen / Outlaw-Stationen.',
       stockLow:'Bestand < Laderaum',noRows:'Keine Ware passt zu den Filtern.',reset:'Filter zurücksetzen',
       buyPlaces:'Kauforte (günstigster zuerst)',sellPlaces:'Verkaufsorte (teuerster zuerst)',illegalTag:'illegal',
       refOk:'Neuester Stand geladen.',refSame:'Du hast bereits den neuesten Stand.',refErr:'GitHub nicht erreichbar – bestehende Daten bleiben.',loading:'⏳ lädt…',
-      built:'gebaut',github:'GitHub-Stand',patch:'Patch',goods:'Waren',prices:'Preiszeilen',goodsN:'Waren'},
+      built:'gebaut',github:'GitHub-Stand',patch:'Patch',goods:'Waren',prices:'Preiszeilen',goodsN:'Waren',rowsN:'Zeilen'},
   en:{all:'all',legalOnly:'legal only',illegalOnly:'illegal only',allSys:'all systems',custom:'custom',
       ware:'Commodity',buyAt:'Buy at',buy:'~Buy',sellAt:'Sell at',sell:'~Sell',margin:'Margin/SCU',perLoad:'Profit/load',cost:'Outlay/load',stock:'Stock',
-      typ:'Type',bestBuy:'Best buy',bestSell:'Best sell',nPlaces:'#Places',place:'Place',price:'Price',asOf:'As of',cont:'Container',
+      typ:'Type',sellPlace:'Sell location',buyPlace:'Buy location',allPlaces:'all places',bestBuy:'Best buy',bestSell:'Best sell',nPlaces:'#Places',place:'Place',price:'Price',asOf:'As of',cont:'Container',
       bulk:'Top legal bulk routes',bulkSub:'Buy stock ≥ {n} SCU – available in quantity, the practical cargo routes.',
       legal:'Highest margins overall',legalSub:'Incl. niche and small quantities – some only tradable in tiny amounts, check stock.',
       illegal:'Illegal routes',illegalSub:'High margin, high risk. Only at hidden terminals / outlaw stations.',
       stockLow:'stock < cargo',noRows:'No commodity matches the filters.',reset:'Reset filters',
       buyPlaces:'Buy places (cheapest first)',sellPlaces:'Sell places (highest first)',illegalTag:'illegal',
       refOk:'Latest build loaded.',refSame:'You already have the latest build.',refErr:'GitHub unreachable – keeping current data.',loading:'⏳ loading…',
-      built:'built',github:'GitHub build',patch:'Patch',goods:'commodities',prices:'price rows',goodsN:'commodities'}
+      built:'built',github:'GitHub build',patch:'Patch',goods:'commodities',prices:'price rows',goodsN:'commodities',rowsN:'rows'}
 };
 function t(k,v){let s=(I18N[LANG][k]??I18N.de[k]??k);if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s;}
 function fmt(n){return n==null?'–':Math.round(n).toLocaleString(LANG==='de'?'de-DE':'en-US');}
@@ -292,6 +290,8 @@ function ingest(d){
   TYPS=[...new Set(d.wares.map(w=>w.t).filter(Boolean))].sort();
   for(const id of ['rKs','rVs','wKs','wVs','sSys','bSys']) fillSel($('#'+id),SYS,t('allSys'));
   fillSel($('#wTyp'),TYPS,t('all'));
+  fillSel($('#sOrt'),[...new Set(d.bysell.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
+  fillSel($('#bOrt'),[...new Set(d.bybuy.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
   $('#buildStat').textContent=(d.source==='refresh'?t('github'):t('built'))+' '+d.generated+' · '+t('patch')+' '+d.patch+' · '+d.wares.length+' '+t('goodsN')+' · '+d.rows.length+' '+t('prices');
 }
 function fillSel(sel,items,first){const cur=sel.value;sel.innerHTML='<option value="">'+esc(first)+'</option>'+items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if([...sel.options].some(o=>o.value===cur))sel.value=cur;}
@@ -346,25 +346,24 @@ function detailRow(i){
   return `<tr class="detail"><td colspan="9"><div class="inner"><div><h4>${t('buyPlaces')}</h4>${tbl(buys,true)}</div><div><h4>${t('sellPlaces')}</h4>${tbl(sells,false)}</div></div></td></tr>`;
 }
 
-// ---- Nach Ort ----
-function renderLoc(id,recs,keyIdx,sysIdx,wIdx,cols,qId,sysId){
-  const q=($('#'+qId).value||'').trim().toLowerCase(), sys=$('#'+sysId).value;
-  const groups=new Map();
-  for(const r of recs){ if(sys&&r[sysIdx]!==sys)continue; const w=W(r[wIdx]); if(q&&!(r[keyIdx]+' '+w.w).toLowerCase().includes(q))continue; (groups.get(r[keyIdx])||groups.set(r[keyIdx],[]).get(r[keyIdx])).push(r);}
-  if(!groups.size){$('#'+id).innerHTML=`<div class="empty">${t('noRows')}<button class="btn" type="button" data-reset="${id}">${t('reset')}</button></div>`;return;}
-  let html='', first=true;
-  for(const [k,lst] of groups){
-    html+=`<details class="loc"${first?' open':''}><summary>${esc(k)}${sysTag(lst[0][sysIdx])}<span class="cnt">${lst.length} ${t('goods')} · ${t('margin')} ${fmt(lst[0][7])}</span></summary><div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th${c.num?' class="num"':''}>${c.l}</th>`).join('')}</tr></thead><tbody>${lst.map(r=>'<tr>'+cols.map(c=>`<td${c.num?' class="num"':''}${c.m?' class="num m"':''}>${c.f(r)}</td>`).join('')+'</tr>').join('')}</tbody></table></div></details>`;
-    first=false;
-  }
-  $('#'+id).innerHTML=html;
+// ---- Nach Ort: eine Zeile je Ort und Ware, sortierbar ----
+// Spalten-Definition: k = Sortierschlüssel (Index im Datensatz oder 'w' für Warenname), num = Zahl
+const SELL_COLS=[{k:0,l:'sellPlace',f:r=>esc(r[0])+sysTag(r[1])},{k:'w',l:'ware',f:r=>`<b>${esc(W(r[2]).w)}</b>${illTag(W(r[2]))}`},{k:3,l:'sell',num:1,f:r=>fmt(r[3])},{k:4,l:'buy',num:1,f:r=>fmt(r[4])},{k:5,l:'buyAt',f:r=>esc(r[5])+sysTag(r[6])},{k:7,l:'margin',num:1,m:1,f:r=>fmt(r[7])},{k:8,l:'asOf',f:r=>esc(r[8])}];
+const BUY_COLS=[{k:0,l:'buyPlace',f:r=>esc(r[0])+sysTag(r[1])},{k:'w',l:'ware',f:r=>`<b>${esc(W(r[2]).w)}</b>${illTag(W(r[2]))}`},{k:3,l:'buy',num:1,f:r=>fmt(r[3])},{k:8,l:'stock',num:1,f:r=>r[8]==null?'–':fmt(r[8])},{k:4,l:'sell',num:1,f:r=>fmt(r[4])},{k:5,l:'sellAt',f:r=>esc(r[5])+sysTag(r[6])},{k:7,l:'margin',num:1,m:1,f:r=>fmt(r[7])},{k:9,l:'asOf',f:r=>esc(r[9])}];
+const locSort={sell:{k:7,dir:-1},buy:{k:7,dir:-1}};
+function locVal(r,k){return k==='w'?W(r[2]).w:r[k];}
+function renderLoc(id,recs,cols,qId,ortId,sysId){
+  const q=($('#'+qId).value||'').trim().toLowerCase(), ort=$('#'+ortId).value, sys=$('#'+sysId).value;
+  const list=recs.filter(r=>(!sys||r[1]===sys)&&(!ort||r[0]===ort)&&(!q||(r[0]+' '+W(r[2]).w+' '+r[5]).toLowerCase().includes(q)));
+  if(!list.length){$('#'+id).innerHTML=`<div class="empty">${t('noRows')}<button class="btn" type="button" data-reset="${id}">${t('reset')}</button></div>`;return;}
+  const st=locSort[id], k=st.k, dir=st.dir;
+  list.sort((a,b)=>{const x=locVal(a,k),y=locVal(b,k);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;const c=(typeof x==='string')?x.localeCompare(y):x-y;return c!==0?c*dir:(b[7]-a[7]);});
+  const head=cols.map(c=>`<th class="sortable${c.num?' num':''}" data-lsort="${id}:${c.k}">${t(c.l)}${k===c.k?`<span class="arr">${dir<0?'▼':'▲'}</span>`:''}</th>`).join('');
+  const body=list.map(r=>'<tr>'+cols.map(c=>`<td class="${c.m?'num m':(c.num?'num':'')}">${c.f(r)}</td>`).join('')+'</tr>').join('');
+  $('#'+id).innerHTML=`<p class="sub">${list.length} ${t('rowsN')}</p><div class="tablewrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
-function renderSell(){renderLoc('sell',D.bysell,0,1,2,[
-  {l:t('ware'),f:r=>`<b>${esc(W(r[2]).w)}</b>${illTag(W(r[2]))}`},{l:t('sell'),num:1,f:r=>fmt(r[3])},{l:t('buy'),num:1,f:r=>fmt(r[4])},
-  {l:t('buyAt'),f:r=>esc(r[5])+sysTag(r[6])},{l:t('margin'),m:1,f:r=>fmt(r[7])},{l:t('asOf'),f:r=>esc(r[8])}],'sQ','sSys');}
-function renderBuy(){renderLoc('buy',D.bybuy,0,1,2,[
-  {l:t('ware'),f:r=>`<b>${esc(W(r[2]).w)}</b>${illTag(W(r[2]))}`},{l:t('buy'),num:1,f:r=>fmt(r[3])},{l:t('stock'),num:1,f:r=>r[8]==null?'–':fmt(r[8])},{l:t('sell'),num:1,f:r=>fmt(r[4])},
-  {l:t('sellAt'),f:r=>esc(r[5])+sysTag(r[6])},{l:t('margin'),m:1,f:r=>fmt(r[7])},{l:t('asOf'),f:r=>esc(r[9])}],'bQ','bSys');}
+function renderSell(){renderLoc('sell',D.bysell,SELL_COLS,'sQ','sOrt','sSys');}
+function renderBuy(){renderLoc('buy',D.bybuy,BUY_COLS,'bQ','bOrt','bSys');}
 
 // ---- Views / Events ----
 const VIEWS={routes:renderRoutes,wares:renderWares,sell:renderSell,buy:renderBuy};
@@ -372,11 +371,12 @@ function showView(v){document.querySelectorAll('.tab').forEach(b=>b.setAttribute
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 function rerenderAll(){for(const k in VIEWS)if(!$('#view-'+k).classList.contains('hide'))VIEWS[k]();}
 let deb=null;
-for(const [id,fn] of [['rQ',renderRoutes],['rKs',renderRoutes],['rVs',renderRoutes],['wQ',renderWares],['wTyp',renderWares],['wLeg',renderWares],['wKs',renderWares],['wVs',renderWares],['sQ',renderSell],['sSys',renderSell],['bQ',renderBuy],['bSys',renderBuy]]){
+for(const [id,fn] of [['rQ',renderRoutes],['rKs',renderRoutes],['rVs',renderRoutes],['wQ',renderWares],['wTyp',renderWares],['wLeg',renderWares],['wKs',renderWares],['wVs',renderWares],['sQ',renderSell],['sOrt',renderSell],['sSys',renderSell],['bQ',renderBuy],['bOrt',renderBuy],['bSys',renderBuy]]){
   const el=$('#'+id); el.addEventListener(el.tagName==='INPUT'?'input':'change',()=>{clearTimeout(deb);deb=setTimeout(fn,130);});
 }
 document.addEventListener('click',e=>{
-  const rs=e.target.closest('[data-reset]'); if(rs){const v=rs.dataset.reset; const ids={r:['rQ','rKs','rVs'],w:['wQ','wTyp','wLeg','wKs','wVs'],sell:['sQ','sSys'],buy:['bQ','bSys']}[v]||[]; ids.forEach(i=>{const el=$('#'+i);el.value=el.id==='wLeg'?'all':'';}); rerenderAll(); return;}
+  const rs=e.target.closest('[data-reset]'); if(rs){const v=rs.dataset.reset; const ids={r:['rQ','rKs','rVs'],w:['wQ','wTyp','wLeg','wKs','wVs'],sell:['sQ','sOrt','sSys'],buy:['bQ','bOrt','bSys']}[v]||[]; ids.forEach(i=>{const el=$('#'+i);el.value=el.id==='wLeg'?'all':'';}); rerenderAll(); return;}
+  const lth=e.target.closest('th[data-lsort]'); if(lth){const [id,kk]=lth.dataset.lsort.split(':'); const k=kk==='w'?'w':+kk; const st=locSort[id]; locSort[id]= st.k===k?{k,dir:-st.dir}:{k,dir:(k==='w'||k===0||k===5)?1:-1}; (id==='sell'?renderSell:renderBuy)(); return;}
   const th=e.target.closest('th[data-sort]'); if(th){const k=th.dataset.sort; wSort= wSort.k===k?{k,dir:-wSort.dir}:{k,dir:(k==='w'||k==='t')?1:-1}; renderWares(); return;}
   const tr=e.target.closest('tr.row'); if(tr){const i=+tr.dataset.i; wOpen=wOpen===i?null:i; renderWares();}
 });
