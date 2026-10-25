@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.2.0] – 2026-10-25
+
+### Geändert
+- **Nach Verkaufsort / Nach Kaufort:** Systeme als **Mehrfachauswahl** (Kästchen Stanton · Pyro · Nyx) statt Dropdown – z. B. Pyro und Stanton zusammen. Nichts angehakt = alle Systeme.
+
 ## [1.1.0] – 2026-10-25
 
 ### Geändert

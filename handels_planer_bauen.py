@@ -131,6 +131,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   .panel{background:var(--panel);border:1px solid var(--line);border-top:none;border-radius:0 0 12px 12px;box-shadow:var(--shadow);padding:16px}
   .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:0 0 12px}
   .filters label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+  .chk{display:flex;gap:4px;align-items:center;margin:0;padding:0 10px;min-height:36px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+  .chk legend{float:left;font-size:12px;color:var(--muted);padding:0;margin-right:6px}
+  .chk label{flex-direction:row;align-items:center;gap:5px;font-size:14px;color:var(--ink);padding:6px 6px;cursor:pointer;min-height:36px}
+  .chk input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
   .filters input,.filters select{font-family:var(--body);font-size:14px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:36px}
   .filters input[type=search]{min-width:220px}
   .filters input[type=number]{width:90px}
@@ -221,7 +225,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div class="filters">
       <label><span class="de">Suche (Ort/Ware)</span><span class="en">Search (place/commodity)</span><input type="search" id="sQ"></label>
       <label><span class="de">Verkaufsort</span><span class="en">Sell location</span><select id="sOrt"></select></label>
-      <label><span class="de">System</span><span class="en">System</span><select id="sSys"></select></label>
+      <fieldset class="chk" id="sSys"><legend><span class="de">Systeme</span><span class="en">Systems</span></legend></fieldset>
     </div>
     <p class="sub"><span class="de">Eine Zeile je Verkaufsort und Ware: Verkaufspreis dort gegen den besten Kaufort der Ware. Spaltenköpfe anklicken zum Sortieren (z. B. Marge, Stand, Ort).</span><span class="en">One row per sell location and commodity: sell price there vs. the commodity's best buy place. Click column headers to sort (e.g. margin, date, place).</span></p>
     <div id="sell"></div>
@@ -232,7 +236,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div class="filters">
       <label><span class="de">Suche (Ort/Ware)</span><span class="en">Search (place/commodity)</span><input type="search" id="bQ"></label>
       <label><span class="de">Kaufort</span><span class="en">Buy location</span><select id="bOrt"></select></label>
-      <label><span class="de">System</span><span class="en">System</span><select id="bSys"></select></label>
+      <fieldset class="chk" id="bSys"><legend><span class="de">Systeme</span><span class="en">Systems</span></legend></fieldset>
     </div>
     <p class="sub"><span class="de">Eine Zeile je Kaufort und Ware: Kaufpreis und Bestand dort gegen den besten Verkaufsort der Ware. Spaltenköpfe anklicken zum Sortieren (z. B. Marge, Stand, Ort).</span><span class="en">One row per buy location and commodity: buy price and stock there vs. the commodity's best sell place. Click column headers to sort (e.g. margin, date, place).</span></p>
     <div id="buy"></div>
@@ -288,12 +292,16 @@ let SYS=[], TYPS=[];
 function ingest(d){
   D=d; SYS=[...new Set(d.wares.flatMap(w=>[w.ks,w.vs]).filter(Boolean))].sort();
   TYPS=[...new Set(d.wares.map(w=>w.t).filter(Boolean))].sort();
-  for(const id of ['rKs','rVs','wKs','wVs','sSys','bSys']) fillSel($('#'+id),SYS,t('allSys'));
+  for(const id of ['rKs','rVs','wKs','wVs']) fillSel($('#'+id),SYS,t('allSys'));
+  for(const id of ['sSys','bSys']) fillChk($('#'+id),SYS);
   fillSel($('#wTyp'),TYPS,t('all'));
   fillSel($('#sOrt'),[...new Set(d.bysell.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
   fillSel($('#bOrt'),[...new Set(d.bybuy.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
   $('#buildStat').textContent=(d.source==='refresh'?t('github'):t('built'))+' '+d.generated+' · '+t('patch')+' '+d.patch+' · '+d.wares.length+' '+t('goodsN')+' · '+d.rows.length+' '+t('prices');
 }
+// Mehrfachauswahl: keine Box angehakt = alle Systeme
+function fillChk(box,items){const cur=new Set(chkVals(box));box.querySelectorAll('label').forEach(l=>l.remove());box.insertAdjacentHTML('beforeend',items.map(x=>`<label><input type="checkbox" value="${esc(x)}"${cur.has(x)?' checked':''}>${esc(x)}</label>`).join(''));}
+function chkVals(box){return [...box.querySelectorAll('input:checked')].map(i=>i.value);}
 function fillSel(sel,items,first){const cur=sel.value;sel.innerHTML='<option value="">'+esc(first)+'</option>'+items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if([...sel.options].some(o=>o.value===cur))sel.value=cur;}
 const W=i=>D.wares[i];
 function illTag(w){return w.il?` <span class="ill">${t('illegalTag')}</span>`:'';}
@@ -353,8 +361,8 @@ const BUY_COLS=[{k:0,l:'buyPlace',f:r=>esc(r[0])+sysTag(r[1])},{k:'w',l:'ware',f
 const locSort={sell:{k:7,dir:-1},buy:{k:7,dir:-1}};
 function locVal(r,k){return k==='w'?W(r[2]).w:r[k];}
 function renderLoc(id,recs,cols,qId,ortId,sysId){
-  const q=($('#'+qId).value||'').trim().toLowerCase(), ort=$('#'+ortId).value, sys=$('#'+sysId).value;
-  const list=recs.filter(r=>(!sys||r[1]===sys)&&(!ort||r[0]===ort)&&(!q||(r[0]+' '+W(r[2]).w+' '+r[5]).toLowerCase().includes(q)));
+  const q=($('#'+qId).value||'').trim().toLowerCase(), ort=$('#'+ortId).value, sys=new Set(chkVals($('#'+sysId)));
+  const list=recs.filter(r=>(!sys.size||sys.has(r[1]))&&(!ort||r[0]===ort)&&(!q||(r[0]+' '+W(r[2]).w+' '+r[5]).toLowerCase().includes(q)));
   if(!list.length){$('#'+id).innerHTML=`<div class="empty">${t('noRows')}<button class="btn" type="button" data-reset="${id}">${t('reset')}</button></div>`;return;}
   const st=locSort[id], k=st.k, dir=st.dir;
   list.sort((a,b)=>{const x=locVal(a,k),y=locVal(b,k);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;const c=(typeof x==='string')?x.localeCompare(y):x-y;return c!==0?c*dir:(b[7]-a[7]);});
@@ -372,10 +380,10 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>show
 function rerenderAll(){for(const k in VIEWS)if(!$('#view-'+k).classList.contains('hide'))VIEWS[k]();}
 let deb=null;
 for(const [id,fn] of [['rQ',renderRoutes],['rKs',renderRoutes],['rVs',renderRoutes],['wQ',renderWares],['wTyp',renderWares],['wLeg',renderWares],['wKs',renderWares],['wVs',renderWares],['sQ',renderSell],['sOrt',renderSell],['sSys',renderSell],['bQ',renderBuy],['bOrt',renderBuy],['bSys',renderBuy]]){
-  const el=$('#'+id); el.addEventListener(el.tagName==='INPUT'?'input':'change',()=>{clearTimeout(deb);deb=setTimeout(fn,130);});
+  const el=$('#'+id); el.addEventListener(el.tagName==='INPUT'&&el.type!=='checkbox'?'input':'change',()=>{clearTimeout(deb);deb=setTimeout(fn,130);});
 }
 document.addEventListener('click',e=>{
-  const rs=e.target.closest('[data-reset]'); if(rs){const v=rs.dataset.reset; const ids={r:['rQ','rKs','rVs'],w:['wQ','wTyp','wLeg','wKs','wVs'],sell:['sQ','sOrt','sSys'],buy:['bQ','bOrt','bSys']}[v]||[]; ids.forEach(i=>{const el=$('#'+i);el.value=el.id==='wLeg'?'all':'';}); rerenderAll(); return;}
+  const rs=e.target.closest('[data-reset]'); if(rs){const v=rs.dataset.reset; const ids={r:['rQ','rKs','rVs'],w:['wQ','wTyp','wLeg','wKs','wVs'],sell:['sQ','sOrt','sSys'],buy:['bQ','bOrt','bSys']}[v]||[]; ids.forEach(i=>{const el=$('#'+i);if(el.classList.contains('chk'))el.querySelectorAll('input').forEach(c=>c.checked=false);else el.value=el.id==='wLeg'?'all':'';}); rerenderAll(); return;}
   const lth=e.target.closest('th[data-lsort]'); if(lth){const [id,kk]=lth.dataset.lsort.split(':'); const k=kk==='w'?'w':+kk; const st=locSort[id]; locSort[id]= st.k===k?{k,dir:-st.dir}:{k,dir:(k==='w'||k===0||k===5)?1:-1}; (id==='sell'?renderSell:renderBuy)(); return;}
   const th=e.target.closest('th[data-sort]'); if(th){const k=th.dataset.sort; wSort= wSort.k===k?{k,dir:-wSort.dir}:{k,dir:(k==='w'||k==='t')?1:-1}; renderWares(); return;}
   const tr=e.target.closest('tr.row'); if(tr){const i=+tr.dataset.i; wOpen=wOpen===i?null:i; renderWares();}
