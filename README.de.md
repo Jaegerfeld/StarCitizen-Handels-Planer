@@ -27,6 +27,10 @@ Ein Standalone-HTML-Tool (offline lauffähig) für den Warenhandel in Star Citiz
 
   Das zieht Waren, Shops und Preise von star-head.de (rund 280 Abfragen, 10–30 s) und backt sie in `SC_Handels_Planer.html`. Es wird nur die Python-Standardbibliothek benötigt; `openpyxl` nur für `--xlsx`.
 
+## Eigene Daten aus Konsolen-Screenshots
+
+Preise, die du selbst an der Handelskonsole abgelesen hast, kommen über den [SC Screenshot-Auswerter](https://github.com/Jaegerfeld/StarCitizen-Screenshot-Auswerter) herein: dessen `auswertung.json` (nach dem Prüfen heruntergeladen) in den Ordner `eigene_daten/` legen und neu bauen. Gleicher Shop + Ware + Art ersetzt die star-head-Zeile, Neues kommt dazu, Zeilen mit Status „zu prüfen“ bleiben draußen. Die Zeilen sind in der Warendetail-Tabelle als „eigene Daten“ markiert. Alternativ `python handels_planer_bauen.py --eigene <Datei|Ordner>`. Der Ordner bleibt lokal (gitignored); die Online-Version enthält nur star-head-Daten.
+
 ## Wie es funktioniert
 
 - `handel_core.py` – die **einzige** Stelle mit der Fachlogik: Abruf (`fetch_all`), bester Kauf (günstigster Ort mit Bestand > 0, sonst günstigster) und bester Verkauf (teuerster Ort), Marge, Routen-Auswahl (`select_routes`), Ansichten nach Ort, Routen-Guide als Markdown.

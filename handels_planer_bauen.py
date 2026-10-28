@@ -42,6 +42,31 @@ def num(v):
     return v if isinstance(v, (int, float)) else None
 
 
+EIGENE_DIR = HERE / "eigene_daten"
+
+
+def load_eigene(argv):
+    """Exporte des SC Screenshot-Auswerters: alle *.json in eigene_daten/ plus --eigene <Datei|Ordner>."""
+    paths = []
+    if EIGENE_DIR.is_dir():
+        paths += sorted(EIGENE_DIR.glob("*.json"))
+    for i, a in enumerate(argv):
+        if a == "--eigene" and i + 1 < len(argv):
+            p = pathlib.Path(argv[i + 1])
+            paths += sorted(p.glob("*.json")) if p.is_dir() else [p]
+    eintraege = []
+    for p in paths:
+        try:
+            d = json.loads(p.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError) as e:
+            print(f"  eigene Daten übersprungen ({p.name}): {e}", file=sys.stderr)
+            continue
+        if str(d.get("schema", "")).startswith("sc-konsole-export/"):
+            eintraege += d.get("eintraege", [])
+            print(f"  eigene Daten: {p.name} ({len(d.get('eintraege', []))} Einträge)")
+    return eintraege
+
+
 def build_data(rows, summary):
     """Kompaktes Datenobjekt für die App. Alle Auswertungen kommen aus handel_core."""
     idx = {s["ware"]: i for i, s in enumerate(summary)}
@@ -51,7 +76,8 @@ def build_data(rows, summary):
               "vs": s.get("verkaufSys", ""), "m": num(s.get("marge")), "nk": s["nKauf"], "nv": s["nVerkauf"]}
              for s in summary]
     rws = [[idx[r["ware"]], 0 if r["art"] == "Kauf" else 1, r["preis"], r["shop"], r["ort"], r["system"],
-            num(r.get("invScu")), r.get("container", ""), r.get("stand", "")] for r in rows]
+            num(r.get("invScu")), r.get("container", ""), r.get("stand", ""), 1 if r.get("quelle") == "eigene" else 0]
+           for r in rows]
     routes = {k: [idx[s["ware"]] for s in v] for k, v in hc.select_routes(summary).items()}
     bysell = [[x["vort"], x["sys"], idx[x["ware"]], x["vpreis"], x["kpreis"], x["kort"], x["ksys"], x["marge"], x["stand"]]
               for x in hc.by_sell_location(rows, summary)]
@@ -71,6 +97,9 @@ def main(argv):
     except Exception as e:  # noqa: BLE001
         print(f"FEHLER: star-head nicht erreichbar: {e}", file=sys.stderr)
         return 1
+    eigene = load_eigene(argv)
+    if eigene:
+        rows, summary = hc.merge_eigene(rows, summary, eigene)
     data = build_data(rows, summary)
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     html = HTML_TEMPLATE.replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
@@ -149,6 +178,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   th.sortable{cursor:pointer} th.sortable:hover{color:var(--accent)} th .arr{font-size:10px;margin-left:3px}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   td.m{font-weight:700;color:var(--ok)}
+  .own{display:inline-block;font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent2);border:1px solid var(--accent2);border-radius:20px;padding:0 7px;margin-left:4px;vertical-align:middle}
   tr:last-child td{border-bottom:none}
   tr.row{cursor:pointer} tr.row:hover td{background:var(--glow)} tr.row[aria-expanded="true"] td{background:var(--glow)}
   .ill{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:0 8px;border:1px solid var(--bad);color:var(--bad);margin-left:6px;vertical-align:middle}
@@ -265,7 +295,7 @@ const I18N = {
       legal:'Höchste Margen insgesamt',legalSub:'Inkl. Nischen- und Kleinmengen – teils nur in Kleinstmengen handelbar, Bestand prüfen.',
       illegal:'Illegale Routen',illegalSub:'Hohe Marge, hohes Risiko. Nur an versteckten Konsolen / Outlaw-Stationen.',
       stockLow:'Bestand < Laderaum',noRows:'Keine Ware passt zu den Filtern.',reset:'Filter zurücksetzen',
-      buyPlaces:'Kauforte (günstigster zuerst)',sellPlaces:'Verkaufsorte (teuerster zuerst)',illegalTag:'illegal',
+      own:'eigene Daten',buyPlaces:'Kauforte (günstigster zuerst)',sellPlaces:'Verkaufsorte (teuerster zuerst)',illegalTag:'illegal',
       refOk:'Neuester Stand geladen.',refSame:'Du hast bereits den neuesten Stand.',refErr:'GitHub nicht erreichbar – bestehende Daten bleiben.',loading:'⏳ lädt…',
       built:'gebaut',github:'GitHub-Stand',patch:'Patch',goods:'Waren',prices:'Preiszeilen',goodsN:'Waren',rowsN:'Zeilen'},
   en:{all:'all',legalOnly:'legal only',illegalOnly:'illegal only',allSys:'all systems',custom:'custom',
@@ -275,7 +305,7 @@ const I18N = {
       legal:'Highest margins overall',legalSub:'Incl. niche and small quantities – some only tradable in tiny amounts, check stock.',
       illegal:'Illegal routes',illegalSub:'High margin, high risk. Only at hidden terminals / outlaw stations.',
       stockLow:'stock < cargo',noRows:'No commodity matches the filters.',reset:'Reset filters',
-      buyPlaces:'Buy places (cheapest first)',sellPlaces:'Sell places (highest first)',illegalTag:'illegal',
+      own:'own data',buyPlaces:'Buy places (cheapest first)',sellPlaces:'Sell places (highest first)',illegalTag:'illegal',
       refOk:'Latest build loaded.',refSame:'You already have the latest build.',refErr:'GitHub unreachable – keeping current data.',loading:'⏳ loading…',
       built:'built',github:'GitHub build',patch:'Patch',goods:'commodities',prices:'price rows',goodsN:'commodities',rowsN:'rows'}
 };
@@ -297,7 +327,7 @@ function ingest(d){
   fillSel($('#wTyp'),TYPS,t('all'));
   fillSel($('#sOrt'),[...new Set(d.bysell.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
   fillSel($('#bOrt'),[...new Set(d.bybuy.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
-  $('#buildStat').textContent=(d.source==='refresh'?t('github'):t('built'))+' '+d.generated+' · '+t('patch')+' '+d.patch+' · '+d.wares.length+' '+t('goodsN')+' · '+d.rows.length+' '+t('prices');
+  $('#buildStat').textContent=(d.source==='refresh'?t('github'):t('built'))+' '+d.generated+' · '+t('patch')+' '+d.patch+' · '+d.wares.length+' '+t('goodsN')+' · '+d.rows.length+' '+t('prices')+(d.rows.some(r=>r[9])?' · '+d.rows.filter(r=>r[9]).length+' '+t('own'):'');
 }
 // Mehrfachauswahl: keine Box angehakt = alle Systeme
 function fillChk(box,items){const cur=new Set(chkVals(box));box.querySelectorAll('label').forEach(l=>l.remove());box.insertAdjacentHTML('beforeend',items.map(x=>`<label><input type="checkbox" value="${esc(x)}"${cur.has(x)?' checked':''}>${esc(x)}</label>`).join(''));}
@@ -350,7 +380,7 @@ function renderWares(){
 }
 function detailRow(i){
   const rs=D.rows.filter(r=>r[0]===i), buys=rs.filter(r=>r[1]===0).sort((a,b)=>a[2]-b[2]), sells=rs.filter(r=>r[1]===1).sort((a,b)=>b[2]-a[2]);
-  const tbl=(lst,withInv)=>lst.length?`<table><thead><tr><th>${t('place')}</th><th class="num">${t('price')}</th>${withInv?`<th class="num">${t('stock')}</th>`:''}<th>${t('cont')}</th><th>${t('asOf')}</th></tr></thead><tbody>${lst.map(r=>`<tr><td>${esc(r[3])}${r[4]&&r[4]!==r[3]?' <span class="sys">'+esc(r[4])+'</span>':''}${sysTag(r[5])}</td><td class="num">${fmt(r[2])}</td>${withInv?`<td class="num">${r[6]==null?'–':fmt(r[6])}</td>`:''}<td>${esc(r[7])}</td><td>${esc(r[8])}</td></tr>`).join('')}</tbody></table>`:`<p class="sub">–</p>`;
+  const tbl=(lst,withInv)=>lst.length?`<table><thead><tr><th>${t('place')}</th><th class="num">${t('price')}</th>${withInv?`<th class="num">${t('stock')}</th>`:''}<th>${t('cont')}</th><th>${t('asOf')}</th></tr></thead><tbody>${lst.map(r=>`<tr><td>${esc(r[3])}${r[4]&&r[4]!==r[3]?' <span class="sys">'+esc(r[4])+'</span>':''}${sysTag(r[5])}</td><td class="num">${fmt(r[2])}</td>${withInv?`<td class="num">${r[6]==null?'–':fmt(r[6])}</td>`:''}<td>${esc(r[7])}</td><td>${esc(r[8])}${r[9]?` <span class="own">${t('own')}</span>`:''}</td></tr>`).join('')}</tbody></table>`:`<p class="sub">–</p>`;
   return `<tr class="detail"><td colspan="9"><div class="inner"><div><h4>${t('buyPlaces')}</h4>${tbl(buys,true)}</div><div><h4>${t('sellPlaces')}</h4>${tbl(sells,false)}</div></div></td></tr>`;
 }
 

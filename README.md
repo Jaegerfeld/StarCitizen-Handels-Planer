@@ -29,6 +29,10 @@ A standalone HTML tool (works offline) for commodity trading in Star Citizen: **
 
   This pulls commodities, shops and prices from star-head.de (about 280 requests, 10–30 s) and bakes them into `SC_Handels_Planer.html`. Only the Python standard library is required; `openpyxl` only for `--xlsx`.
 
+## Own data from terminal screenshots
+
+Prices you read off a trade terminal yourself come in through the [SC Screenshot Evaluator](https://github.com/Jaegerfeld/StarCitizen-Screenshot-Auswerter): put its reviewed `auswertung.json` into the folder `eigene_daten/` and rebuild. Same shop + commodity + side replaces the star-head row, new ones are added, rows still marked "to check" stay out. Such rows are tagged "own data" in the commodity detail table. Alternatively `python handels_planer_bauen.py --eigene <file|folder>`. The folder stays local (gitignored); the online version holds star-head data only.
+
 ## How it works
 
 - `handel_core.py` – the **single** place holding the business logic: fetching (`fetch_all`), best buy (cheapest place with stock > 0, else cheapest) and best sell (highest-paying place), margin, route selection (`select_routes`), per-location views, routes guide as Markdown.

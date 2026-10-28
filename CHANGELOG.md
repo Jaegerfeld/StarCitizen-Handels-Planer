@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.3.0] – 2026-10-28
+
+### Hinzugefügt
+- **Eigene Daten:** Exporte des [SC Screenshot-Auswerters](https://github.com/Jaegerfeld/StarCitizen-Screenshot-Auswerter) (`auswertung.json`) im Ordner `eigene_daten/` – oder per `--eigene <Datei|Ordner>` – werden beim Bauen in die star-head-Daten eingemischt: gleicher Shop + Ware + Art wird ersetzt, Neues kommt dazu, Zeilen „zu prüfen“ bleiben draußen. Routen, Warenübersicht und Orts-Ansichten rechnen damit; in der Warendetail-Tabelle und der Statuszeile sind diese Zeilen als „eigene Daten“ markiert.
+
 ## [1.2.0] – 2026-10-25
 
 ### Geändert
