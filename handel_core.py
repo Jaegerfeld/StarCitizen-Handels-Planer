@@ -139,6 +139,53 @@ def fetch_all(log=print):
     return rows, summary
 
 
+# ---------------- Eigene Daten (Export des Screenshot-Auswerters) ----------------
+def merge_eigene(rows, summary, eintraege, log=print):
+    """Konsolen-Daten aus dem SC Screenshot-Auswerter (Schema sc-konsole-export/1) in die
+    star-head-Zeilen einarbeiten: gleicher Shop + Ware + Art wird ersetzt, Neues kommt dazu;
+    jede übernommene Zeile trägt quelle="eigene". Danach wird summary (bester Kauf/Verkauf)
+    neu berechnet, damit Routen und Orts-Ansichten dieselbe Logik sehen."""
+    known = {s["ware"]: s for s in summary}
+    index = {(r["ware"], r["art"], r["shop"], r["ort"]): i for i, r in enumerate(rows)}
+    rows = list(rows)
+    n_new = n_upd = n_skip = 0
+    for e in eintraege:
+        ware, art, shop = e.get("ware", ""), e.get("art", ""), e.get("shop", "")
+        preis = e.get("preis_auec_scu")
+        if ware not in known or art not in ("Kauf", "Verkauf") or not shop or not isinstance(preis, (int, float)) or preis <= 0:
+            n_skip += 1
+            continue
+        if e.get("konfidenz") == "pruefen":
+            n_skip += 1
+            continue
+        s = known[ware]
+        key = (ware, art, shop, e.get("ort", ""))
+        old = rows[index[key]] if key in index else None
+        row = {"ware": ware, "typ": s["typ"], "illegal": s["illegal"], "art": art, "preis": float(preis),
+               "shop": shop, "ort": e.get("ort", ""), "system": e.get("system", "") or (old or {}).get("system", ""),
+               "invScu": e.get("bestand_scu") if art == "Kauf" and e.get("bestand_scu") is not None else (old or {}).get("invScu"),
+               "container": (old or {}).get("container", ""), "stand": (e.get("stand") or "")[:10], "quelle": "eigene"}
+        if old is None:
+            index[key] = len(rows)
+            rows.append(row)
+            n_new += 1
+        elif row["stand"] >= (old.get("stand") or ""):
+            rows[index[key]] = row
+            n_upd += 1
+        else:
+            n_skip += 1
+    by_ware = {}
+    for r in rows:
+        by_ware.setdefault(r["ware"], ([], []))[0 if r["art"] == "Kauf" else 1].append(r)
+    new_summary = []
+    for s in summary:
+        c = {"name": s["ware"], "type": s["typ"], "isIllegal": s["illegal"], "basePrice": s.get("basePrice", "")}
+        b, v = by_ware.get(s["ware"], ([], []))
+        new_summary.append(summarise(c, b, v))
+    log(f"  Eigene Daten: {n_upd} Zeilen ersetzt, {n_new} neu, {n_skip} übersprungen (unbekannt, ohne Preis, zu prüfen oder älter).")
+    return rows, new_summary
+
+
 # ---------------- Auswertung ----------------
 def _num(v):
     return isinstance(v, (int, float))
