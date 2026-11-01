@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 
 import handel_core as hc
 import kopfzeile as kz
+import sc_design as sd
 from version import PATCH, VERSION
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -105,7 +106,8 @@ def fill_header(html):
               "star-head.de – verify in game before buying."),
         version=VERSION, refresh=refresh, data='<span id="buildStat"></span>')
     html = html.replace("<!--FH_HEADER-->", head)
-    html = html.replace("/*FH_CSS*/", kz.CSS).replace("/*FH_JS*/", kz.JS)
+    html = html.replace("/*FH_CSS*/", kz.CSS + sd.CSS).replace("/*FH_JS*/", kz.JS + sd.JS)
+    html = html.replace("<!--SD_FONTS-->", sd.FONTS)
     return html.replace("<!--FH_DIALOG-->", kz.dialog_html("handel", VERSION) + "\n"
                         + kz.changelog_script(HERE / "CHANGELOG.md"))
 
@@ -149,7 +151,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta name="description" content="Star Citizen Handels-Planer: Top-Handelsrouten, Handelsübersicht aller Waren, Kauf-/Verkaufsorte, Laderaum-Rechner. Daten: star-head.de, täglich neu gebaut.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<!--SD_FONTS-->
 <style>
   :root{
     --bg:#f4f6f8; --panel:#ffffff; --panel2:#eef1f5; --ink:#141922; --muted:#5a6472;
@@ -216,6 +218,8 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   footer a{color:var(--accent)}
   .en{display:none} [data-lang="en"] .de{display:none} [data-lang="en"] .en{display:revert}
   .hide{display:none!important}
+  .grp{flex-wrap:wrap}
+  @media(max-width:600px){.grp{width:100%}.grp label,.grp select,.grp input{min-width:0}.tabs{gap:2px}.tab{padding:8px 10px;font-size:14px}.tablewrap table{font-size:13px}.tablewrap td,.tablewrap th{padding:6px 7px}}
 /*FH_CSS*/
 </style>
 </head>
