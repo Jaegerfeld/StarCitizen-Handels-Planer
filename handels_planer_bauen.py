@@ -16,6 +16,7 @@ import sys
 from datetime import datetime, timezone
 
 import handel_core as hc
+import kopfzeile as kz
 from version import PATCH, VERSION
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -89,6 +90,26 @@ def build_data(rows, summary):
             "ships": hc.SHIPS, "bulk_min": hc.BULK_MIN_SCU, "routes_n": list(hc.ROUTES_N)}
 
 
+def fill_header(html):
+    """Gemeinsame Kopfzeile, „Was ist neu?“-Dialog und Changelog einsetzen (kopfzeile.py)."""
+    b = kz.bi
+    refresh = ('<button class="btn fh-btn" id="refreshBtn" type="button" title="Neuesten täglich gebauten Datenstand von GitHub laden">'
+               f'🔄 {b("Neuesten Stand laden (GitHub)", "Load latest build (GitHub)")}</button>')
+    head = kz.header_html(
+        "handel",
+        eyebrow=("Handel · Waren · Routen", "Trade · Commodities · Routes"),
+        title=("SC Handels-Planer", "SC Trade Planner"),
+        lede=("Was kaufen, wo verkaufen, was bringt eine volle Ladung. Community-Daten von "
+              "star-head.de – vor dem Kauf im Spiel gegenprüfen.",
+              "What to buy, where to sell, what a full load earns. Community data from "
+              "star-head.de – verify in game before buying."),
+        version=VERSION, refresh=refresh, data='<span id="buildStat"></span>')
+    html = html.replace("<!--FH_HEADER-->", head)
+    html = html.replace("/*FH_CSS*/", kz.CSS).replace("/*FH_JS*/", kz.JS)
+    return html.replace("<!--FH_DIALOG-->", kz.dialog_html("handel", VERSION) + "\n"
+                        + kz.changelog_script(HERE / "CHANGELOG.md"))
+
+
 def main(argv):
     use_cache = "--cache" in argv
     want_xlsx = "--xlsx" in argv
@@ -102,7 +123,7 @@ def main(argv):
         rows, summary = hc.merge_eigene(rows, summary, eigene)
     data = build_data(rows, summary)
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    html = HTML_TEMPLATE.replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
+    html = fill_header(HTML_TEMPLATE).replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
     OUT_HTML.write_text(html, encoding="utf-8")
     OUT_JSON.write_text(payload, encoding="utf-8")
     stamp = data["generated"][:10]
@@ -195,25 +216,13 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   footer a{color:var(--accent)}
   .en{display:none} [data-lang="en"] .de{display:none} [data-lang="en"] .en{display:revert}
   .hide{display:none!important}
+/*FH_CSS*/
 </style>
 </head>
 <body>
 <div class="hazard"></div>
 <div class="wrap">
-  <header>
-    <p class="eyebrow"><span class="de">Handel · Waren · Routen</span><span class="en">Trade · Commodities · Routes</span></p>
-    <h1><span class="de">SC Handels-Planer</span><span class="en">SC Trade Planner</span></h1>
-    <p class="lede"><span class="de">Was kaufen, wo verkaufen, was bringt eine volle Ladung. Community-Daten von star-head.de – vor dem Kauf im Spiel gegenprüfen.</span><span class="en">What to buy, where to sell, what a full load earns. Community data from star-head.de – verify in game before buying.</span></p>
-    <div class="toolbar">
-      <button class="btn" id="langBtn" type="button">EN / DE</button>
-      <button class="btn" id="themeBtn" type="button"><span class="de">Hell / Dunkel</span><span class="en">Light / Dark</span></button>
-      <button class="btn" id="refreshBtn" type="button" title="Neuesten täglich gebauten Datenstand von GitHub laden"><span class="de">🔄 Neuesten Stand laden (GitHub)</span><span class="en">🔄 Load latest build (GitHub)</span></button>
-      <a class="btn swap" href="https://jaegerfeld.github.io/StarCitizen-Bauplan-Planer/" target="_blank" rel="noopener">🛠️ <span class="de">Bauplan-Planer</span><span class="en">Blueprint Planner</span></a>
-      <a class="btn swap" href="https://jaegerfeld.github.io/StarCitizen-Wikelo-Planer/" target="_blank" rel="noopener">🧮 <span class="de">Wikelo-Planer</span><span class="en">Wikelo Planner</span></a>
-      <a class="btn swap" href="https://jaegerfeld.github.io/sc-guides/" target="_blank" rel="noopener">📚 <span class="de">Guides</span><span class="en">Guides</span></a>
-      <span class="stat" id="buildStat"></span>
-    </div>
-  </header>
+<!--FH_HEADER-->
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-view="routes" aria-selected="true"><span class="de">Routen</span><span class="en">Routes</span></button>
@@ -419,7 +428,7 @@ document.addEventListener('click',e=>{
   const tr=e.target.closest('tr.row'); if(tr){const i=+tr.dataset.i; wOpen=wOpen===i?null:i; renderWares();}
 });
 $('#themeBtn').addEventListener('click',()=>{const n=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',n);save(LS.theme,n);});
-$('#langBtn').addEventListener('click',()=>{LANG=LANG==='de'?'en':'de';save(LS.lang,LANG);root.setAttribute('data-lang',LANG);root.setAttribute('lang',LANG);ingest(D);shipSetup();rerenderAll();});
+$('#langBtn').addEventListener('click',e=>{const lb=e.target.closest('[data-lang]');if(!lb||lb.dataset.lang===LANG)return;LANG=lb.dataset.lang;save(LS.lang,LANG);root.setAttribute('data-lang',LANG);root.setAttribute('lang',LANG);ingest(D);shipSetup();rerenderAll();});
 async function refresh(){
   // Lädt den zuletzt auf GitHub gebauten Datenstand (täglich 05:00 UTC); kein Direktzugriff auf star-head aus dem Browser.
   const btn=$('#refreshBtn'); if(btn.dataset.busy)return; btn.dataset.busy='1'; btn.disabled=true;
@@ -440,7 +449,9 @@ $('#refreshBtn').addEventListener('contextmenu',e=>{e.preventDefault();try{local
   root.setAttribute('data-lang',LANG); root.setAttribute('lang',LANG);
   ingest(D); shipSetup(); showView('routes');
 })();
+/*FH_JS*/
 </script>
+<!--FH_DIALOG-->
 </body>
 </html>
 """
