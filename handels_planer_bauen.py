@@ -1,14 +1,34 @@
-"""SC Handels-Planer bauen: Handelsübersicht + Top-Routen als eine HTML-Datei (offline lauffähig).
+# =============================================================================
+# Autor:          Robert Seebauer
+# Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
+# KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
+# Erstellt:       25.10.2026
+# Geändert:       01.11.2026
+# Lizenz:         BSD-3-Clause (siehe LICENSE)
+#
+# Fachliche Funktion:
+#   Baut den SC Handels-Planer: eine einzelne, offline lauffähige HTML-Seite mit
+#   Routen, allen Waren und den Ansichten je Verkaufs- und Kaufort, die Daten
+#   eingebettet. Quelle sind die star-head.de-Community-Daten über
+#   handel_core.fetch_all(); eigene Konsolen-Exporte des SC Screenshot-Auswerters
+#   aus eigene_daten/ (und per --eigene) werden vorher eingearbeitet.
+#   Erzeugt im Skript-Ordner:
+#     SC_Handels_Planer.html          die App mit eingebetteten Daten
+#     data.json                       derselbe Datenstand; der Knopf „Neuesten Stand
+#                                     laden“ holt ihn zur Laufzeit von GitHub Pages
+#     SC_Waren_Top_Handelsrouten.md   der Routen-Guide als Markdown
+#     SC_Waren_Handelsuebersicht.xlsx nur mit --xlsx (braucht openpyxl)
+#   Kopfzeile, Design und „Was ist neu?“-Dialog kommen aus kopfzeile.py und
+#   sc_design.py (gemeinsam mit den anderen SC-Planern). Die Seite ruft star-head
+#   nie selbst auf; aktuelle Daten kommen nur aus dem täglichen Build.
+# =============================================================================
+"""Build the trade planner page, data.json, the route guide and optionally the Excel file.
 
-Quelle: star-head.de (Community-Daten) über handel_core.fetch_all().
-Erzeugt im Skript-Ordner:
-  SC_Handels_Planer.html          die App mit eingebetteten Daten
-  data.json                       derselbe Datenstand (Knopf "Neuesten Stand laden" holt ihn von Pages)
-  SC_Waren_Top_Handelsrouten.md   der Routen-Guide als Markdown
-  SC_Waren_Handelsuebersicht.xlsx nur mit --xlsx (braucht openpyxl)
-
-Start:  py handels_planer_bauen.py            (oder Handels_Planer_aktualisieren.bat)
-        py handels_planer_bauen.py --cache    (Rohdaten aus handel_cache.json statt star-head; zum Entwickeln)
+Usage:
+  py handels_planer_bauen.py                 fetch from star-head and build
+  py handels_planer_bauen.py --cache         use handel_cache.json instead of star-head (dev)
+  py handels_planer_bauen.py --xlsx          also write the Excel overview
+  py handels_planer_bauen.py --eigene <p>    merge an extra export file or folder
 """
 import json
 import pathlib
@@ -20,16 +40,35 @@ import kopfzeile as kz
 import sc_design as sd
 from version import PATCH, VERSION
 
+#: Script folder; all outputs are written here.
 HERE = pathlib.Path(__file__).resolve().parent
+#: The generated app with embedded data.
 OUT_HTML = HERE / "SC_Handels_Planer.html"
+#: Same data as the page; fetched by the in-app refresh button.
 OUT_JSON = HERE / "data.json"
+#: Route guide as Markdown.
 OUT_MD = HERE / "SC_Waren_Top_Handelsrouten.md"
+#: Excel overview (only with --xlsx).
 OUT_XLSX = HERE / "SC_Waren_Handelsuebersicht.xlsx"
+#: Raw star-head data for offline development (--cache).
 CACHE = HERE / "handel_cache.json"
+#: Published data.json the page loads on "Load latest build".
 DATA_URL = "https://jaegerfeld.github.io/StarCitizen-Handels-Planer/data.json"
 
 
 def load_rows(use_cache):
+    """Load price rows and summary from star-head or from the local cache.
+
+    Args:
+        use_cache: If True, read handel_cache.json when it exists; otherwise fetch from
+            star-head and write the cache for the next run.
+
+    Returns:
+        Tuple (rows, summary) as from handel_core.fetch_all().
+
+    Raises:
+        urllib.error.URLError: If star-head is unreachable.
+    """
     if use_cache and CACHE.exists():
         d = json.loads(CACHE.read_text(encoding="utf-8"))
         print(f"Rohdaten aus {CACHE.name} ({len(d['rows'])} Zeilen).")
@@ -41,14 +80,27 @@ def load_rows(use_cache):
 
 
 def num(v):
+    """Return v if it is a number, else None (so JSON gets null instead of "")."""
     return v if isinstance(v, (int, float)) else None
 
 
+#: Folder with private screenshot-evaluator exports (never part of the tracked page).
 EIGENE_DIR = HERE / "eigene_daten"
 
 
 def load_eigene(argv):
-    """Exporte des SC Screenshot-Auswerters: alle *.json in eigene_daten/ plus --eigene <Datei|Ordner>."""
+    """Collect entries from SC screenshot evaluator exports.
+
+    Reads every *.json in eigene_daten/ plus any file or folder given with --eigene.
+    Only files whose schema starts with "sc-konsole-export/" are used; unreadable
+    files are reported on stderr and skipped.
+
+    Args:
+        argv: Command-line arguments.
+
+    Returns:
+        List of all export entries ("eintraege").
+    """
     paths = []
     if EIGENE_DIR.is_dir():
         paths += sorted(EIGENE_DIR.glob("*.json"))
@@ -70,7 +122,20 @@ def load_eigene(argv):
 
 
 def build_data(rows, summary):
-    """Kompaktes Datenobjekt für die App. Alle Auswertungen kommen aus handel_core."""
+    """Build the compact data object embedded in the page and written to data.json.
+
+    Commodities are stored once; price rows, routes and location records refer to them
+    by index and use short keys to keep the page small. All evaluation comes from
+    handel_core.
+
+    Args:
+        rows: Price rows (own data marked with quelle="eigene").
+        summary: Per-commodity summary.
+
+    Returns:
+        Dict with schema, version, patch, build time, wares, rows, routes, bysell, bybuy,
+        ships, bulk_min and routes_n.
+    """
     idx = {s["ware"]: i for i, s in enumerate(summary)}
     wares = [{"w": s["ware"], "t": s["typ"], "il": 1 if s["illegal"] else 0, "bp": num(s.get("basePrice")),
               "kp": num(s.get("kaufPreis")), "ko": s.get("kaufOrt", ""), "ks": s.get("kaufSys", ""),
@@ -92,7 +157,14 @@ def build_data(rows, summary):
 
 
 def fill_header(html):
-    """Gemeinsame Kopfzeile, „Was ist neu?“-Dialog und Changelog einsetzen (kopfzeile.py)."""
+    """Insert the shared header, design CSS/JS, fonts, "What's new?" dialog and changelog.
+
+    Args:
+        html: The page template with its placeholders.
+
+    Returns:
+        The template with all kopfzeile.py / sc_design.py placeholders replaced.
+    """
     b = kz.bi
     refresh = ('<button class="btn fh-btn" id="refreshBtn" type="button" title="Neuesten täglich gebauten Datenstand von GitHub laden">'
                f'🔄 {b("Neuesten Stand laden (GitHub)", "Load latest build (GitHub)")}</button>')
@@ -113,6 +185,14 @@ def fill_header(html):
 
 
 def main(argv):
+    """Fetch, merge own data and write the page, data.json, Markdown and optional Excel.
+
+    Args:
+        argv: Command-line arguments (--cache, --xlsx, --eigene <path>).
+
+    Returns:
+        Exit code: 0 on success, 1 if star-head is unreachable.
+    """
     use_cache = "--cache" in argv
     want_xlsx = "--xlsx" in argv
     try:
@@ -141,8 +221,10 @@ def main(argv):
     return 0
 
 
-# ============================================================ HTML-Template
+# ============================================================ HTML template
+#: Page template; placeholders are filled by fill_header() and main().
 HTML_TEMPLATE = r"""<!DOCTYPE html>
+<!-- SC Handels-Planer (SC Trade Planner) - generated by handels_planer_bauen.py, do not edit this file by hand -->
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -235,7 +317,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <button class="tab" role="tab" data-view="buy" aria-selected="false"><span class="de">Nach Kaufort</span><span class="en">By buy location</span></button>
   </div>
 
-  <!-- Routen -->
+  <!-- Routes -->
   <section class="panel" id="view-routes">
     <div class="filters">
       <div class="grp">
@@ -250,7 +332,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div id="routes"></div>
   </section>
 
-  <!-- Alle Waren -->
+  <!-- All commodities -->
   <section class="panel hide" id="view-wares">
     <div class="filters">
       <label><span class="de">Suche</span><span class="en">Search</span><input type="search" id="wQ" placeholder="Ware, Ort …"></label>
@@ -263,7 +345,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div id="wares"></div>
   </section>
 
-  <!-- Nach Verkaufsort -->
+  <!-- By sell location -->
   <section class="panel hide" id="view-sell">
     <div class="filters">
       <label><span class="de">Suche (Ort/Ware)</span><span class="en">Search (place/commodity)</span><input type="search" id="sQ"></label>
@@ -274,7 +356,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div id="sell"></div>
   </section>
 
-  <!-- Nach Kaufort -->
+  <!-- By buy location -->
   <section class="panel hide" id="view-buy">
     <div class="filters">
       <label><span class="de">Suche (Ort/Ware)</span><span class="en">Search (place/commodity)</span><input type="search" id="bQ"></label>
@@ -293,13 +375,18 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 </div>
 <div class="toast" id="toast"></div>
 <script>
+/* ---------- Data and storage ---------- */
+// RAW is the data set embedded at build time; DATA_URL points to the daily build on GitHub Pages.
 const RAW = /*__DATA__*/{};
 const DATA_URL = '__DATA_URL__';
 const LS = {theme:'sc_handel_theme', lang:'sc_handel_lang', raw:'sc_handel_raw_v1', ship:'sc_handel_ship'};
 const root=document.documentElement;
+// Read a JSON value from localStorage; null if missing or storage is blocked.
 function load(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+// Write a JSON value to localStorage; ignores blocked storage.
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 let LANG = load(LS.lang)==='en' ? 'en' : 'de';
+// UI strings per language (data, not comments).
 const I18N = {
   de:{all:'alle',legalOnly:'nur legal',illegalOnly:'nur illegal',allSys:'alle Systeme',custom:'eigener Wert',
       ware:'Ware',buyAt:'Kaufen bei',buy:'~Kauf',sellAt:'Verkaufen bei',sell:'~Verk.',margin:'Marge/SCU',perLoad:'Gewinn/Ladung',cost:'Einsatz/Ladung',stock:'Bestand',
@@ -322,16 +409,23 @@ const I18N = {
       refOk:'Latest build loaded.',refSame:'You already have the latest build.',refErr:'GitHub unreachable – keeping current data.',loading:'⏳ loading…',
       built:'built',github:'GitHub build',patch:'Patch',goods:'commodities',prices:'price rows',goodsN:'commodities',rowsN:'rows'}
 };
+// Translate key k into the current language, filling {placeholders} from v.
 function t(k,v){let s=(I18N[LANG][k]??I18N.de[k]??k);if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s;}
+// Format a number rounded to whole aUEC in the locale of the current language; "–" for null.
 function fmt(n){return n==null?'–':Math.round(n).toLocaleString(LANG==='de'?'de-DE':'en-US');}
+// Escape text for safe insertion into HTML.
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+// Shorthand for document.querySelector.
 const $=s=>document.querySelector(s);
+// Show a short message at the bottom of the page for 2.6 s.
 let toastT=null;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2600);}
 
-// ---- Daten (eingebaut oder gecachter GitHub-Stand) ----
+/* ---------- Data (embedded or cached GitHub build) ---------- */
+// Use the cached GitHub build if it has the same schema, else the embedded data.
 function loadRaw(){const c=load(LS.raw);return (c&&c.schema===RAW.schema&&c.wares)?c:RAW;}
 let D=loadRaw();
 let SYS=[], TYPS=[];
+// Make d the active data set and refill all filter options and the build status line.
 function ingest(d){
   D=d; SYS=[...new Set(d.wares.flatMap(w=>[w.ks,w.vs]).filter(Boolean))].sort();
   TYPS=[...new Set(d.wares.map(w=>w.t).filter(Boolean))].sort();
@@ -342,15 +436,21 @@ function ingest(d){
   fillSel($('#bOrt'),[...new Set(d.bybuy.map(r=>r[0]))].sort((a,b)=>a.localeCompare(b)),t('allPlaces'));
   $('#buildStat').textContent=(d.source==='refresh'?t('github'):t('built'))+' '+d.generated+' · '+t('patch')+' '+d.patch+' · '+d.wares.length+' '+t('goodsN')+' · '+d.rows.length+' '+t('prices')+(d.rows.some(r=>r[9])?' · '+d.rows.filter(r=>r[9]).length+' '+t('own'):'');
 }
-// Mehrfachauswahl: keine Box angehakt = alle Systeme
+// Fill a system checkbox group, keeping ticked boxes; no box ticked means all systems.
 function fillChk(box,items){const cur=new Set(chkVals(box));box.querySelectorAll('label').forEach(l=>l.remove());box.insertAdjacentHTML('beforeend',items.map(x=>`<label><input type="checkbox" value="${esc(x)}"${cur.has(x)?' checked':''}>${esc(x)}</label>`).join(''));}
+// Return the values of the ticked checkboxes in a group.
 function chkVals(box){return [...box.querySelectorAll('input:checked')].map(i=>i.value);}
+// Fill a select with a leading "all" option, keeping the current choice if still present.
 function fillSel(sel,items,first){const cur=sel.value;sel.innerHTML='<option value="">'+esc(first)+'</option>'+items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if([...sel.options].some(o=>o.value===cur))sel.value=cur;}
+// Commodity by index (rows and location records store the index, not the name).
 const W=i=>D.wares[i];
+// Badge marking an illegal commodity.
 function illTag(w){return w.il?` <span class="ill">${t('illegalTag')}</span>`:'';}
+// Badge with the star system name.
 function sysTag(s){return s?` <span class="sys">${esc(s)}</span>`:'';}
 
-// ---- Laderaum ----
+/* ---------- Cargo hold ---------- */
+// Fill the ship select, restore the saved ship/SCU and wire both inputs to re-render routes.
 function shipSetup(){
   const sel=$('#ship'); sel.innerHTML=D.ships.map(([n,s],i)=>`<option value="${i}">${esc(n)} (${s} SCU)</option>`).join('')+`<option value="custom">${t('custom')}</option>`;
   const p=load(LS.ship)||{i:0,scu:D.ships[0][1]};
@@ -358,10 +458,14 @@ function shipSetup(){
   sel.addEventListener('change',()=>{if(sel.value!=='custom')$('#scu').value=D.ships[+sel.value][1];saveShip();renderRoutes();});
   $('#scu').addEventListener('input',()=>{sel.value='custom';saveShip();renderRoutes();});
 }
+// Remember the chosen ship and SCU.
 function saveShip(){save(LS.ship,{i:$('#ship').value,scu:+$('#scu').value||0});}
+// Current cargo size in SCU (never negative).
 function scuNow(){return Math.max(0,+$('#scu').value||0);}
 
-// ---- Routen ----
+/* ---------- Routes ---------- */
+// Render one route table: filter by system and search, cap at n rows, compute outlay and
+// profit per load and warn when the buy stock is below the cargo size.
 function routeTable(ids,n,scu){
   const q=($('#rQ').value||'').trim().toLowerCase(), ks=$('#rKs').value, vs=$('#rVs').value;
   const list=ids.map(W).filter(w=>(!ks||w.ks===ks)&&(!vs||w.vs===vs)&&(!q||(w.w+' '+w.ko+' '+w.vo).toLowerCase().includes(q))).slice(0,n);
@@ -371,6 +475,7 @@ function routeTable(ids,n,scu){
     return `<tr><td><b>${esc(w.w)}</b>${illTag(w)}</td><td>${esc(w.ko)}${sysTag(w.ks)}</td><td class="num">${fmt(w.kp)}</td><td>${esc(w.vo)}${sysTag(w.vs)}</td><td class="num">${fmt(w.vp)}</td><td class="num m">${fmt(w.m)}</td><td class="num">${fmt(w.kp*scu)}</td><td class="num"><b>${fmt(w.m*scu)}</b>${low?` <span class="warn" title="${t('stockLow')}">⚠ ${fmt(w.ki)} SCU</span>`:''}</td></tr>`;}).join('');
   return `<div class="tablewrap"><table><thead><tr><th>${t('ware')}</th><th>${t('buyAt')}</th><th class="num">${t('buy')}</th><th>${t('sellAt')}</th><th class="num">${t('sell')}</th><th class="num">${t('margin')}</th><th class="num">${t('cost')}</th><th class="num">${t('perLoad')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+// Render the three route sections (bulk, highest margin, illegal).
 function renderRoutes(){
   const scu=scuNow(), [nb,nl,ni]=D.routes_n;
   $('#routes').innerHTML=
@@ -379,30 +484,38 @@ function renderRoutes(){
     `<h2>🕶️ ${t('illegal')}</h2><p class="sub">${t('illegalSub')}</p>${routeTable(D.routes.illegal,ni,scu)}`;
 }
 
-// ---- Alle Waren ----
+/* ---------- All commodities ---------- */
 let wSort={k:'m',dir:-1}, wOpen=null;
+// Render the commodity table with filters, sortable columns and the opened detail row.
 function renderWares(){
   const q=($('#wQ').value||'').trim().toLowerCase(), typ=$('#wTyp').value, leg=$('#wLeg').value, ks=$('#wKs').value, vs=$('#wVs').value;
   let list=D.wares.map((w,i)=>({w,i})).filter(({w})=>(!typ||w.t===typ)&&(leg==='all'||(leg==='illegal')===!!w.il)&&(!ks||w.ks===ks)&&(!vs||w.vs===vs)&&(!q||(w.w+' '+w.t+' '+w.ko+' '+w.vo).toLowerCase().includes(q)));
   const k=wSort.k, dir=wSort.dir;
   list.sort((a,b)=>{const x=a.w[k],y=b.w[k];if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y):x-y)*dir;});
   if(!list.length){$('#wares').innerHTML=`<div class="empty">${t('noRows')}<button class="btn" type="button" data-reset="w">${t('reset')}</button></div>`;return;}
+  // Sortable header cell with the current sort arrow.
   const th=(key,label,num)=>`<th class="sortable${num?' num':''}" data-sort="${key}">${label}${wSort.k===key?`<span class="arr">${dir<0?'▼':'▲'}</span>`:''}</th>`;
   const rows=list.map(({w,i})=>`<tr class="row" data-i="${i}" aria-expanded="${wOpen===i}"><td><b>${esc(w.w)}</b>${illTag(w)}</td><td>${esc(w.t)}</td><td class="num">${fmt(w.kp)}</td><td>${esc(w.ko)}${sysTag(w.ks)}</td><td class="num">${w.ki==null?'–':fmt(w.ki)}</td><td class="num">${fmt(w.vp)}</td><td>${esc(w.vo)}${sysTag(w.vs)}</td><td class="num m">${fmt(w.m)}</td><td class="num">${w.nk}/${w.nv}</td></tr>`+(wOpen===i?detailRow(i):'')).join('');
   $('#wares').innerHTML=`<div class="tablewrap"><table><thead><tr>${th('w',t('ware'))}${th('t',t('typ'))}${th('kp',t('bestBuy'),1)}<th>${t('place')}</th>${th('ki',t('stock'),1)}${th('vp',t('bestSell'),1)}<th>${t('place')}</th>${th('m',t('margin'),1)}<th class="num">${t('nPlaces')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+// Detail row of commodity i: all buy places (cheapest first) and sell places (highest first).
 function detailRow(i){
   const rs=D.rows.filter(r=>r[0]===i), buys=rs.filter(r=>r[1]===0).sort((a,b)=>a[2]-b[2]), sells=rs.filter(r=>r[1]===1).sort((a,b)=>b[2]-a[2]);
+  // Price table for one side; withInv adds the stock column.
   const tbl=(lst,withInv)=>lst.length?`<table><thead><tr><th>${t('place')}</th><th class="num">${t('price')}</th>${withInv?`<th class="num">${t('stock')}</th>`:''}<th>${t('cont')}</th><th>${t('asOf')}</th></tr></thead><tbody>${lst.map(r=>`<tr><td>${esc(r[3])}${r[4]&&r[4]!==r[3]?' <span class="sys">'+esc(r[4])+'</span>':''}${sysTag(r[5])}</td><td class="num">${fmt(r[2])}</td>${withInv?`<td class="num">${r[6]==null?'–':fmt(r[6])}</td>`:''}<td>${esc(r[7])}</td><td>${esc(r[8])}${r[9]?` <span class="own">${t('own')}</span>`:''}</td></tr>`).join('')}</tbody></table>`:`<p class="sub">–</p>`;
   return `<tr class="detail"><td colspan="9"><div class="inner"><div><h4>${t('buyPlaces')}</h4>${tbl(buys,true)}</div><div><h4>${t('sellPlaces')}</h4>${tbl(sells,false)}</div></div></td></tr>`;
 }
 
-// ---- Nach Ort: eine Zeile je Ort und Ware, sortierbar ----
-// Spalten-Definition: k = Sortierschlüssel (Index im Datensatz oder 'w' für Warenname), num = Zahl
+/* ---------- By location: one row per place and commodity, sortable ---------- */
+// Column definition: k = sort key (index in the record or 'w' for the commodity name),
+// l = label key, num = numeric, m = margin style, f = cell renderer.
 const SELL_COLS=[{k:0,l:'sellPlace',f:r=>esc(r[0])+sysTag(r[1])},{k:'w',l:'ware',f:r=>`<b>${esc(W(r[2]).w)}</b>${illTag(W(r[2]))}`},{k:3,l:'sell',num:1,f:r=>fmt(r[3])},{k:4,l:'buy',num:1,f:r=>fmt(r[4])},{k:5,l:'buyAt',f:r=>esc(r[5])+sysTag(r[6])},{k:7,l:'margin',num:1,m:1,f:r=>fmt(r[7])},{k:8,l:'asOf',f:r=>esc(r[8])}];
 const BUY_COLS=[{k:0,l:'buyPlace',f:r=>esc(r[0])+sysTag(r[1])},{k:'w',l:'ware',f:r=>`<b>${esc(W(r[2]).w)}</b>${illTag(W(r[2]))}`},{k:3,l:'buy',num:1,f:r=>fmt(r[3])},{k:8,l:'stock',num:1,f:r=>r[8]==null?'–':fmt(r[8])},{k:4,l:'sell',num:1,f:r=>fmt(r[4])},{k:5,l:'sellAt',f:r=>esc(r[5])+sysTag(r[6])},{k:7,l:'margin',num:1,m:1,f:r=>fmt(r[7])},{k:9,l:'asOf',f:r=>esc(r[9])}];
+// Current sort column and direction per location view.
 const locSort={sell:{k:7,dir:-1},buy:{k:7,dir:-1}};
+// Sort value of a location record: commodity name for 'w', otherwise the field at index k.
 function locVal(r,k){return k==='w'?W(r[2]).w:r[k];}
+// Render a location view: filter by systems, place and search, sort, then build the table.
 function renderLoc(id,recs,cols,qId,ortId,sysId){
   const q=($('#'+qId).value||'').trim().toLowerCase(), ort=$('#'+ortId).value, sys=new Set(chkVals($('#'+sysId)));
   const list=recs.filter(r=>(!sys.size||sys.has(r[1]))&&(!ort||r[0]===ort)&&(!q||(r[0]+' '+W(r[2]).w+' '+r[5]).toLowerCase().includes(q)));
@@ -413,28 +526,36 @@ function renderLoc(id,recs,cols,qId,ortId,sysId){
   const body=list.map(r=>'<tr>'+cols.map(c=>`<td class="${c.m?'num m':(c.num?'num':'')}">${c.f(r)}</td>`).join('')+'</tr>').join('');
   $('#'+id).innerHTML=`<p class="sub">${list.length} ${t('rowsN')}</p><div class="tablewrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
+// Render the "by sell location" view.
 function renderSell(){renderLoc('sell',D.bysell,SELL_COLS,'sQ','sOrt','sSys');}
+// Render the "by buy location" view.
 function renderBuy(){renderLoc('buy',D.bybuy,BUY_COLS,'bQ','bOrt','bSys');}
 
-// ---- Views / Events ----
+/* ---------- Views / events ---------- */
 const VIEWS={routes:renderRoutes,wares:renderWares,sell:renderSell,buy:renderBuy};
+// Switch to tab v and render it.
 function showView(v){document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));for(const k in VIEWS)$('#view-'+k).classList.toggle('hide',k!==v);VIEWS[v]();}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+// Re-render the visible view (after language or data changes).
 function rerenderAll(){for(const k in VIEWS)if(!$('#view-'+k).classList.contains('hide'))VIEWS[k]();}
+// Filter inputs re-render their view, debounced by 130 ms.
 let deb=null;
 for(const [id,fn] of [['rQ',renderRoutes],['rKs',renderRoutes],['rVs',renderRoutes],['wQ',renderWares],['wTyp',renderWares],['wLeg',renderWares],['wKs',renderWares],['wVs',renderWares],['sQ',renderSell],['sOrt',renderSell],['sSys',renderSell],['bQ',renderBuy],['bOrt',renderBuy],['bSys',renderBuy]]){
   const el=$('#'+id); el.addEventListener(el.tagName==='INPUT'&&el.type!=='checkbox'?'input':'change',()=>{clearTimeout(deb);deb=setTimeout(fn,130);});
 }
+// Delegated clicks: reset filters, sort location views, sort commodities, open/close a detail row.
 document.addEventListener('click',e=>{
   const rs=e.target.closest('[data-reset]'); if(rs){const v=rs.dataset.reset; const ids={r:['rQ','rKs','rVs'],w:['wQ','wTyp','wLeg','wKs','wVs'],sell:['sQ','sOrt','sSys'],buy:['bQ','bOrt','bSys']}[v]||[]; ids.forEach(i=>{const el=$('#'+i);if(el.classList.contains('chk'))el.querySelectorAll('input').forEach(c=>c.checked=false);else el.value=el.id==='wLeg'?'all':'';}); rerenderAll(); return;}
   const lth=e.target.closest('th[data-lsort]'); if(lth){const [id,kk]=lth.dataset.lsort.split(':'); const k=kk==='w'?'w':+kk; const st=locSort[id]; locSort[id]= st.k===k?{k,dir:-st.dir}:{k,dir:(k==='w'||k===0||k===5)?1:-1}; (id==='sell'?renderSell:renderBuy)(); return;}
   const th=e.target.closest('th[data-sort]'); if(th){const k=th.dataset.sort; wSort= wSort.k===k?{k,dir:-wSort.dir}:{k,dir:(k==='w'||k==='t')?1:-1}; renderWares(); return;}
   const tr=e.target.closest('tr.row'); if(tr){const i=+tr.dataset.i; wOpen=wOpen===i?null:i; renderWares();}
 });
+// Header buttons: toggle theme; switch language and rebuild all texts.
 $('#themeBtn').addEventListener('click',()=>{const n=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',n);save(LS.theme,n);});
 $('#langBtn').addEventListener('click',e=>{const lb=e.target.closest('[data-lang]');if(!lb||lb.dataset.lang===LANG)return;LANG=lb.dataset.lang;save(LS.lang,LANG);root.setAttribute('data-lang',LANG);root.setAttribute('lang',LANG);ingest(D);shipSetup();rerenderAll();});
+// Load the latest data.json built on GitHub (daily 05:00 UTC) and cache it.
 async function refresh(){
-  // Lädt den zuletzt auf GitHub gebauten Datenstand (täglich 05:00 UTC); kein Direktzugriff auf star-head aus dem Browser.
+  // The browser never calls star-head directly; it only reads the daily build from GitHub Pages.
   const btn=$('#refreshBtn'); if(btn.dataset.busy)return; btn.dataset.busy='1'; btn.disabled=true;
   try{
     const r=await fetch(DATA_URL,{cache:'no-store'}); if(!r.ok)throw new Error('HTTP '+r.status);
@@ -445,9 +566,11 @@ async function refresh(){
   finally{btn.dataset.busy='';btn.disabled=false;}
 }
 $('#refreshBtn').addEventListener('click',refresh);
+// Right-click on the refresh button drops the cached build and returns to the embedded data.
 $('#refreshBtn').addEventListener('contextmenu',e=>{e.preventDefault();try{localStorage.removeItem(LS.raw);}catch(x){}ingest(RAW);shipSetup();rerenderAll();toast(t('built')+' '+RAW.generated);});
 
-// ---- Init ----
+/* ---------- Init ---------- */
+// Apply saved theme and language, then render the routes tab.
 (function init(){
   const th=load(LS.theme); if(th)root.setAttribute('data-theme',th);
   root.setAttribute('data-lang',LANG); root.setAttribute('lang',LANG);

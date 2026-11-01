@@ -1,12 +1,43 @@
-"""Handelsübersicht als Excel (Übersicht · Nach Verkaufsort · Nach Kaufort · Alle Preise · Info).
-
-Logik aus update_starhead.py hierher verschoben, damit Web-Build (GitHub Actions) und
-lokale Pipeline dieselbe Datei erzeugen. Braucht openpyxl.
-"""
+# =============================================================================
+# Autor:          Robert Seebauer
+# Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
+# KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
+# Erstellt:       25.10.2026
+# Geändert:       25.10.2026
+# Lizenz:         BSD-3-Clause (siehe LICENSE)
+#
+# Fachliche Funktion:
+#   Schreibt die Handelsübersicht als Excel-Datei mit fünf Blättern: Übersicht
+#   (eine Zeile je Ware, bester Kauf/Verkauf, Marge), Nach Verkaufsort und Nach
+#   Kaufort (gruppiert, beste Marge oben), Alle Preise (jede Shop-Preiszeile mit
+#   Stand) und Info (Quelle, Abrufdatum, Spielstand, Lesehinweise).
+#   Die Auswertung kommt aus handel_core; diese Datei formatiert nur.
+#   Aus update_starhead.py hierher verschoben, damit der Web-Build (GitHub Actions)
+#   und die lokale Pipeline dieselbe Datei erzeugen. Braucht openpyxl.
+# =============================================================================
+"""Excel export of the trade overview (five sheets)."""
 from handel_core import by_buy_location, by_sell_location
 
 
 def build_xlsx(rows, summary, stamp, patch, out_path):  # noqa: C901 - lineare Blatt-Formatierung
+    """Write the trade overview workbook.
+
+    Sheets: Übersicht, Nach Verkaufsort, Nach Kaufort, Alle Preise, Info. Illegal
+    commodities are highlighted red, positive margins green.
+
+    Args:
+        rows: Price rows (one per shop, commodity and trade type).
+        summary: Per-commodity summary with best buy and sell.
+        stamp: Date of the data fetch, written to the Info sheet.
+        patch: Game version the data refers to.
+        out_path: Target path of the .xlsx file.
+
+    Returns:
+        out_path, after the workbook was saved.
+
+    Raises:
+        ImportError: If openpyxl is not installed.
+    """
     from openpyxl import Workbook
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
@@ -19,6 +50,7 @@ def build_xlsx(rows, summary, stamp, patch, out_path):  # noqa: C901 - lineare B
     red = Font(color="B00020", bold=True)
 
     def hdr(ws, n):
+        """Style the header row of n columns, freeze it and add an auto filter."""
         for c in range(1, n + 1):
             cell = ws.cell(row=1, column=c)
             cell.fill = head_fill
@@ -29,10 +61,12 @@ def build_xlsx(rows, summary, stamp, patch, out_path):  # noqa: C901 - lineare B
         ws.row_dimensions[1].height = 26
 
     def widths(ws, ws_widths):
+        """Set the column widths from a list (first entry = column A)."""
         for i, w in enumerate(ws_widths, 1):
             ws.column_dimensions[get_column_letter(i)].width = w
 
     def numfmt(ws, cols):
+        """Apply the thousands number format to numeric cells of the given columns."""
         for r in range(2, ws.max_row + 1):
             for c in cols:
                 cell = ws.cell(row=r, column=c)
@@ -48,6 +82,7 @@ def build_xlsx(rows, summary, stamp, patch, out_path):  # noqa: C901 - lineare B
     ws.append(cols)
 
     def mkey(s):
+        """Sort key: highest margin first, commodities without margin last."""
         m = s.get("marge")
         return (0, -m) if isinstance(m, (int, float)) else (1, 0)
 
@@ -67,11 +102,24 @@ def build_xlsx(rows, summary, stamp, patch, out_path):  # noqa: C901 - lineare B
         if isinstance(mc.value, (int, float)) and mc.value > 0:
             mc.font = green
 
-    # ---------- gruppierte Blätter ----------
+    # ---------- grouped sheets ----------
     ga = PatternFill("solid", fgColor="FFFFFF")
     gb = PatternFill("solid", fgColor="EEF3F6")
 
     def grouped(title, cols_, recs, key, rowfn, ws_widths, numcols, margecol, illcol):
+        """Add a sheet grouped by place, with alternating fills per group.
+
+        Args:
+            title: Sheet name.
+            cols_: Header labels.
+            recs: Records from by_sell_location() / by_buy_location().
+            key: Record field that defines a group (the place).
+            rowfn: Maps a record to the list of cell values.
+            ws_widths: Column widths.
+            numcols: 1-based columns that get the number format.
+            margecol: 1-based margin column (green if positive).
+            illcol: 1-based "Illegal" column (red if "Ja").
+        """
         wsg = wb.create_sheet(title)
         wsg.append(cols_)
         prev, gi = None, -1
@@ -108,7 +156,7 @@ def build_xlsx(rows, summary, stamp, patch, out_path):  # noqa: C901 - lineare B
                        x["vpreis"], x["vort"], x["vsys"], x["marge"], x.get("inv", ""), x["stand"]],
             [30, 13, 22, 15, 7, 15, 15, 32, 14, 12, 15, 11], [6, 7, 10, 11], 10, 5)
 
-    # ---------- Alle Preise ----------
+    # ---------- All prices ----------
     ws2 = wb.create_sheet("Alle Preise")
     cols2 = ["Ware", "Typ", "Illegal", "Art", "Preis (aUEC/SCU)", "Shop", "Ort", "System", "Max-Inventar (SCU)",
              "Container (SCU)", "Stand"]
