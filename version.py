@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       25.10.2026
-# Geändert:       01.11.2026
+# Geändert:       10.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -14,6 +14,6 @@
 # =============================================================================
 """Central version numbers of the StarCitizen trade planner."""
 #: Tool version (SemVer), shown in the page header and written to data.json.
-VERSION = "1.5.1"
+VERSION = "1.5.2"
 #: Game version the price data refers to (update on each new live patch).
 PATCH = "4.10.2-LIVE"   # Spielstand, auf den sich die Daten beziehen (bei neuem Patch anpassen)
