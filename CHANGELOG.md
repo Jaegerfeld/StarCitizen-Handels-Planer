@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.7.0] – 2026-11-19
+
+### Hinzugefügt
+- **Fracht-Logbuch, Suche:** „Ware im Logbuch suchen“ zeigt jede Station und jedes Schiff mit dieser Ware samt Containern; ein Klick springt dorthin.
+- **Lagerwert:** Wert je Posten, je Ort, je Schiff und gesamt, nach dem besten Verkaufspreis aus den Daten dieser Seite (star-head), sonst dem UEX-Durchschnitt. Posten ohne bekannten Verkaufspreis (z. B. Erze vor dem Raffinieren) werden genannt statt still weggelassen.
+- **Einkaufspreis (optional)** beim Einbuchen, mit Gewinn-Schätzung; Posten mit verschiedenen Einkaufspreisen bleiben getrennt.
+- **Bester Verkaufsort** je Ware, mit Sprung zu „Alle Waren“ für alle Verkaufsorte.
+- **XLSX-Export** um Einkaufs- und Verkaufspreis, besten Verkaufsort, Wert und Gewinn erweitert.
+
 ## [1.6.0] – 2026-11-18
 
 ### Hinzugefügt

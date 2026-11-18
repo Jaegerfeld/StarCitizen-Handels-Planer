@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       18.11.2026
-# Geändert:       18.11.2026
+# Geändert:       19.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -15,6 +15,10 @@
 #   Verschieben per Drag & Drop oder per Klick/Antippen mit Mengenabfrage
 #   (Container-Anzahl oder SCU), Einbuchen, Ausbuchen, Journal mit Rückgängig.
 #   Warnungen (Laderaum, Containergröße, illegal, flüchtig) sperren nie.
+#   Schritt 2: Suche über alle Orte und Schiffe, Lagerwert je Posten, Ort und
+#   gesamt (Verkaufspreis aus den star-head-Daten dieser Seite, sonst UEX-
+#   Durchschnitt), optionaler Einkaufspreis mit Gewinn-Schätzung, Sprung zu
+#   „Alle Waren“ für alle Verkaufsorte.
 #   Gespeichert wird nur im Browser; Export als JSON (auch wieder einlesbar)
 #   und XLSX (ohne fremde Bibliothek, eigener ZIP-Schreiber). Kein Server.
 #   Alles ist mit lb- bzw. #view-ledger abgegrenzt.
@@ -31,13 +35,16 @@ LB_HTML = r"""
   <section class="panel hide" id="view-ledger">
     <div class="lb-bar">
       <button type="button" class="btn" id="lb-undo" disabled>↶ <span class="de">Rückgängig</span><span class="en">Undo</span></button>
+      <label class="lb-find"><span class="de">Ware im Logbuch suchen</span><span class="en">Find a commodity in the ledger</span><input type="search" id="lb-fq" autocomplete="off"></label>
       <span class="lb-sp"></span>
+      <span class="lb-total" id="lb-total" aria-live="polite"></span>
       <button type="button" class="btn" id="lb-xlsx">⬇ <span class="de">Export XLSX</span><span class="en">Export XLSX</span></button>
       <button type="button" class="btn" id="lb-json">⬇ <span class="de">Export JSON</span><span class="en">Export JSON</span></button>
       <button type="button" class="btn" id="lb-imp">⬆ <span class="de">JSON einlesen</span><span class="en">Import JSON</span></button>
       <input type="file" id="lb-file" accept=".json,application/json" hidden>
     </div>
     <p class="lb-note"><span class="de">Dein Logbuch wird nur in diesem Browser gespeichert. Sichere es ab und zu per „Export JSON“.</span><span class="en">Your ledger is stored in this browser only. Back it up now and then with “Export JSON”.</span></p>
+    <div id="lb-found" class="lb-found" aria-live="polite"></div>
     <div class="lb-grid">
       <aside class="lb-col" aria-labelledby="lb-hs">
         <h3 id="lb-hs"><span class="de">Meine Schiffe</span><span class="en">My ships</span></h3>
@@ -67,6 +74,18 @@ LB_CSS = r"""
   #view-ledger .lb-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
   #view-ledger .lb-bar .btn{min-height:44px}
   #view-ledger .lb-sp{flex:1}
+  #view-ledger .lb-find{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+  #view-ledger .lb-find input{font:inherit;font-size:14px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:44px;min-width:240px}
+  #view-ledger .lb-total{font-family:var(--disp);font-weight:700;font-size:15px}
+  .lb-found:empty{display:none}
+  .lb-found{background:var(--panel2);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+  .lb-fw{margin:4px 0} .lb-fw b{font-family:var(--disp);font-size:15.5px;margin-right:6px}
+  .lb-floc{font:inherit;font-size:13.5px;min-height:36px;margin:3px 6px 3px 0;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  .lb-floc:hover,.lb-floc:focus-visible{border-color:var(--accent);color:var(--accent)}
+  .lb-sell{font-size:13px;color:var(--muted);margin-top:3px}
+  .lb-val{font-family:var(--disp);font-weight:700;font-size:15px;margin:0 0 6px}
+  .lb-pos{color:var(--ok)} .lb-neg{color:var(--bad)}
+  .lb-link{font:inherit;font-size:13px;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;min-height:32px;padding:0 4px}
   #view-ledger .lb-note{color:var(--muted);font-size:12.5px;margin:0 0 12px}
   #view-ledger .lb-grid{display:grid;grid-template-columns:250px minmax(0,1fr) 270px;gap:14px;align-items:start}
   #view-ledger .lb-col{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
@@ -178,7 +197,30 @@ function maxBox(loc){if(!loc) return 32; if(loc[0]==='s'){const s=shipById(loc.s
 function wTags(w){if(!w) return ''; return (w.il?`<span class="lb-tag il">⚠ ${T('illegal','illegal')}</span>`:'')+
   (w.vq?`<span class="lb-tag vol">⚡ ${T('Quantum-flüchtig','quantum-volatile')}</span>`:'')+(w.vt?`<span class="lb-tag vol">⏳ ${T('verdirbt mit der Zeit','decays over time')}</span>`:'');}
 // Add containers to a location, merging with an existing post of the same commodity and size.
-function put(loc,w,z,n){const p=S.stock.find(q=>q.l===loc&&q.w===w&&q.z===z); if(p) p.n+=n; else S.stock.push({l:loc,w,z,n});}
+// Add containers to a location; posts merge only with the same commodity, size and buy price,
+// so different purchase prices stay separate and the profit estimate stays honest.
+function put(loc,w,z,n,bp){const p=S.stock.find(q=>q.l===loc&&q.w===w&&q.z===z&&q.bp===bp); if(p) p.n+=n; else S.stock.push(bp==null?{l:loc,w,z,n}:{l:loc,w,z,n,bp});}
+// Sell price per SCU: best sell place from this page's star-head data (same source as the routes),
+// else the UEX average; null if neither knows the commodity.
+let SELL=null, SELLD=null;
+const normN=s=>String(s||'').toLowerCase().replace(/\s*\((raw|ore|refined)\)/g,'').trim();
+function sell(wid){
+  // Exact names only: "Aluminum (Ore)" must not get the price of refined "Aluminum".
+  if(typeof D!=='undefined'&&D!==SELLD){SELLD=D; SELL={}; for(const x of (D.wares||[])){const a=x.w.toLowerCase().trim(); if(!(a in SELL)) SELL[a]=x;}}
+  const w=WA[wid]; if(!w) return null; const x=SELL&&SELL[w.n.toLowerCase().trim()];
+  if(x&&x.vp) return {p:x.vp,at:x.vo,sys:x.vs,src:'sh',name:x.w};
+  return w.ps?{p:w.ps,src:'uex'}:null;}
+// Value and profit estimate of a set of posts (profit only where a buy price was entered).
+function worth(posts){let v=0,known=0,pr=0,hasBp=false,unknown=0;
+  for(const q of posts){const si=sell(q.w); if(!si){unknown++; continue;} known++; v+=si.p*q.z*q.n; if(q.bp!=null){hasBp=true; pr+=(si.p-q.bp)*q.z*q.n;}}
+  return {v:Math.round(v),known,unknown,pr:Math.round(pr),hasBp};}
+// Note that a value leaves out posts without a known sell price (raw ores, niche goods).
+const missTxt=n=>n?` · <span class="lb-sell">${T(`${n} ${n===1?'Posten':'Posten'} ohne Verkaufspreis nicht enthalten`,`${n} ${n===1?'post':'posts'} without sell price not included`)}</span>`:'';
+const profitTxt=pr=>`<b class="${pr>=0?'lb-pos':'lb-neg'}">${pr>=0?'+':'−'}${nf(Math.abs(pr))} aUEC</b>`;
+// Read a price as players type it: "6840", "6.840", "6 840", "68,4".
+function parsePrice(v){let s=String(v||'').trim().replace(/\s/g,''); if(!s) return null;
+  if(/^\d{1,3}([.,]\d{3})+$/.test(s)) s=s.replace(/[.,]/g,''); else s=s.replace(',','.');
+  const n=Number(s); return Number.isFinite(n)&&n>=0?n:NaN;}
 function take(p,n){p.n-=n; if(p.n<=0) S.stock.splice(S.stock.indexOf(p),1);}
 function warnings(loc,w,z,addScu){const out=[]; const wa=WA[w];
   if(loc&&loc[0]==='s'){const s=shipById(loc.slice(2)); if(s){const c=cap(s), u=used(loc)+addScu;
@@ -213,13 +255,19 @@ function renderMid(){const box=$l('mid'), loc=S.sel;
   const posts=S.stock.filter(q=>q.l===loc), byW={};
   for(const q of posts)(byW[q.w]=byW[q.w]||[]).push(q);
   const meta=isShip?`${esc(SH[s.t]?.n||'?')} · ${T('Container bis','containers up to')} ${SH[s.t]?.cs||'?'} SCU`:`${esc(p.sys)}${p.body?' · '+esc(p.body):''}${p.max?` · ${T('Aufzug bis','elevator up to')} ${p.max} SCU`:''}`;
+  const wv=worth(posts);
   let html=`<h2>${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}</div>${isShip?fillBar(s,loc):''}
+    ${wv.known?`<div class="lb-val">${T('Lagerwert','Cargo value')} ≈ ${nf(wv.v)} aUEC${wv.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(wv.pr)}`:''}${missTxt(wv.unknown)}</div>`:''}
     <div class="lb-acts"><button type="button" class="btn pri" data-act="in">+ ${T('Fracht einbuchen','Book cargo in')}</button>${isShip?`<button type="button" class="btn" data-act="editship">✎ ${T('Schiff bearbeiten','Edit ship')}</button>`:''}</div>`;
   const ws=Object.keys(byW).sort((a,b)=>(WA[a]?.n||'').localeCompare(WA[b]?.n||''));
   if(!ws.length) html+=`<p class="lb-empty">${T('Hier liegt nichts. Buche Fracht ein oder ziehe einen Posten von einem anderen Ort hierher.','Nothing here. Book cargo in or drag a post here from another place.')}</p>`;
-  for(const w of ws){const list=byW[w].sort((a,b)=>b.z-a.z), tot=list.reduce((a,q)=>a+q.z*q.n,0);
-    html+=`<div class="lb-ware"><div class="lb-wh"><b>${esc(WA[w]?.n||'?')}</b>${wTags(WA[w])}<span class="lb-tot">${nf(tot)} SCU</span></div><div class="lb-chips">${list.map(q=>
-      `<button type="button" class="lb-chip" draggable="true" data-i="${S.stock.indexOf(q)}" title="${T('Klicken: verschieben oder ausbuchen · Ziehen: auf ein Schiff oder einen Ort','Click: move or book out · Drag: onto a ship or place')}">${q.z} SCU × ${q.n}<small>= ${nf(q.z*q.n)}</small></button>`).join('')}</div></div>`;}
+  for(const w of ws){const list=byW[w].sort((a,b)=>b.z-a.z||(a.bp??-1)-(b.bp??-1)), tot=list.reduce((a,q)=>a+q.z*q.n,0), si=sell(+w), ww=worth(list);
+    const sellTxt=si?(si.src==='sh'?`${T('Bester Verkauf','Best sell')}: ${esc(si.at)}${si.sys?` (${esc(si.sys)})`:''} · ${nf(si.p)} aUEC/SCU`
+      :`${T('UEX-Durchschnittspreis','UEX average price')} ${nf(si.p)} aUEC/SCU`):T('Kein Verkaufspreis bekannt.','No sell price known.');
+    html+=`<div class="lb-ware"><div class="lb-wh"><b>${esc(WA[w]?.n||'?')}</b>${wTags(WA[w])}<span class="lb-tot">${nf(tot)} SCU${si?` · ≈ ${nf(ww.v)} aUEC`:''}</span></div>
+      <div class="lb-sell">${sellTxt}${ww.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(ww.pr)}`:''}${si?.src==='sh'?` <button type="button" class="lb-link" data-wares="${esc(si.name)}">${T('alle Verkaufsorte ↗','all sell places ↗')}</button>`:''}</div>
+      <div class="lb-chips">${list.map(q=>
+      `<button type="button" class="lb-chip" draggable="true" data-i="${S.stock.indexOf(q)}" title="${T('Klicken: verschieben oder ausbuchen · Ziehen: auf ein Schiff oder einen Ort','Click: move or book out · Drag: onto a ship or place')}">${q.z} SCU × ${q.n}<small>= ${nf(q.z*q.n)}${q.bp!=null?` · ${T('à','at')} ${nf(q.bp)}`:''}</small></button>`).join('')}</div></div>`;}
   box.innerHTML=html;}
 function renderLog(){$l('jn').textContent=S.log.length?`(${S.log.length})`:'';
   $l('log').innerHTML=S.log.slice(0,200).map(e=>`<li><time>${new Date(e.t).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'})}</time>${esc(e.x)}</li>`).join('')||`<li>${T('Noch keine Buchung.','No entries yet.')}</li>`;}
@@ -227,7 +275,18 @@ function render(){const sys=$l('sys'), cur=sys.value;
   sys.innerHTML=`<option value="">${T('alle Systeme','all systems')}</option>`+[...new Set(M.places.map(p=>p.sys))].map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('');
   $l('wlist').innerHTML=M.wares.map(w=>`<option value="${esc(w.n)}">`).join('');
   $l('slist').innerHTML=M.ships.map(s=>`<option value="${esc(s.n)}">${s.scu} SCU</option>`).join('');
-  renderShips(); renderPlaces(); renderMid(); renderLog(); $l('undo').disabled=!UNDO.length;}
+  renderShips(); renderPlaces(); renderMid(); renderLog(); renderFound(); $l('undo').disabled=!UNDO.length;
+  const all=worth(S.stock), scu=S.stock.reduce((a,p)=>a+p.z*p.n,0);
+  $l('total').innerHTML=scu?`${T('Gesamt','Total')}: ${nf(scu)} SCU${all.known?` · ≈ ${nf(all.v)} aUEC`:''}`:'';}
+// Where is a commodity? Every place and ship holding it, with container sizes; a click selects it.
+function renderFound(){const q=normN($l('fq').value), box=$l('found'); if(q.length<2){box.innerHTML=''; return;}
+  const byW={}; for(const p of S.stock){const n=WA[p.w]?.n||''; if(normN(n).includes(q)) (byW[p.w]=byW[p.w]||[]).push(p);}
+  const ws=Object.keys(byW).sort((a,b)=>(WA[a]?.n||'').localeCompare(WA[b]?.n||''));
+  if(!ws.length){box.innerHTML=`<p class="lb-sell" style="margin:0">${T(`Nichts mit „${esc($l('fq').value.trim())}“ im Logbuch.`,`Nothing matching “${esc($l('fq').value.trim())}” in the ledger.`)}</p>`; return;}
+  box.innerHTML=ws.map(w=>{const posts=byW[w], byL={}; for(const p of posts)(byL[p.l]=byL[p.l]||[]).push(p);
+    const tot=posts.reduce((a,p)=>a+p.z*p.n,0);
+    return `<div class="lb-fw"><b>${esc(WA[w]?.n)}</b><span class="lb-sell">${nf(tot)} SCU</span><br>${Object.entries(byL).map(([l,ps])=>
+      `<button type="button" class="lb-floc" data-loc="${esc(l)}">${l[0]==='s'?'🚀 ':''}${esc(locName(l))} · ${ps.map(p=>`${p.z}×${p.n}`).join(', ')}</button>`).join('')}</div>`;}).join('');}
 function select(loc){S.sel=loc; save(); render(); if(matchMedia('(max-width:900px)').matches) $l('mid').scrollIntoView({behavior:'smooth',block:'start'});}
 
 /* ---------- dialogs ---------- */
@@ -259,23 +318,28 @@ function openMove(i,target){const p=S.stock[i]; if(!p) return; const w=WA[p.w];
   $l('mto').dispatchEvent(new Event('change',{bubbles:true}));
   dlgAct=b=>{const a=amount(); if(b==='cx'){closeDlg();return;} if(a.err||!(a.n>=1&&a.n<=p.n)){$l('mn').focus();return;}
     if(b==='out'){snap(); take(p,a.n); closeDlg(); commit(T(`Ausgebucht: ${w?.n} ${p.z} SCU × ${a.n} aus ${locName(p.l)}`,`Booked out: ${w?.n} ${p.z} SCU × ${a.n} from ${locName(p.l)}`)); return;}
-    const to=$l('mto').value, from=p.l; snap(); take(p,a.n); put(to,p.w,p.z,a.n); closeDlg();
+    const to=$l('mto').value, from=p.l; snap(); take(p,a.n); put(to,p.w,p.z,a.n,p.bp); closeDlg();
     commit(T(`Verschoben: ${w?.n} ${p.z} SCU × ${a.n} von ${locName(from)} nach ${locName(to)}`,`Moved: ${w?.n} ${p.z} SCU × ${a.n} from ${locName(from)} to ${locName(to)}`));};}
 // Book new cargo in at the selected place or ship.
 function openIn(){const loc=S.sel, mb=maxBox(loc);
   const body=`<p class="lb-hint">${T('Nach','To')} ${esc(locName(loc))}</p>
     <label>${T('Ware','Commodity')}<input id="lb-iw" list="lb-wlist" autocomplete="off" placeholder="${T('z. B. Laranite','e.g. Laranite')}"></label>
     <div class="lb-row"><label>${T('Containergröße','Container size')}<select id="lb-iz">${M.sizes.map(z=>`<option value="${z}"${z===Math.min(32,mb)?' selected':''}>${z} SCU</option>`).join('')}</select></label>
-    <label>${T('Anzahl','Count')}<input type="number" id="lb-in" min="1" value="1" inputmode="numeric"></label></div>`;
+    <label>${T('Anzahl','Count')}<input type="number" id="lb-in" min="1" value="1" inputmode="numeric"></label></div>
+    <label>${T('Einkaufspreis je SCU in aUEC (optional, für die Gewinn-Schätzung)','Buy price per SCU in aUEC (optional, for the profit estimate)')}<input id="lb-ip" inputmode="decimal" autocomplete="off" placeholder="${T('z. B. 6.840','e.g. 6,840')}"></label>`;
   const ware=()=>{const v=($l('iw').value||'').trim().toLowerCase(); return M.wares.find(w=>w.n.toLowerCase()===v)||null;};
   dialog(T('Fracht einbuchen','Book cargo in'),body,[{id:'ok',label:T('Einbuchen','Book in'),cls:'pri'},{id:'cx',label:T('Abbrechen','Cancel')}],()=>{
     const w=ware(), z=+$l('iz').value, n=Math.floor(+$l('in').value||0); const out=[];
     if(($l('iw').value||'').trim()&&!w) out.push(T('Ware nicht gefunden: bitte aus der Liste wählen.','Commodity not found: please pick from the list.'));
     if(n<1) out.push(T('Anzahl mindestens 1.','Count at least 1.'));
+    if(Number.isNaN(parsePrice($l('ip').value))) out.push(T('Einkaufspreis nicht lesbar: nur eine Zahl, z. B. 6840.','Buy price not readable: a number only, e.g. 6840.'));
+    const si=w?sell(w.id):null; if(si&&n>=1) out.push(T(`Wert ≈ ${nf(Math.round(si.p*z*n))} aUEC (${nf(si.p)} aUEC/SCU)`,`Value ≈ ${nf(Math.round(si.p*z*n))} aUEC (${nf(si.p)} aUEC/SCU)`));
     return out.concat(w&&n>=1?warnings(loc,w.id,z,z*n):[]);});
   dlgAct=b=>{if(b==='cx'){closeDlg();return;} const w=ware(), z=+$l('iz').value, n=Math.floor(+$l('in').value||0);
     if(!w){$l('iw').focus();return;} if(n<1){$l('in').focus();return;}
-    snap(); put(loc,w.id,z,n); closeDlg(); commit(T(`Eingebucht: ${w.n} ${z} SCU × ${n} in ${locName(loc)}`,`Booked in: ${w.n} ${z} SCU × ${n} at ${locName(loc)}`));};}
+    const bp=parsePrice($l('ip').value); if(Number.isNaN(bp)){$l('ip').focus();return;}
+    const at=bp!=null?T(` zu ${nf(bp)} aUEC/SCU`,` at ${nf(bp)} aUEC/SCU`):'';
+    snap(); put(loc,w.id,z,n,bp??undefined); closeDlg(); commit(T(`Eingebucht: ${w.n} ${z} SCU × ${n} in ${locName(loc)}${at}`,`Booked in: ${w.n} ${z} SCU × ${n} at ${locName(loc)}${at}`));};}
 // Add or edit an own ship (type from the data, own name, overload switch).
 function openShip(edit){const s=edit?shipById(S.sel.slice(2)):null;
   const body=`<label>${T('Schiffstyp','Ship type')}<input id="lb-st" list="lb-slist" autocomplete="off" value="${esc(s?SH[s.t]?.n:'')}" placeholder="${T('z. B. Crusader C2','e.g. Crusader C2')}"></label>
@@ -335,8 +399,10 @@ function xlsx(sheets){const ns='http://schemas.openxmlformats.org/', files=[
   return zip(files);}
 // The three sheets: stock, ships, journal.
 function ledgerSheets(){const locInfo=l=>{if(l[0]==='s'){const s=shipById(l.slice(2)); return [T('Schiff','Ship'),s?.n||'?','',''];} const p=PL[l.slice(2)]; return [T('Ort','Place'),p?.n||l.slice(2),p?.sys||'',p?.body||''];};
-  const stock=[[T('Art','Kind'),T('Ort/Schiff','Place/ship'),'System',T('Planet/Mond','Planet/moon'),T('Ware','Commodity'),T('Containergröße (SCU)','Container size (SCU)'),T('Anzahl','Count'),'SCU']]
-    .concat(S.stock.map(p=>[...locInfo(p.l),WA[p.w]?.n||'?',p.z,p.n,p.z*p.n]));
+  const stock=[[T('Art','Kind'),T('Ort/Schiff','Place/ship'),'System',T('Planet/Mond','Planet/moon'),T('Ware','Commodity'),T('Containergröße (SCU)','Container size (SCU)'),T('Anzahl','Count'),'SCU',
+      T('Einkaufspreis je SCU','Buy price per SCU'),T('Verkaufspreis je SCU','Sell price per SCU'),T('Bester Verkaufsort','Best sell place'),T('Wert (aUEC)','Value (aUEC)'),T('Gewinn (aUEC)','Profit (aUEC)')]]
+    .concat(S.stock.map(p=>{const si=sell(p.w), scu=p.z*p.n;
+      return [...locInfo(p.l),WA[p.w]?.n||'?',p.z,p.n,scu,p.bp??'',si?si.p:'',si?(si.src==='sh'?si.at:T('UEX-Durchschnitt','UEX average')):'',si?Math.round(si.p*scu):'',si&&p.bp!=null?Math.round((si.p-p.bp)*scu):''];}));
   const ships=[[T('Name','Name'),T('Typ','Type'),T('Laderaum (SCU)','Cargo (SCU)'),T('Überladen bis (SCU)','Overload up to (SCU)'),T('belegt (SCU)','used (SCU)')]]
     .concat(S.ships.map(s=>{const c=cap(s); return [s.n,SH[s.t]?.n||'?',c.base,c.max,used('s:'+s.id)];}));
   const journal=[[T('Zeit','Time'),T('Buchung','Entry')]].concat(S.log.map(e=>[new Date(e.t).toLocaleString(L()==='en'?'en-GB':'de-DE'),e.x]));
@@ -345,7 +411,10 @@ function exportXlsx(){download(`SC_Fracht_Logbuch_${stamp()}.xlsx`,xlsx(ledgerSh
 
 /* ---------- events ---------- */
 const view=document.getElementById('view-ledger');
-view.addEventListener('click',e=>{const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true)})[a.dataset.act](); return;}
+view.addEventListener('click',e=>{const wl=e.target.closest('[data-wares]');
+  // Jump to "All commodities" filtered to this commodity: there are all sell places with price and stock.
+  if(wl){showView('wares'); const i=document.getElementById('wQ'); i.value=wl.dataset.wares; i.dispatchEvent(new Event('input',{bubbles:true})); window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'}); return;}
+  const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true)})[a.dataset.act](); return;}
   const c=e.target.closest('.lb-chip'); if(c){openMove(+c.dataset.i); return;}
   const l=e.target.closest('[data-loc]'); if(l) select(l.dataset.loc);});
 $l('addship').addEventListener('click',()=>openShip(false));
@@ -355,6 +424,7 @@ $l('xlsx').addEventListener('click',exportXlsx);
 $l('imp').addEventListener('click',()=>$l('file').click());
 $l('file').addEventListener('change',e=>{const f=e.target.files[0]; if(f) importJson(f); e.target.value='';});
 for(const id of ['q','sys','only']) $l(id).addEventListener(id==='q'?'input':'change',renderPlaces);
+$l('fq').addEventListener('input',renderFound);
 $l('dbtn').addEventListener('click',e=>{const b=e.target.closest('[data-b]'); if(b&&dlgAct) dlgAct(b.dataset.b);});
 $l('form').addEventListener('submit',e=>{e.preventDefault(); if(dlgAct) dlgAct(dlgOk?.[0]?.id);});
 // Drag a post chip onto a ship or place; the drop opens the move dialog with that target.
