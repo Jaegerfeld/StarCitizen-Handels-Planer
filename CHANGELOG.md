@@ -2,6 +2,16 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.6.0] – 2026-11-18
+
+### Hinzugefügt
+- **Neuer Reiter „Fracht-Logbuch“:** führt Buch, welche Ware in welchen Containern an welcher Station oder auf welchem deiner Schiffe liegt. Links deine Schiffe mit Füllbalken, rechts alle Orte mit Frachtaufzug nach System und Planet, in der Mitte der gewählte Ort mit seinen Posten.
+- **Verschieben** per Drag & Drop oder per Klick/Antippen, mit Mengenabfrage als Container-Anzahl oder SCU; **Einbuchen** und **Ausbuchen**.
+- **Überladen** je Schiff schaltbar (Standard +1/3 Laderaum). Warnungen bei vollem Schiff, zu großem Container, illegaler oder flüchtiger Ware; sie sperren nie.
+- **Journal** jeder Buchung mit **Rückgängig** (Knopf oder Strg+Z).
+- **Speichern** im Browser, **Export JSON** (wieder einlesbar) und **Export XLSX** (Bestand, Schiffe, Journal).
+- Stammdaten (Orte, Waren, Schiffe mit Laderaum und Containergrößen) aus der UEX-API, beim täglichen Bau eingebettet.
+
 ## [1.5.2] – 2026-11-10
 
 ### Geändert

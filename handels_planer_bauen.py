@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       25.10.2026
-# Geändert:       01.11.2026
+# Geändert:       18.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -19,14 +19,16 @@
 #     SC_Waren_Top_Handelsrouten.md   der Routen-Guide als Markdown
 #     SC_Waren_Handelsuebersicht.xlsx nur mit --xlsx (braucht openpyxl)
 #   Kopfzeile, Design und „Was ist neu?“-Dialog kommen aus kopfzeile.py und
-#   sc_design.py (gemeinsam mit den anderen SC-Planern). Die Seite ruft star-head
+#   sc_design.py (gemeinsam mit den anderen SC-Planern). Reiter „Fracht-Logbuch“:
+#   Stammdaten aus UEX (logbuch_daten.py), Oberfläche in logbuch_seite.py; ist UEX
+#   beim Bau nicht erreichbar, entsteht die Seite trotzdem. Die Seite ruft star-head
 #   nie selbst auf; aktuelle Daten kommen nur aus dem täglichen Build.
 # =============================================================================
 """Build the trade planner page, data.json, the route guide and optionally the Excel file.
 
 Usage:
   py handels_planer_bauen.py                 fetch from star-head and build
-  py handels_planer_bauen.py --cache         use handel_cache.json instead of star-head (dev)
+  py handels_planer_bauen.py --cache         use handel_cache.json / logbuch_cache.json (dev)
   py handels_planer_bauen.py --xlsx          also write the Excel overview
   py handels_planer_bauen.py --eigene <p>    merge an extra export file or folder
 """
@@ -37,7 +39,9 @@ from datetime import datetime, timezone
 
 import handel_core as hc
 import kopfzeile as kz
+import logbuch_daten as lb
 import sc_design as sd
+from logbuch_seite import LB_CSS, LB_HTML, LB_JS, LB_TAB
 from version import PATCH, VERSION
 
 #: Script folder; all outputs are written here.
@@ -205,7 +209,16 @@ def main(argv):
         rows, summary = hc.merge_eigene(rows, summary, eigene)
     data = build_data(rows, summary)
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    html = fill_header(HTML_TEMPLATE).replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
+    try:
+        lb_data = lb.build(use_cache)
+    except Exception as e:  # noqa: BLE001 - the page must still build without the ledger data
+        print(f"WARNUNG: Logbuch-Stammdaten (UEX) nicht verfügbar: {e}", file=sys.stderr)
+        lb_data = None
+    lb_json = json.dumps(lb_data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    html = fill_header(HTML_TEMPLATE)
+    html = (html.replace("/*LB_CSS*/", LB_CSS).replace("<!--LB_TAB-->\n", LB_TAB)
+                .replace("<!--LB_HTML-->", LB_HTML).replace("/*LB_JS*/", LB_JS.replace("/*__LB__*/null", lb_json)))
+    html = html.replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
     OUT_HTML.write_text(html, encoding="utf-8")
     OUT_JSON.write_text(payload, encoding="utf-8")
     stamp = data["generated"][:10]
@@ -218,6 +231,9 @@ def main(argv):
     r = data["routes"]
     print(f"  {len(summary)} Waren, {len(rows)} Preiszeilen, Routen: {len(r['bulk'])} Bulk / "
           f"{len(r['legal'])} legal / {len(r['illegal'])} illegal.")
+    if lb_data:
+        print(f"  Logbuch: {len(lb_data['places'])} Orte, {len(lb_data['wares'])} Waren, "
+              f"{len(lb_data['ships'])} Schiffe mit Laderaum.")
     return 0
 
 
@@ -302,6 +318,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   .hide{display:none!important}
   .grp{flex-wrap:wrap}
   @media(max-width:600px){.grp{width:100%}.grp label,.grp select,.grp input{min-width:0}.tabs{gap:2px}.tab{padding:8px 10px;font-size:14px}.tablewrap table{font-size:13px}.tablewrap td,.tablewrap th{padding:6px 7px}}
+/*LB_CSS*/
 /*FH_CSS*/
 </style>
 </head>
@@ -315,6 +332,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <button class="tab" role="tab" data-view="wares" aria-selected="false"><span class="de">Alle Waren</span><span class="en">All commodities</span></button>
     <button class="tab" role="tab" data-view="sell" aria-selected="false"><span class="de">Nach Verkaufsort</span><span class="en">By sell location</span></button>
     <button class="tab" role="tab" data-view="buy" aria-selected="false"><span class="de">Nach Kaufort</span><span class="en">By buy location</span></button>
+<!--LB_TAB-->
   </div>
 
   <!-- Routes -->
@@ -367,6 +385,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div id="buy"></div>
   </section>
 
+<!--LB_HTML-->
   <footer>
     <p><span class="de">Downloads: </span><span class="en">Downloads: </span><a href="SC_Waren_Handelsuebersicht.xlsx">Excel</a> · <a href="SC_Waren_Top_Handelsrouten.md">Routen (Markdown)</a> · <a href="data.json">data.json</a> <span class="de">(nur in der Online-Version)</span><span class="en">(online version only)</span></p>
     <p><span class="de">Marge/SCU = bester Verkaufs- − bester Kaufpreis, ohne Sprit, Zeit und Risiko. Preise sind community-gepflegt und teils Tage alt („Stand"). Illegale Waren nur an versteckten Konsolen; Scan = Verlust + CrimeStat.</span><span class="en">Margin/SCU = best sell − best buy price, excluding fuel, time and risk. Prices are community-maintained and may be days old ("as of"). Illegal goods only at hidden terminals; a scan means loss + CrimeStat.</span></p>
@@ -531,8 +550,9 @@ function renderSell(){renderLoc('sell',D.bysell,SELL_COLS,'sQ','sOrt','sSys');}
 // Render the "by buy location" view.
 function renderBuy(){renderLoc('buy',D.bybuy,BUY_COLS,'bQ','bOrt','bSys');}
 
+/*LB_JS*/
 /* ---------- Views / events ---------- */
-const VIEWS={routes:renderRoutes,wares:renderWares,sell:renderSell,buy:renderBuy};
+const VIEWS={routes:renderRoutes,wares:renderWares,sell:renderSell,buy:renderBuy,ledger:()=>LB.render()};
 // Switch to tab v and render it.
 function showView(v){document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));for(const k in VIEWS)$('#view-'+k).classList.toggle('hide',k!==v);VIEWS[v]();}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
