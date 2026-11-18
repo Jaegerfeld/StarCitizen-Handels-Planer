@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       18.11.2026
-# Geändert:       18.11.2026
+# Geändert:       19.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -87,7 +87,7 @@ def places(terminals: list[dict]) -> list[dict]:
 
 
 def wares(commodities: list[dict]) -> list[dict]:
-    """Visible commodities with category and warning flags (illegal, volatile)."""
+    """Visible commodities with category, warning flags (illegal, volatile) and UEX sell price."""
     out = []
     for c in commodities:
         if not c.get("is_visible"):
@@ -95,7 +95,9 @@ def wares(commodities: list[dict]) -> list[dict]:
         out.append({"id": c["id"], "n": c["name"], "k": (c.get("kind") or "").capitalize(),
                     "il": 1 if c.get("is_illegal") else 0,
                     "vq": 1 if c.get("is_volatile_qt") else 0,
-                    "vt": 1 if c.get("is_volatile_time") else 0})
+                    "vt": 1 if c.get("is_volatile_time") else 0,
+                    # UEX average sell price per SCU, fallback when star-head does not list it.
+                    "ps": round(c["price_sell"]) if (c.get("price_sell") or 0) > 0 else None})
     return sorted(out, key=lambda w: w["n"].lower())
 
 
