@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 import time
 import urllib.request
 
@@ -31,6 +32,11 @@ API = "https://api.uexcorp.space/2.0"
 UA = {"User-Agent": "sc-tools-handels-planer (github.com/Jaegerfeld)"}
 #: Local cache for ``--cache`` builds (gitignored).
 CACHE = HERE / "logbuch_cache.json"
+#: Planet codes the game uses in internal station names (RR_<code>_L<n>, RR_<code>_LEO).
+RR_STANTON = {"ArcCorp": "ARC", "Crusader": "CRU", "Hurston": "HUR", "MicroTech": "MIC"}
+RR_PYRO = {"Pyro I": 1, "Monox": 2, "Bloom": 3, "Pyro IV": 4, "Pyro V": 5, "Pyro VI": 6, "Terminus": 6}
+#: The station that the game log calls RR_<code>_LEO where several orbit the same planet.
+RR_LEO = {"Seraphim Station", "Everus Harbor", "Baijini Point", "Port Tressler", "Orbituary", "Ruin Station"}
 #: Container sizes in SCU that exist in game.
 SIZES = [1, 2, 4, 8, 16, 24, 32]
 
@@ -59,6 +65,36 @@ def load_raw(use_cache: bool) -> dict:
     return raw
 
 
+def rr_code(t: dict) -> str | None:
+    """Internal name the game log uses for a station (e.g. ``RR_MIC_L1``, ``RR_JP_PyroNyx``).
+
+    Lets the sessions tab map ``<RequestLocationInventory> Location[RR_…]`` to a place; derived
+    from the UEX orbit name (``"<body> Lagrange Point <n>"`` or the body itself for low orbit).
+
+    Args:
+        t: UEX terminal record.
+
+    Returns:
+        The internal code, or None if the terminal is no rest stop or gateway.
+    """
+    st, orbit = t.get("space_station_name"), t.get("orbit_name") or ""
+    if not st:
+        return None
+    gate = re.match(r"(\w+) Gateway \((\w+)\)$", st)
+    if gate:
+        return f"RR_JP_{gate.group(2)}{gate.group(1)}"
+    lag = re.match(r"(.+) Lagrange Point (\d)$", orbit)
+    body, n = (lag.group(1), lag.group(2)) if lag else (orbit, None)
+    # UEX writes the planet both as "MicroTech" and "microTech"; compare without case.
+    stanton = {k.lower(): v for k, v in RR_STANTON.items()}
+    code = stanton.get(body.lower()) or (f"P{RR_PYRO[body]}" if body in RR_PYRO else None)
+    if not code:
+        return None
+    if n:
+        return f"RR_{code}_L{n}"
+    return f"RR_{code}_LEO" if st in RR_LEO else None
+
+
 def places(terminals: list[dict]) -> list[dict]:
     """Stations, cities and outposts where cargo can be stored, one entry per place.
 
@@ -67,7 +103,7 @@ def places(terminals: list[dict]) -> list[dict]:
 
     Returns:
         Places sorted by system, body and name: id (``system|name``), name, system, body,
-        largest container.
+        largest container and, for stations, the internal name used in game logs (``rr``).
     """
     out: dict = {}
     for t in terminals:
@@ -86,6 +122,9 @@ def places(terminals: list[dict]) -> list[dict]:
                                  "body": t.get("moon_name") or t.get("planet_name") or "",
                                  "max": 0})
         p["max"] = max(p["max"], t.get("max_container_size") or 0)
+        rr = rr_code(t)
+        if rr:
+            p["rr"] = rr
     # Stanton first (the home system), then the others alphabetically.
     return sorted(out.values(), key=lambda p: (p["sys"] != "Stanton", p["sys"], p["body"], p["n"]))
 

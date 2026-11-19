@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       25.10.2026
-# Geändert:       18.11.2026
+# Geändert:       19.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -21,7 +21,8 @@
 #   Kopfzeile, Design und „Was ist neu?“-Dialog kommen aus kopfzeile.py und
 #   sc_design.py (gemeinsam mit den anderen SC-Planern). Reiter „Fracht-Logbuch“:
 #   Stammdaten aus UEX (logbuch_daten.py), Oberfläche in logbuch_seite.py; ist UEX
-#   beim Bau nicht erreichbar, entsteht die Seite trotzdem. Die Seite ruft star-head
+#   beim Bau nicht erreichbar, entsteht die Seite trotzdem. Reiter „Sitzungen“
+#   (sitzungen_seite.py) liest die Spiel-Logs im Browser. Die Seite ruft star-head
 #   nie selbst auf; aktuelle Daten kommen nur aus dem täglichen Build.
 # =============================================================================
 """Build the trade planner page, data.json, the route guide and optionally the Excel file.
@@ -42,6 +43,7 @@ import kopfzeile as kz
 import logbuch_daten as lb
 import sc_design as sd
 from logbuch_seite import LB_CSS, LB_HTML, LB_JS, LB_TAB
+from sitzungen_seite import SZ_CSS, SZ_HTML, SZ_JS, SZ_TAB
 from version import PATCH, VERSION
 
 #: Script folder; all outputs are written here.
@@ -217,7 +219,9 @@ def main(argv):
     lb_json = json.dumps(lb_data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     html = fill_header(HTML_TEMPLATE)
     html = (html.replace("/*LB_CSS*/", LB_CSS).replace("<!--LB_TAB-->\n", LB_TAB)
-                .replace("<!--LB_HTML-->", LB_HTML).replace("/*LB_JS*/", LB_JS.replace("/*__LB__*/null", lb_json)))
+                .replace("<!--LB_HTML-->", LB_HTML + SZ_HTML)
+                .replace("/*LB_JS*/", LB_JS.replace("/*__LB__*/null", lb_json) + SZ_JS))
+    html = html.replace("/*SZ_CSS*/", SZ_CSS).replace("<!--SZ_TAB-->\n", SZ_TAB)
     html = html.replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
     OUT_HTML.write_text(html, encoding="utf-8")
     OUT_JSON.write_text(payload, encoding="utf-8")
@@ -319,6 +323,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   .grp{flex-wrap:wrap}
   @media(max-width:600px){.grp{width:100%}.grp label,.grp select,.grp input{min-width:0}.tabs{gap:2px}.tab{padding:8px 10px;font-size:14px}.tablewrap table{font-size:13px}.tablewrap td,.tablewrap th{padding:6px 7px}}
 /*LB_CSS*/
+/*SZ_CSS*/
 /*FH_CSS*/
 </style>
 </head>
@@ -333,6 +338,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <button class="tab" role="tab" data-view="sell" aria-selected="false"><span class="de">Nach Verkaufsort</span><span class="en">By sell location</span></button>
     <button class="tab" role="tab" data-view="buy" aria-selected="false"><span class="de">Nach Kaufort</span><span class="en">By buy location</span></button>
 <!--LB_TAB-->
+<!--SZ_TAB-->
   </div>
 
   <!-- Routes -->
@@ -552,7 +558,7 @@ function renderBuy(){renderLoc('buy',D.bybuy,BUY_COLS,'bQ','bOrt','bSys');}
 
 /*LB_JS*/
 /* ---------- Views / events ---------- */
-const VIEWS={routes:renderRoutes,wares:renderWares,sell:renderSell,buy:renderBuy,ledger:()=>LB.render()};
+const VIEWS={routes:renderRoutes,wares:renderWares,sell:renderSell,buy:renderBuy,ledger:()=>LB.render(),sessions:()=>SZ.render()};
 // Switch to tab v and render it.
 function showView(v){document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===v));for(const k in VIEWS)$('#view-'+k).classList.toggle('hide',k!==v);VIEWS[v]();}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));

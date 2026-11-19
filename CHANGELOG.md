@@ -2,6 +2,14 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.9.0] – 2026-11-19
+
+### Hinzugefügt
+- **Neuer Reiter „Sitzungen“:** liest die Spiel-Logs von Star Citizen (Ordner `StarCitizen\LIVE` oder `PTU`: `Game.log` und `logbackups`) direkt im Browser und zeigt die letzten 25 Sitzungen mit Beginn, Dauer, Ende (normal oder **abgestürzt**), letztem Server/Shard samt Region und IP, letztem Ort, letztem Schiff und Rechtsgebiet.
+- Oben stehen **„Letzter Absturz“** und **„Zuletzt“** als eigene Karten, der Shard-Name lässt sich kopieren. Gedacht für die Frage nach einem Absturz: Wo war ich, auf welchem Shard, liegt die Fracht vielleicht noch da?
+- Der letzte Ort wird, wo möglich, einem Ort des Fracht-Logbuchs zugeordnet (Raststationen, Sprungtore, Städte, Außenposten); ein Klick öffnet ihn dort.
+- Den Ordner merkt sich Chrome/Edge (nach dem Neuladen einmal „Zugriff erlauben“); andere Browser wählen ihn über ein Ordner-Auswahlfeld. Die Logs verlassen den Rechner nicht.
+
 ## [1.8.0] – 2026-11-19
 
 ### Hinzugefügt
