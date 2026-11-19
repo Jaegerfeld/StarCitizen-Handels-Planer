@@ -2,6 +2,16 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.8.0] – 2026-11-19
+
+### Hinzugefügt
+- **Fracht-Logbuch, Umpacken:** Ein Posten lässt sich ganz oder teilweise in eine andere Containergröße umpacken, z. B. 20 × 1 SCU in 1 × 16 + 1 × 4 SCU. Es gibt nur die echten Größen 1, 2, 4, 8, 16, 24 und 32 SCU; was nicht aufgeht, kommt in kleinere Container. Vorschau vor dem Umpacken, Rückgängig möglich.
+- **Speicherort frei wählbar:** Unter „Speicherort …“ lässt sich das Logbuch mit einer JSON-Datei verknüpfen, z. B. auf einem USB-Stick oder in einem geteilten Ordner; jede Änderung wird dorthin geschrieben, eine Kopie bleibt im Browser. Wurde die Datei inzwischen woanders geändert, fragt das Logbuch statt zu überschreiben. Funktioniert in Chrome und Edge; in anderen Browsern bleiben Export und Import JSON.
+- **Suchergebnisse mit Wert** und Gewinn je Ware und je Ort.
+
+### Behoben
+- **Nyx fehlte im Fracht-Logbuch.** UEX kennzeichnet Frachtaufzüge in Nyx nur an alten, stillgelegten Terminals. Jetzt zählen auch Orte mit Waren-Terminal oder Frachtzentrum: Levski, Pyro Gateway, Stanton Gateway und die vier People's Service Stations sind dabei, dazu einige Handelsplätze in Stanton und Pyro (116 statt 102 Orte).
+
 ## [1.7.0] – 2026-11-19
 
 ### Hinzugefügt

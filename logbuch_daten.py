@@ -60,7 +60,7 @@ def load_raw(use_cache: bool) -> dict:
 
 
 def places(terminals: list[dict]) -> list[dict]:
-    """Stations, cities and outposts with a freight elevator, one entry per place.
+    """Stations, cities and outposts where cargo can be stored, one entry per place.
 
     Args:
         terminals: UEX terminal records.
@@ -71,7 +71,11 @@ def places(terminals: list[dict]) -> list[dict]:
     """
     out: dict = {}
     for t in terminals:
-        if not t.get("has_freight_elevator") or not t.get("is_available"):
+        # UEX flags freight elevators incompletely (in Nyx only on retired Levski terminals), so a
+        # commodity terminal or a cargo center also counts as a place where cargo can be stored.
+        storable = (t.get("has_freight_elevator") or t.get("is_cargo_center")
+                    or t.get("type") in ("commodity", "commodity_raw"))
+        if not storable or not t.get("is_available"):
             continue
         name = (t.get("space_station_name") or t.get("city_name") or t.get("outpost_name")
                 or t.get("nickname") or t.get("name"))
