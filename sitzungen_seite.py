@@ -13,8 +13,10 @@
 #   den letzten Ort und das letzte Schiff. Zweck: Nach einem Absturz sehen, wo
 #   man zuletzt war, um liegen gelassene Fracht wiederzufinden. Der Ort wird,
 #   wo möglich, einem Ort des Fracht-Logbuchs zugeordnet (Klick öffnet ihn).
-#   Ordnerwahl über die File System Access API (Chrome/Edge, Freigabe wird
-#   gemerkt), sonst über ein Ordner-Auswahlfeld. Nichts verlässt den Rechner;
+#   Ordnerwahl über ein Ordner-Auswahlfeld (geht überall, auch unter
+#   C:\Programme, das Chrome für die File System Access API sperrt); wer Star
+#   Citizen anderswo installiert hat, kann den Ordner zusätzlich merken lassen
+#   (Chrome/Edge). Nichts verlässt den Rechner;
 #   die Logs enthalten Spielername und Server-IPs.
 #   Log-Zeilen (Stand Alpha 4.10.3): <Join PU> address[…] port[…] shard[…];
 #   <RequestLocationInventory> … Location[…]; <Local Route Guard …> | SCHIFF_ID[…];
@@ -32,12 +34,14 @@ SZ_HTML = r"""
   <!-- Sessions from the game logs -->
   <section class="panel hide" id="view-sessions">
     <div class="sz-bar">
-      <button type="button" class="btn" id="sz-pick">📁 <span class="de">Log-Ordner wählen …</span><span class="en">Choose log folder …</span></button>
+      <button type="button" class="btn" id="sz-pick">📁 <span class="de">Log-Ordner laden …</span><span class="en">Load log folder …</span></button>
       <button type="button" class="btn" id="sz-reload" hidden>⟳ <span class="de">Neu einlesen</span><span class="en">Read again</span></button>
+      <button type="button" class="btn" id="sz-remember" hidden>📌 <span class="de">Ordner merken …</span><span class="en">Remember folder …</span></button>
       <input type="file" id="sz-input" webkitdirectory multiple hidden>
       <span class="sz-stat" id="sz-stat" role="status"></span>
     </div>
-    <p class="sz-note"><span class="de">Ordner: <code>…\Roberts Space Industries\StarCitizen\LIVE</code> (oder <code>PTU</code>). Die Logs werden nur in deinem Browser gelesen; sie enthalten deinen Spielernamen und Server-Adressen.</span><span class="en">Folder: <code>…\Roberts Space Industries\StarCitizen\LIVE</code> (or <code>PTU</code>). The logs are read in your browser only; they contain your player name and server addresses.</span></p>
+    <div class="sz-hint" role="note"><span class="de"><b>Bei jedem Besuch neu laden:</b> Liegt Star Citizen unter <code>C:\Programme</code> (Standard), kann sich der Browser den Ordner nicht merken – Chrome sperrt dort den dauerhaften Zugriff. Wähle dann bei jedem Besuch einmal „Log-Ordner laden …“ und den Ordner <code>…\Roberts Space Industries\StarCitizen\LIVE</code> (oder <code>PTU</code>). Liegt Star Citizen woanders, verknüpft „Ordner merken …“ ihn dauerhaft.</span><span class="en"><b>Load again on every visit:</b> If Star Citizen is installed under <code>C:\Program Files</code> (the default), the browser cannot remember the folder – Chrome blocks lasting access there. Then choose “Load log folder …” once per visit and pick <code>…\Roberts Space Industries\StarCitizen\LIVE</code> (or <code>PTU</code>). If Star Citizen is elsewhere, “Remember folder …” links it for good.</span></div>
+    <p class="sz-note"><span class="de">Chrome fragt beim Laden „Dateien hochladen?“: Die Dateien bleiben trotzdem auf deinem Rechner, die Seite liest nur <code>Game.log</code> und <code>logbackups</code> und sendet nichts. Die Logs enthalten deinen Spielernamen und Server-Adressen.</span><span class="en">Chrome asks “Upload files?” when loading: the files still stay on your computer, the page only reads <code>Game.log</code> and <code>logbackups</code> and sends nothing. The logs contain your player name and server addresses.</span></p>
     <div id="sz-last"></div>
     <div id="sz-list"></div>
   </section>
@@ -50,6 +54,10 @@ SZ_CSS = r"""
   #view-sessions .sz-bar .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--bg)}
   #view-sessions .sz-stat{color:var(--muted);font-size:13px}
   #view-sessions .sz-note{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+  #view-sessions [hidden]{display:none!important}
+  #view-sessions .sz-hint{background:var(--panel2);border-left:4px solid var(--accent2);border-radius:0 8px 8px 0;padding:10px 12px;margin:4px 0 8px;font-size:14px}
+  #view-sessions .sz-hint code{font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:0 4px}
+  #view-sessions .sz-hint.loaded{display:none}
   #view-sessions .sz-note code{font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:0 4px}
   #view-sessions .sz-last{border:2px solid var(--accent);border-radius:12px;padding:14px 16px;margin:0 0 18px;background:var(--panel2)}
   #view-sessions .sz-last.crash{border-color:var(--bad)}
@@ -133,8 +141,10 @@ async function filesFromDir(dir){const out=[];
   try{const g=await dir.getFileHandle('Game.log'); out.push(await g.getFile());}catch(e){}
   try{const b=await dir.getDirectoryHandle('logbackups'); for await (const [n,h] of b.entries()) if(h.kind==='file'&&n.endsWith('.log')) out.push(await h.getFile());}catch(e){}
   return out;}
-function filesFromInput(list){return [...list].filter(f=>{const p=(f.webkitRelativePath||f.name).split('/'); return (p.length===2&&p[1]==='Game.log')||(p.length===3&&p[1]==='logbackups'&&p[2].endsWith('.log'));});}
-async function readFiles(files,label){if(BUSY) return; BUSY=true; SRC=label;
+// Accept the LIVE/PTU folder (Game.log + logbackups/*.log) or the logbackups folder itself.
+function filesFromInput(list){return [...list].filter(f=>{const p=(f.webkitRelativePath||f.name).split('/');
+  return (p.length===2&&p[1]==='Game.log')||(p.length===2&&p[0]==='logbackups'&&p[1].endsWith('.log'))||(p.length===3&&p[1]==='logbackups'&&p[2].endsWith('.log'));});}
+async function readFiles(files,label,once){if(BUSY) return; BUSY=true; SRC=label;
   const pick=files.sort((a,b)=>b.lastModified-a.lastModified).slice(0,MAXF);
   if(!pick.length){BUSY=false; stat(T('In diesem Ordner liegen keine Game.log und kein logbackups-Ordner. Bitte den Ordner LIVE (oder PTU) wählen.','No Game.log or logbackups folder here. Please choose the LIVE (or PTU) folder.')); render(); return;}
   const cache=cacheGet(); SESS=[]; let i=0;
@@ -143,20 +153,24 @@ async function readFiles(files,label){if(BUSY) return; BUSY=true; SRC=label;
     if(!s){s=parse(await f.text(),f.name); if(f.name!=='Game.log') cache[key]=s;}
     SESS.push(s); await new Promise(r=>setTimeout(r,0));}
   cacheSet(cache); SESS.sort((a,b)=>(b.start||'').localeCompare(a.start||'')); BUSY=false;
-  stat(T(`${label} · ${SESS.length} Sitzungen gelesen · ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`,`${label} · ${SESS.length} sessions read · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`)); render();}
+  stat(T(`${label} · ${SESS.length} Sitzungen gelesen · ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`,`${label} · ${SESS.length} sessions read · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`)+(once?T(' · beim nächsten Besuch erneut laden (Ordner wird nicht gemerkt)',' · load again on your next visit (folder is not remembered)'):'')); render();}
 function stat(t){$z('stat').textContent=t;}
 
 /* ---------- remembered folder (Chrome/Edge) ---------- */
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('scha_sessions',1); r.onupgradeneeded=()=>r.result.createObjectStore('h'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
 async function idbSet(v){try{const db=await idb(); await new Promise(res=>{const tx=db.transaction('h','readwrite'); tx.objectStore('h').put(v,'dir'); tx.oncomplete=res; tx.onerror=res;});}catch(e){}}
 async function idbGet(){try{const db=await idb(); return await new Promise(res=>{const r=db.transaction('h').objectStore('h').get('dir'); r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null);});}catch(e){return null;}}
-async function pick(){if(!DIR_OK){$z('input').click(); return;}
+// Main way: the folder input works everywhere, also under C:\Program Files.
+function pick(){$z('input').click();}
+// Optional: remember the folder (Chrome/Edge). Chrome refuses folders under C:\Program Files.
+async function remember(){
   try{const d=await window.showDirectoryPicker({id:'sc-logs',mode:'read'}); DIR=d; PERM=true; await idbSet(d); await readFiles(await filesFromDir(d),d.name);}
-  catch(e){if(e.name!=='AbortError') stat(T('Ordner konnte nicht geöffnet werden.','Could not open the folder.'));}}
+  catch(e){stat(T('Nicht gemerkt. Liegt Star Citizen unter C:\\Programme, sperrt Chrome das Merken; nimm dann „Log-Ordner laden …“.','Not remembered. If Star Citizen is under C:\\Program Files, Chrome blocks remembering; use “Load log folder …” instead.'));}}
 async function reload(){if(!DIR) return pick();
   try{if(!PERM) PERM=(await DIR.requestPermission({mode:'read'}))==='granted'; if(PERM) await readFiles(await filesFromDir(DIR),DIR.name);}
   catch(e){stat(T('Ordner nicht erreichbar.','Folder not reachable.'));}}
-async function init(){const d=DIR_OK?await idbGet():null; if(d){DIR=d; try{PERM=(await d.queryPermission({mode:'read'}))==='granted';}catch(e){PERM=false;}}
+// Draw the empty state at once; the remembered folder (IndexedDB) may answer late or not at all.
+async function init(){render(); const d=DIR_OK?await Promise.race([idbGet(),new Promise(r=>setTimeout(()=>r(null),1500))]):null; if(d){DIR=d; try{PERM=(await d.queryPermission({mode:'read'}))==='granted';}catch(e){PERM=false;}}
   if(DIR&&PERM) await readFiles(await filesFromDir(DIR),DIR.name); else render();}
 
 /* ---------- rendering ---------- */
@@ -168,11 +182,11 @@ function endTag(s){return s.ended==='crash'?`<span class="sz-end crash">⚠ ${T(
 function locHtml(l){if(!l) return '–'; const p=placeOf(l.raw);
   return p?`<button type="button" class="sz-loc" data-loc="p:${esc(p.id)}" title="${T('Im Fracht-Logbuch öffnen','Open in the cargo ledger')}">${esc(p.n)}</button>`:`<span title="${esc(l.raw)}">${esc(prettyLoc(l.raw))}</span>`;}
 function render(){const last=$z('last'), list=$z('list'), has=!!SESS.length;
-  $z('pick').classList.toggle('pri',!has&&!(DIR&&!PERM)); $z('reload').hidden=!DIR;
+  $z('pick').classList.toggle('pri',!has&&!(DIR&&!PERM)); $z('reload').hidden=!DIR; $z('remember').hidden=!DIR_OK||!!DIR;
   $z('reload').innerHTML=DIR&&!PERM?`🔓 ${T('Zugriff erlauben und einlesen','Allow access and read')}`:`⟳ ${T('Neu einlesen','Read again')}`;
   $z('reload').classList.toggle('pri',!!(DIR&&!PERM));
   if(!has){last.innerHTML=''; list.innerHTML=`<p class="sz-empty">${DIR&&!PERM?T(`Der Ordner „${esc(DIR.name)}“ ist gemerkt; der Browser braucht nach dem Neuladen einmal deine Erlaubnis.`,`The folder “${esc(DIR.name)}” is remembered; after reloading, the browser needs your permission once.`)
-    :T('Wähle einmal den Log-Ordner von Star Citizen. Dann siehst du hier, auf welchem Server und wo du zuletzt warst, auch nach einem Absturz.','Choose the Star Citizen log folder once. Then you see here which server you were on and where, also after a crash.')}</p>`; return;}
+    :T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU). Dann siehst du hier, auf welchem Server und wo du zuletzt warst, auch nach einem Absturz.','Load the Star Citizen log folder (LIVE or PTU). Then you see here which server you were on and where, also after a crash.')}</p>`; return;}
   // "Last" = the newest session that joined a server (menu-only sessions are skipped).
   const s=SESS.find(x=>x.joins.length)||SESS[0], j=s.joins[s.joins.length-1];
   // The newest crash, if it is not the session shown as "last": after a crash one usually starts again.
@@ -200,11 +214,12 @@ function render(){const last=$z('last'), list=$z('list'), has=!!SESS.length;
 /* ---------- events ---------- */
 $z('pick').addEventListener('click',pick);
 $z('reload').addEventListener('click',reload);
-$z('input').addEventListener('change',e=>{const f=filesFromInput(e.target.files); const root=(e.target.files[0]?.webkitRelativePath||'').split('/')[0]; readFiles(f,root||'Logs'); e.target.value='';});
+$z('remember').addEventListener('click',remember);
+$z('input').addEventListener('change',e=>{const f=filesFromInput(e.target.files); const root=(e.target.files[0]?.webkitRelativePath||'').split('/')[0]; readFiles(f,root||'Logs',true); e.target.value='';});
 document.getElementById('view-sessions').addEventListener('click',async e=>{const c=e.target.closest('[data-copy]');
   if(c){try{await navigator.clipboard.writeText(c.dataset.copy); c.textContent=T('kopiert ✓','copied ✓');}catch(x){c.textContent=T('nicht möglich','not possible');} setTimeout(()=>{c.textContent=T('kopieren','copy');},1600); return;}
   const l=e.target.closest('[data-loc]'); if(l&&typeof LB!=='undefined'&&LB.openLoc) LB.openLoc(l.dataset.loc);});
 let started=false;
-return {render(){if(!started){started=true; init();} else render();}, _parse:parse, _placeOf:placeOf, _shipName:shipName, _load:(list)=>{SESS=list; render();}};
+return {render(){if(!started){started=true; init();} else render();}, _parse:parse, _placeOf:placeOf, _fromInput:filesFromInput, _read:readFiles, _shipName:shipName, _load:(list)=>{SESS=list; render();}};
 })();
 """
