@@ -118,7 +118,12 @@ function shipName(raw){const p=raw.split('_'); const mk=MAKERS[p[0]]||p[0]; retu
 const words=s=>String(s).replace(/([a-z])([A-Z])/g,'$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g,'$1 $2').replace(/([A-Za-z])(\d)/g,'$1 $2').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
 const STOP=new Set(['stanton','nyx','pyro','outpost','station','the','and','von','mining','hydro','base','paf','rr','social']);
 // Map an internal location name to a cargo-ledger place: internal station codes first, then shared words and numbers.
+// Log names that differ from the place name. Castra and Magnus are the systems these gateways will lead to
+// later; as long as Castra and Magnus are not in the game, the codes stand for the Stanton–Nyx gateways.
+// Check this on every patch (Game.log: Location[RR_JP_…]).
+const ALIAS={GrimHEX:'Green Imperial Housing Exchange',RR_JP_NyxCastra:'RR_JP_NyxStanton',RR_JP_StantonMagnus:'RR_JP_StantonNyx'};
 function placeOf(raw){const P=(typeof LB!=='undefined'&&LB.places)||[]; if(!raw) return null;
+  const al=ALIAS[raw]; if(al){const hit=P.find(p=>p.rr===al||p.n===al); if(hit) return hit;}
   const byRR=P.find(p=>p.rr===raw); if(byRR) return byRR;
   // Drop system/planet prefixes such as "Stanton1b" or "Nyx": their digits are no part of the place name.
   const core=String(raw).split('_').filter(x=>!/^(Stanton|Pyro|Nyx)\d*[a-z]?$/.test(x)).join('_');

@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.9.2] – 2026-11-19
+
+### Behoben
+- **Sitzungen: GrimHEX und die Sprungtore Stanton–Nyx werden erkannt.** Das Spiel-Log nennt GrimHEX so statt „Green Imperial Housing Exchange“ und die beiden Tore nach den künftigen Systemen: `RR_JP_NyxCastra` = Stanton Gateway (Nyx), `RR_JP_StantonMagnus` = Nyx Gateway (Stanton), im Spiel geprüft. Das gilt nur, solange Castra und Magnus nicht im Spiel sind, und wird mit jedem Patch neu geprüft.
+
 ## [1.9.1] – 2026-11-19
 
 ### Behoben
