@@ -2,6 +2,12 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.9.1] – 2026-11-19
+
+### Behoben
+- **Sitzungen: Log-Ordner unter `C:\Programme` ließ sich nicht öffnen.** Chrome sperrt Systemordner für das Merken eines Ordners. „Log-Ordner laden …“ nutzt jetzt das normale Ordner-Auswahlfeld, das dort funktioniert (Chrome fragt „Dateien hochladen?“; die Dateien bleiben auf dem Rechner). „Ordner merken …“ bleibt als Zusatz für Installationen außerhalb von `C:\Programme`. Auch der Ordner `logbackups` allein wird angenommen. Ein Hinweiskasten sagt deutlich, dass der Ordner dann bei jedem Besuch neu geladen werden muss; nach dem Laden steht es auch in der Statuszeile.
+- Ausgeblendete Knöpfe im Reiter „Sitzungen“ (z. B. „Neu einlesen“ ohne gemerkten Ordner) erscheinen nicht mehr.
+
 ## [1.9.0] – 2026-11-19
 
 ### Hinzugefügt
