@@ -175,7 +175,7 @@ const T=(de,en)=>L()==='en'?en:de;
 const $l=id=>document.getElementById('lb-'+id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nf=n=>Number(n||0).toLocaleString(L()==='en'?'en-US':'de-DE');
-if(!M){return {render(){const b=document.getElementById('view-ledger');
+if(!M){return {places:[], openLoc(){}, render(){const b=document.getElementById('view-ledger');
   if(b) b.innerHTML=`<p class="lb-empty">${T('Die Stammdaten (Orte, Waren, Schiffe) waren beim letzten Bau nicht erreichbar. Der nächste Bau holt sie neu.','The master data (places, commodities, ships) was unavailable at the last build. The next build fetches it again.')}</p>`;}};}
 const PL={}; for(const p of M.places) PL[p.id]=p;
 const WA={}; for(const w of M.wares) WA[w.id]=w;
@@ -524,6 +524,8 @@ document.addEventListener('keydown',e=>{if(view.classList.contains('hide')||$l('
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault(); undo();}});
 
 load(); fsInit();
-return {render, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};
+// Open a place in the ledger (used by the sessions tab).
+function openLoc(loc){S.sel=loc; save(); showView('ledger'); window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'});}
+return {render, openLoc, places:M.places, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};
 })();
 """
