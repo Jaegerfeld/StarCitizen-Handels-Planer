@@ -15,6 +15,9 @@
 #   Übernommen werden nur Zahlen, Titel und Rangnamen, keine Texte. Titel und
 #   Beschreibung werden über den Schlüssel exakt gepaart (…_Title_001 ↔
 #   …_Desc_001, …_Title_M_001 ↔ …_Desc_M_001), nicht über einen Präfix-Abgleich.
+#   Je Titel steht auch der Schlüssel der Beschreibung (klein geschrieben): Der
+#   Reiter „Ruf“ liest den Missionstext damit zur Laufzeit aus der global.ini des
+#   Spielers; die Texte selbst stehen nicht in der Tabelle.
 #   Rangleitern: Organisationen mit „Auftragnehmer …“-Rängen bekommen die volle
 #   Auftragnehmer-Leiter, auch wenn ihre Missionen nur einzelne Stufen nennen.
 #   Aufruf: python ruf_daten.py "<…\StarCitizen\LIVE\data\Localization\german_(germany)\global.ini>"
@@ -85,7 +88,7 @@ def build(path: pathlib.Path) -> dict:
         path: Path to the annotated global.ini.
 
     Returns:
-        ``{"stand", "quelle", "missions": {title: [[org, xp_lo, xp_hi, min_rank_xp|None], …]},
+        ``{"stand", "quelle", "missions": {title: [[org, xp_lo, xp_hi, min_rank_xp|None, desc_key], …]},
         "ladders": {org: [[xp, rank], …]}}``.
     """
     kv = read_ini(path)
@@ -95,7 +98,8 @@ def build(path: pathlib.Path) -> dict:
         m = RE_KEY.match(key)
         if not m:
             continue
-        desc = kv.get(f"{m.group(1)}_desc{m.group(2)}")
+        dkey = f"{m.group(1)}_desc{m.group(2)}"
+        desc = kv.get(dkey)
         if not desc or "Ruf:" not in desc:
             continue
         title = norm_title(val)
@@ -103,7 +107,7 @@ def build(path: pathlib.Path) -> dict:
         min_xp = next((x for kind, _, x in ranks if kind.startswith("Min")), None)
         for lo, hi, org in RE_RUF.findall(desc):
             org = org.strip()
-            missions.setdefault(title, set()).add((org, xp(lo), xp(hi or lo), min_xp))
+            missions.setdefault(title, set()).add((org, xp(lo), xp(hi or lo), min_xp, dkey))
             for _, name, x in ranks:
                 ladders.setdefault(org, set()).add((x, name))
     # Contractor ladder: all "Auftragnehmer …" ranks (and Neutral) seen anywhere; orgs using it get all of it.

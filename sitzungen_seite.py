@@ -26,6 +26,9 @@
 #   MissionId (Titel), <EndMission> … CompletionType[…], die Organisation aus
 #   SendCommsNotification … Missions.Organization.<Org> und „Auftrag geteilt“.
 #   Nach jedem Einlesen meldet das Modul „sz:loaded“; der Reiter „Ruf“ hört darauf.
+#   Liegt im Ordner eine Sprachdatei (data\Localization\<Sprache>\global.ini),
+#   merkt sich das Modul nur den Verweis darauf; gelesen wird sie erst, wenn der
+#   Reiter „Ruf“ einen Missionstext anzeigen soll.
 # =============================================================================
 """HTML, CSS and JS fragments of the "Sitzungen" (sessions) tab, inserted by the page builder."""
 
@@ -93,7 +96,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 // Cache key v2: sessions also carry the missions for the reputation tab.
 const MAXF=25, CKEY='scha_sessions_cache_v2';
 const DIR_OK=typeof window.showDirectoryPicker==='function';
-let DIR=null, PERM=false, SESS=[], BUSY=false, SRC='';
+let DIR=null, PERM=false, SESS=[], BUSY=false, SRC='', INI=null;
 
 /* ---------- parsing ---------- */
 // One session per log file: start, end, how it ended, server joins, last place, ship, jurisdiction.
@@ -163,6 +166,12 @@ async function filesFromDir(dir){const out=[];
   try{const g=await dir.getFileHandle('Game.log'); out.push(await g.getFile());}catch(e){}
   try{const b=await dir.getDirectoryHandle('logbackups'); for await (const [n,h] of b.entries()) if(h.kind==='file'&&n.endsWith('.log')) out.push(await h.getFile());}catch(e){}
   return out;}
+// Language file of the game (data/Localization/<language>/global.ini) in the chosen folder; German first.
+function iniFromInput(list){const c=[...list].filter(f=>/(^|\/)data\/Localization\/[^/]+\/global\.ini$/i.test(f.webkitRelativePath||''));
+  return c.find(f=>/german/i.test(f.webkitRelativePath))||c[0]||null;}
+async function iniFromDir(dir){try{const loc=await (await dir.getDirectoryHandle('data')).getDirectoryHandle('Localization'); let first=null;
+    for await (const [n,h] of loc.entries()){if(h.kind!=='directory') continue; try{const f=await (await h.getFileHandle('global.ini')).getFile(); if(/german/i.test(n)) return f; first=first||f;}catch(e){}}
+    return first;}catch(e){return null;}}
 // Accept the LIVE/PTU folder (Game.log + logbackups/*.log) or the logbackups folder itself.
 function filesFromInput(list){return [...list].filter(f=>{const p=(f.webkitRelativePath||f.name).split('/');
   return (p.length===2&&p[1]==='Game.log')||(p.length===2&&p[0]==='logbackups'&&p[1].endsWith('.log'))||(p.length===3&&p[1]==='logbackups'&&p[2].endsWith('.log'));});}
@@ -188,14 +197,14 @@ async function idbGet(){try{const db=await idb(); return await new Promise(res=>
 function pick(){$z('input').click();}
 // Optional: remember the folder (Chrome/Edge). Chrome refuses folders under C:\Program Files.
 async function remember(){
-  try{const d=await window.showDirectoryPicker({id:'sc-logs',mode:'read'}); DIR=d; PERM=true; await idbSet(d); await readFiles(await filesFromDir(d),d.name);}
+  try{const d=await window.showDirectoryPicker({id:'sc-logs',mode:'read'}); DIR=d; PERM=true; await idbSet(d); INI=await iniFromDir(d); await readFiles(await filesFromDir(d),d.name);}
   catch(e){stat(T('Nicht gemerkt. Liegt Star Citizen unter C:\\Programme, sperrt Chrome das Merken; nimm dann „Log-Ordner laden …“.','Not remembered. If Star Citizen is under C:\\Program Files, Chrome blocks remembering; use “Load log folder …” instead.'));}}
 async function reload(){if(!DIR) return pick();
-  try{if(!PERM) PERM=(await DIR.requestPermission({mode:'read'}))==='granted'; if(PERM) await readFiles(await filesFromDir(DIR),DIR.name);}
+  try{if(!PERM) PERM=(await DIR.requestPermission({mode:'read'}))==='granted'; if(PERM){INI=await iniFromDir(DIR); await readFiles(await filesFromDir(DIR),DIR.name);}}
   catch(e){stat(T('Ordner nicht erreichbar.','Folder not reachable.'));}}
 // Draw the empty state at once; the remembered folder (IndexedDB) may answer late or not at all.
 async function init(){render(); const d=DIR_OK?await Promise.race([idbGet(),new Promise(r=>setTimeout(()=>r(null),1500))]):null; if(d){DIR=d; try{PERM=(await d.queryPermission({mode:'read'}))==='granted';}catch(e){PERM=false;}}
-  if(DIR&&PERM) await readFiles(await filesFromDir(DIR),DIR.name); else render();}
+  if(DIR&&PERM){INI=await iniFromDir(DIR); await readFiles(await filesFromDir(DIR),DIR.name);} else render();}
 
 /* ---------- rendering ---------- */
 const fmtT=s=>s?new Date(s).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'}):'–';
@@ -239,12 +248,12 @@ function render(){const last=$z('last'), list=$z('list'), has=!!SESS.length;
 $z('pick').addEventListener('click',pick);
 $z('reload').addEventListener('click',reload);
 $z('remember').addEventListener('click',remember);
-$z('input').addEventListener('change',e=>{const f=filesFromInput(e.target.files); const root=(e.target.files[0]?.webkitRelativePath||'').split('/')[0]; readFiles(f,root||'Logs',true); e.target.value='';});
+$z('input').addEventListener('change',e=>{INI=iniFromInput(e.target.files); const f=filesFromInput(e.target.files); const root=(e.target.files[0]?.webkitRelativePath||'').split('/')[0]; readFiles(f,root||'Logs',true); e.target.value='';});
 document.getElementById('view-sessions').addEventListener('click',async e=>{const c=e.target.closest('[data-copy]');
   if(c){try{await navigator.clipboard.writeText(c.dataset.copy); c.textContent=T('kopiert ✓','copied ✓');}catch(x){c.textContent=T('nicht möglich','not possible');} setTimeout(()=>{c.textContent=T('kopieren','copy');},1600); return;}
   const l=e.target.closest('[data-loc]'); if(l&&typeof LB!=='undefined'&&LB.openLoc) LB.openLoc(l.dataset.loc);});
 let started=false;
 return {render(){if(!started){started=true; init();} else render();}, start(){if(!started){started=true; init();}},
-  pick, sessions:()=>SESS, status:()=>$z('stat').textContent, _parse:parse, _placeOf:placeOf, _fromInput:filesFromInput, _read:readFiles, _shipName:shipName, _load:(list)=>{SESS=list; render(); loaded();}};
+  pick, sessions:()=>SESS, ini:()=>INI, _setIni:f=>{INI=f;}, status:()=>$z('stat').textContent, _parse:parse, _placeOf:placeOf, _fromInput:filesFromInput, _read:readFiles, _shipName:shipName, _load:(list)=>{SESS=list; render(); loaded();}};
 })();
 """
