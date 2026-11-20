@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.14.0] – 2026-11-20
+
+### Geändert
+- **Ruf: kompakter.** Die Karten der Organisationen stehen auf breiten Bildschirmen nebeneinander (zwei je Reihe, bei sehr breiten auch mehr), auf schmalen untereinander.
+- **Gilden einklappbar:** Ein Klick auf die Gilden-Überschrift klappt sie ein oder aus; der Zustand bleibt im Browser. Die Überschrift zeigt, wie viele Organisationen abgeglichen sind.
+- Der Abgleich-Knopf ist auf allen Karten gleich gewichtet (vorher war er bei jeder Karte ohne Abgleich hervorgehoben).
+
 ## [1.13.0] – 2026-11-20
 
 ### Geändert
