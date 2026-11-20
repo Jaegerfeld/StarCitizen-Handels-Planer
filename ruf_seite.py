@@ -371,7 +371,7 @@ function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions
   const hint=S.length?'':`<p class="rf-empty">${T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU), dann zählt der Reiter deine Missionen mit. Abgleichen geht auch ohne Logs.','Load the Star Citizen log folder (LIVE or PTU), then the tab counts your missions. Aligning works without logs too.')}</p>`;
   const nHidden=orgs.length-shown.length;
   list.innerHTML=hint+(groups.length?groups.map(x=>`<section class="rf-guild"><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))} <small>${x.list.length}</small></h2>
-      <p>${x.g?esc(T(x.g.d[0],x.g.d[1])):T('Stehen nicht in der Gildenliste (Stand 5.0 PTU).','Not in the guild list (5.0 PTU).')}</p>${x.list.map(o=>card(o,ms,st)).join('')}</section>`).join('')
+      <p>${x.g?esc(T(x.g.d[0],x.g.d[1])):T('Im Testserver 5.0 noch keiner Gilde zugeordnet (geprüft 20.11.2026).','Not yet assigned to a guild on the 5.0 test server (checked 20 Nov 2026).')}</p>${x.list.map(o=>card(o,ms,st)).join('')}</section>`).join('')
     :`<p class="rf-empty">${T('Noch keine Organisation abgeglichen. Schalte „Ohne Abgleich ausblenden“ aus, um alle zu sehen.','No organisation aligned yet. Switch off “Hide not aligned” to see all.')}</p>`)
     +(hide&&nHidden?`<p class="rf-note">${T(`${nHidden} Organisationen ohne Abgleich ausgeblendet.`,`${nHidden} organisations without alignment hidden.`)}</p>`:'');
   if(OPEN){const f=document.querySelector(`#view-rep [data-form="${CSS.escape(OPEN)}"] select`); if(f) f.focus();}}
