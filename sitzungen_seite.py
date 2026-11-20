@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       19.11.2026
-# Geändert:       19.11.2026
+# Geändert:       20.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -22,6 +22,10 @@
 #   <RequestLocationInventory> … Location[…]; <Local Route Guard …> | SCHIFF_ID[…];
 #   Meldung „Rechtsgebiet von … betreten“ / „Entered … Jurisdiction“; Ende normal
 #   CCIGBroker::FastShutdown, Absturz „crash handler“.
+#   Für den Reiter „Ruf“ liest parse() zusätzlich die Missionen: Meldungen mit
+#   MissionId (Titel), <EndMission> … CompletionType[…], die Organisation aus
+#   SendCommsNotification … Missions.Organization.<Org> und „Auftrag geteilt“.
+#   Nach jedem Einlesen meldet das Modul „sz:loaded“; der Reiter „Ruf“ hört darauf.
 # =============================================================================
 """HTML, CSS and JS fragments of the "Sitzungen" (sessions) tab, inserted by the page builder."""
 
@@ -86,7 +90,8 @@ const L=()=>(document.documentElement.getAttribute('lang')||'de').slice(0,2);
 const T=(de,en)=>L()==='en'?en:de;
 const $z=id=>document.getElementById('sz-'+id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const MAXF=25, CKEY='scha_sessions_cache';
+// Cache key v2: sessions also carry the missions for the reputation tab.
+const MAXF=25, CKEY='scha_sessions_cache_v2';
 const DIR_OK=typeof window.showDirectoryPicker==='function';
 let DIR=null, PERM=false, SESS=[], BUSY=false, SRC='';
 
@@ -96,7 +101,12 @@ const RE={join:/^<([^>]+)> \[Notice\] <Join PU> address\[([^\]]*)\] port\[(\d+)\
   loc:/^<([^>]+)> .*?<RequestLocationInventory> Player\[[^\]]*\] requested inventory for Location\[([^\]]+)\]/gm,
   ship:/^<([^>]+)> .*?<Local Route Guard[^>]*>.*?\| ([A-Z]{3,5}_[A-Za-z0-9_]+?)_\d{9,}\[/gm,
   jur:/^<([^>]+)> .*?notification "(?:Rechtsgebiet von ([^:"]+?) betreten|Entered ([^:"]+?) Jurisdiction)/gm,
-  ts:/^<(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z)>/gm};
+  ts:/^<(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z)>/gm,
+  // Missions (reputation tab): notifications with a MissionId carry the title; <EndMission> the result.
+  mnote:/^<([^>]+)> \[Notice\] <SHUDEvent_OnNotification> Added notification "([^"]*)" \[\d+\] to queue\. New queue size: \d+, MissionId: \[([0-9a-f-]{36})\]/gm,
+  mend:/^<([^>]+)> \[Notice\] <EndMission> Ending mission for player\. MissionId\[([0-9a-f-]{36})\].*?CompletionType\[(\w+)\]/gm,
+  morg:/SendCommsNotification \+?Missions\.Organization\.([A-Za-z]+)[^\n]*? - Mission: \[([0-9a-f-]{36})\]/g,
+  mshare:/^<([^>]+)> \[Notice\] <SHUDEvent_OnNotification> Added notification "(?:Auftrag geteilt|Contract Shared|Mission Shared): ([^"]*)"/gm};
 function all(re,text){re.lastIndex=0; const out=[]; let m; while((m=re.exec(text))) out.push(m); return out;}
 function parse(text,name){
   const ts=all(RE.ts,text.slice(0,20000)), tail=all(RE.ts,text.slice(-60000));
@@ -106,7 +116,14 @@ function parse(text,name){
   const locs=all(RE.loc,text).filter(m=>m[2]!=='INVALID_LOCATION_ID'), ships=all(RE.ship,text), jurs=all(RE.jur,text);
   const last=a=>a.length?a[a.length-1]:null, lo=last(locs), sh=last(ships), ju=last(jurs);
   return {name,start:ts[0]?.[1]||'',end:tail.length?tail[tail.length-1][1]:'',ended:crash?'crash':normal?'ok':'open',joins,
-    loc:lo?{t:lo[1],raw:lo[2]}:null, ship:sh?{t:sh[1],raw:sh[2]}:null, jur:ju?{t:ju[1],n:ju[2]||ju[3]}:null};}
+    loc:lo?{t:lo[1],raw:lo[2]}:null, ship:sh?{t:sh[1],raw:sh[2]}:null, jur:ju?{t:ju[1],n:ju[2]||ju[3]}:null, mis:missions(text)};}
+// Missions of one log: per MissionId the first time, the distinct notification texts (one is the title) and the
+// organisation; the ends with their result; "shared" notifications by title.
+function missions(text){const ids={}, Z='00000000-0000-0000-0000-000000000000';
+  for(const m of all(RE.mnote,text)){if(m[3]===Z) continue; const o=ids[m[3]]||(ids[m[3]]={t:m[1],x:[],org:''});
+    const s=m[2].replace(/:\s*$/,''); if(o.x.length<6&&!o.x.includes(s)) o.x.push(s);}
+  RE.morg.lastIndex=0; let g; while((g=RE.morg.exec(text))){const o=ids[g[2]]; if(o&&!o.org) o.org=g[1]; else if(!o) ids[g[2]]={t:'',x:[],org:g[1]};}
+  return {ids, ends:all(RE.mend,text).map(m=>({t:m[1],id:m[2],r:m[3]})), shares:all(RE.mshare,text).map(m=>({t:m[1],x:m[2].replace(/:\s*$/,'')}))};}
 
 /* ---------- names ---------- */
 // Region from the shard name, e.g. pub_euw1b_13165946_260 -> euw1.
@@ -151,15 +168,17 @@ function filesFromInput(list){return [...list].filter(f=>{const p=(f.webkitRelat
   return (p.length===2&&p[1]==='Game.log')||(p.length===2&&p[0]==='logbackups'&&p[1].endsWith('.log'))||(p.length===3&&p[1]==='logbackups'&&p[2].endsWith('.log'));});}
 async function readFiles(files,label,once){if(BUSY) return; BUSY=true; SRC=label;
   const pick=files.sort((a,b)=>b.lastModified-a.lastModified).slice(0,MAXF);
-  if(!pick.length){BUSY=false; stat(T('In diesem Ordner liegen keine Game.log und kein logbackups-Ordner. Bitte den Ordner LIVE (oder PTU) wählen.','No Game.log or logbackups folder here. Please choose the LIVE (or PTU) folder.')); render(); return;}
+  if(!pick.length){BUSY=false; stat(T('In diesem Ordner liegen keine Game.log und kein logbackups-Ordner. Bitte den Ordner LIVE (oder PTU) wählen.','No Game.log or logbackups folder here. Please choose the LIVE (or PTU) folder.')); render(); loaded(); return;}
   const cache=cacheGet(); SESS=[]; let i=0;
   for(const f of pick){i++; stat(T(`Lese ${i} von ${pick.length} Sitzungen …`,`Reading ${i} of ${pick.length} sessions …`));
     const key=f.name+'|'+f.size+'|'+f.lastModified; let s=cache[key];
     if(!s){s=parse(await f.text(),f.name); if(f.name!=='Game.log') cache[key]=s;}
     SESS.push(s); await new Promise(r=>setTimeout(r,0));}
   cacheSet(cache); SESS.sort((a,b)=>(b.start||'').localeCompare(a.start||'')); BUSY=false;
-  stat(T(`${label} · ${SESS.length} Sitzungen gelesen · ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`,`${label} · ${SESS.length} sessions read · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`)+(once?T(' · beim nächsten Besuch erneut laden (Ordner wird nicht gemerkt)',' · load again on your next visit (folder is not remembered)'):'')); render();}
+  stat(T(`${label} · ${SESS.length} Sitzungen gelesen · ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`,`${label} · ${SESS.length} sessions read · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`)+(once?T(' · beim nächsten Besuch erneut laden (Ordner wird nicht gemerkt)',' · load again on your next visit (folder is not remembered)'):'')); render(); loaded();}
 function stat(t){$z('stat').textContent=t;}
+// Tell other tabs (reputation) that the sessions changed.
+function loaded(){document.dispatchEvent(new CustomEvent('sz:loaded'));}
 
 /* ---------- remembered folder (Chrome/Edge) ---------- */
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('scha_sessions',1); r.onupgradeneeded=()=>r.result.createObjectStore('h'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
@@ -225,6 +244,7 @@ document.getElementById('view-sessions').addEventListener('click',async e=>{cons
   if(c){try{await navigator.clipboard.writeText(c.dataset.copy); c.textContent=T('kopiert ✓','copied ✓');}catch(x){c.textContent=T('nicht möglich','not possible');} setTimeout(()=>{c.textContent=T('kopieren','copy');},1600); return;}
   const l=e.target.closest('[data-loc]'); if(l&&typeof LB!=='undefined'&&LB.openLoc) LB.openLoc(l.dataset.loc);});
 let started=false;
-return {render(){if(!started){started=true; init();} else render();}, _parse:parse, _placeOf:placeOf, _fromInput:filesFromInput, _read:readFiles, _shipName:shipName, _load:(list)=>{SESS=list; render();}};
+return {render(){if(!started){started=true; init();} else render();}, start(){if(!started){started=true; init();}},
+  pick, sessions:()=>SESS, status:()=>$z('stat').textContent, _parse:parse, _placeOf:placeOf, _fromInput:filesFromInput, _read:readFiles, _shipName:shipName, _load:(list)=>{SESS=list; render(); loaded();}};
 })();
 """
