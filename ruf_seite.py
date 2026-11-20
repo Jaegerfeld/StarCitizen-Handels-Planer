@@ -71,7 +71,9 @@ RF_CSS = r"""
   #view-rep .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--bg)}
   #view-rep .rf-stat{color:var(--muted);font-size:13px}
   #view-rep .rf-note{color:var(--muted);font-size:12.5px;margin:0 0 14px;max-width:80ch}
-  #view-rep .rf-org{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 12px;background:var(--panel)}
+  #view-rep .rf-org{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0;background:var(--panel);min-width:0}
+  /* Cards side by side: two or more per row on wide screens, one on narrow ones */
+  #view-rep .rf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:12px;align-items:start}
   #view-rep .rf-org.fav{border-color:var(--accent)}
   #view-rep .rf-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
   #view-rep .rf-head h3{font-family:var(--disp);font-size:17px;letter-spacing:.04em;margin:0;flex:1 1 auto}
@@ -105,10 +107,14 @@ RF_CSS = r"""
   #view-rep .rf-empty{color:var(--muted);padding:12px 2px}
   #view-rep .rf-toggle{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}
   #view-rep .rf-toggle input{width:20px;height:20px}
-  #view-rep .rf-guild{margin:0 0 18px}
-  #view-rep .rf-guild>h2{font-family:var(--disp);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:14px 0 4px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
-  #view-rep .rf-guild>h2 small{font-size:12px;letter-spacing:0;text-transform:none;color:var(--muted)}
-  #view-rep .rf-guild>p{color:var(--muted);font-size:12.5px;margin:0 0 8px}
+  #view-rep .rf-guild{margin:0 0 14px;border-top:1px solid var(--line)}
+  #view-rep .rf-guild>summary{list-style:none;cursor:pointer;min-height:44px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0}
+  #view-rep .rf-guild>summary::-webkit-details-marker{display:none}
+  #view-rep .rf-guild>summary::before{content:"▸";color:var(--accent);font-size:16px;transition:transform .15s}
+  #view-rep .rf-guild[open]>summary::before{transform:rotate(90deg)}
+  #view-rep .rf-guild>summary h2{font-family:var(--disp);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0}
+  #view-rep .rf-guild>summary small{font-size:12.5px;color:var(--muted)}
+  #view-rep .rf-guild>summary .rf-gd{flex-basis:100%;margin-left:26px}
   #view-rep .rf-toggle.off{opacity:.55;cursor:not-allowed}
   #view-rep .rf-lvl{margin:10px 0 0;border-left:4px solid var(--line);padding:2px 0 2px 10px}
   #view-rep .rf-lvl h4{margin:0 0 4px;font-family:var(--disp);font-size:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
@@ -341,7 +347,7 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
         ${est.failed?` · ${T(`${est.failed} fehlgeschlagen/abgebrochen (0 gezählt)`,`${est.failed} failed/abandoned (counted 0)`)}`:''}</p>`;}
   const rows=est.after.slice().reverse().map(m=>`<tr><td>${fmtT(m.t)}</td><td>${esc(prettyT(m.title))}${m.shared?`<span class="rf-tag">${T('geteilt','shared')}</span>`:''}</td><td>${m.res==='Complete'?'✓':`<span class="rf-tag fail">${esc(m.res==='Fail'?T('fehlgeschlagen','failed'):m.res==='Abandon'?T('abgebrochen','abandoned'):m.res)}</span>`}</td><td class="num">${m.lo==null?'?':m.lo===m.hi?fmt(m.lo):fmt(m.lo)+'–'+fmt(m.hi)}</td></tr>`).join('');
   const det=est.after.length?`<details><summary>${T(est.cal?'Missionen seit dem Abgleich':'Missionen in den geladenen Logs',est.cal?'Missions since the alignment':'Missions in the loaded logs')} (${est.after.length})</summary><div class="tablewrap"><table><thead><tr><th>${T('Ende','End')}</th><th>${T('Mission','Mission')}</th><th>${T('Ergebnis','Result')}</th><th class="num">${T('XP laut Beschreibung','XP as stated')}</th></tr></thead><tbody>${rows}</tbody></table></div></details>`:'';
-  const acts=`<div class="rf-acts"><button type="button" class="btn${est.cal?'':' pri'}" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
+  const acts=`<div class="rf-acts"><button type="button" class="btn" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
   const guess=ladderGuess(o)?`<p class="rf-meta"><span class="est">${T('Rangleiter nicht bekannt – Auftragnehmer-Stufen angenommen.','Rank ladder unknown – contractor ranks assumed.')}</span></p>`:'';
   return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${guess}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</article>`;}
 // Alignment form: reached rank, fill of the next rank's bar, time of the look into the mobiGlas.
@@ -370,8 +376,11 @@ function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions
   for(const x of groups) x.list.sort((a,b)=>(orgState(st,b).fav-orgState(st,a).fav)||(orgState(st,b).cals.length>0)-(orgState(st,a).cals.length>0)||last(b).localeCompare(last(a))||a.localeCompare(b));
   const hint=S.length?'':`<p class="rf-empty">${T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU), dann zählt der Reiter deine Missionen mit. Abgleichen geht auch ohne Logs.','Load the Star Citizen log folder (LIVE or PTU), then the tab counts your missions. Aligning works without logs too.')}</p>`;
   const nHidden=orgs.length-shown.length;
-  list.innerHTML=hint+(groups.length?groups.map(x=>`<section class="rf-guild"><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))} <small>${x.list.length}</small></h2>
-      <p>${x.g?esc(T(x.g.d[0],x.g.d[1])):T('Im Testserver 5.0 noch keiner Gilde zugeordnet (geprüft 20.11.2026).','Not yet assigned to a guild on the 5.0 test server (checked 20 Nov 2026).')}</p>${x.list.map(o=>card(o,ms,st)).join('')}</section>`).join('')
+  const closed=gClosed();
+  list.innerHTML=hint+(groups.length?groups.map(x=>{const gn=x.g?x.g.n:'-', aligned=x.list.filter(o=>orgState(st,o).cals.length).length;
+      return `<details class="rf-guild" data-guild="${esc(gn)}"${closed.has(gn)?'':' open'}><summary><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length} ${x.list.length===1?T('Organisation','organisation'):T('Organisationen','organisations')}${aligned?` · ${aligned} ${T('abgeglichen','aligned')}`:''}</small>
+      <small class="rf-gd">${x.g?esc(T(x.g.d[0],x.g.d[1])):T('Im Testserver 5.0 noch keiner Gilde zugeordnet (geprüft 20.11.2026).','Not yet assigned to a guild on the 5.0 test server (checked 20 Nov 2026).')}</small></summary>
+      <div class="rf-cards">${x.list.map(o=>card(o,ms,st)).join('')}</div></details>`;}).join('')
     :`<p class="rf-empty">${T('Noch keine Organisation abgeglichen. Schalte „Ohne Abgleich ausblenden“ aus, um alle zu sehen.','No organisation aligned yet. Switch off “Hide not aligned” to see all.')}</p>`)
     +(hide&&nHidden?`<p class="rf-note">${T(`${nHidden} Organisationen ohne Abgleich ausgeblendet.`,`${nHidden} organisations without alignment hidden.`)}</p>`:'');
   if(OPEN){const f=document.querySelector(`#view-rep [data-form="${CSS.escape(OPEN)}"] select`); if(f) f.focus();}}
@@ -390,7 +399,11 @@ view.addEventListener('click',e=>{const st=load(); let b;
   if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt);}});
 // Remember which overviews are open across re-renders
 view.addEventListener('toggle',e=>{const d=e.target.closest&&e.target.closest('[data-ov]'); if(d){if(d.open) OVOPEN.add(d.dataset.ov); else OVOPEN.delete(d.dataset.ov);}},true);
-const HKEY='scha_rep_hide';
+const HKEY='scha_rep_hide', GKEY='scha_rep_gclosed';
+// Guilds the player has folded in (remembered in the browser).
+function gClosed(){try{return new Set(JSON.parse(localStorage.getItem(GKEY)||'[]'));}catch(e){return new Set();}}
+view.addEventListener('toggle',e=>{const g=e.target.closest&&e.target.closest('[data-guild]'); if(!g||e.target!==g) return; const s=gClosed();
+  if(g.open) s.delete(g.dataset.guild); else s.add(g.dataset.guild); try{localStorage.setItem(GKEY,JSON.stringify([...s]));}catch(x){}},true);
 function hideOn(){try{return localStorage.getItem(HKEY)==='1';}catch(e){return false;}}
 $r('hide').addEventListener('change',e=>{try{localStorage.setItem(HKEY,e.target.checked?'1':'0');}catch(x){} render();});
 $r('texts').addEventListener('change',e=>{try{localStorage.setItem(TKEY,e.target.checked?'1':'0');}catch(x){} render();});
