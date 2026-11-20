@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.12.0] – 2026-11-20
+
+### Hinzugefügt
+- **Ruf: Missionen nach Rufstufe.** Je Organisation eine aufklappbare Übersicht aller bekannten Missionen, geordnet nach der Stufe, ab der sie freigeschaltet sind, mit Ruf-Wert. Nach dem Abgleich ist markiert, was freigeschaltet ist, was als Nächstes kommt (mit verbleibenden XP) und was später kommt. Missionen ohne Stufenangabe stehen gesammelt am Ende.
+- **Missionstexte, zuschaltbar** (Schalter „Missionstexte anzeigen“, aus = Standard): Ein Klick auf eine Mission öffnet ihren Beschreibungstext in einem Fenster. Der Text kommt zur Laufzeit aus der Sprachdatei des Spiels (`data\Localization\…\global.ini`) im geladenen Ordner `LIVE`; die Seite selbst enthält keine Missionstexte. Ohne Sprachdatei bleibt der Schalter grau, mit Hinweis.
+
+### Behoben
+- Missionen mit Namen im Titel (z. B. „Orange Level Contract: MISC Freelancer MAX Needs Assistance“, in der Tabelle „~mission(Ship) Needs Assistance“) werden jetzt erkannt und mitgezählt. Platzhalter erscheinen als [Ship].
+
 ## [1.11.0] – 2026-11-20
 
 ### Hinzugefügt

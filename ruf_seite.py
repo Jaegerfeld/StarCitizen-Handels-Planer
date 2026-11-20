@@ -26,6 +26,11 @@
 #   den Zeitpunkt nimmt sie aus dem Dateinamen (ScreenShot-JJJJ-MM-TT_hh-mm-ss).
 #   Geprüft an sechs Screenshots (2000×837): ±2 Prozentpunkte zur Handmessung.
 #   Das Bild wird nur im Browser gelesen.
+#   Übersicht „Missionen nach Rufstufe“ je Organisation: Missionen der Ruf-Tabelle
+#   nach ihrer Mindeststufe, freigeschaltet / als Nächstes / später nach dem
+#   geschätzten Stand. Missionstexte optional (Schalter, aus = Standard): Sie
+#   kommen zur Laufzeit aus der global.ini im geladenen Spielordner und werden
+#   in einem Fenster gezeigt; die Seite selbst enthält keine Missionstexte.
 #   Konzept: Konzept_Ruf-Tracker.md, Entscheidungen R1–R8 vom 20.11.2026.
 #   Eigenständiges Modul für das spätere Spieler-Cockpit.
 # =============================================================================
@@ -41,11 +46,15 @@ RF_HTML = r"""
   <section class="panel hide" id="view-rep">
     <div class="rf-bar">
       <button type="button" class="btn" id="rf-load">📁 <span class="de">Log-Ordner laden …</span><span class="en">Load log folder …</span></button>
+      <label class="rf-toggle"><input type="checkbox" id="rf-texts"> <span class="de">Missionstexte anzeigen</span><span class="en">Show mission texts</span></label>
       <span class="rf-stat" id="rf-stat" role="status"></span>
     </div>
+    <p class="rf-note" id="rf-texts-note" hidden></p>
     <p class="rf-note"><span class="de">Das Spiel schreibt keine Ruf-Punkte ins Log. Der Reiter rechnet: <b>Stand aus deinem mobiGlas</b> + Ruf der danach abgeschlossenen Missionen (laut Missionsbeschreibung × Faktor). Gleiche einmal je Organisation ab, dann läuft der Balken mit. Gleicher Log-Ordner wie unter „Sitzungen“.</span><span class="en">The game writes no reputation points to the log. This tab computes: <b>the state from your mobiGlas</b> + reputation of the missions completed afterwards (as stated in the mission description × factor). Align once per organisation, then the bar keeps up. Same log folder as under “Sessions”.</span></p>
     <div id="rf-list"></div>
     <p class="rf-note" id="rf-src"></p>
+    <dialog id="rf-dlg" aria-labelledby="rf-dlg-h"><h3 id="rf-dlg-h"></h3><div id="rf-dlg-t"></div>
+      <form method="dialog"><button class="btn" value="x">✕ <span class="de">Schließen</span><span class="en">Close</span></button></form></dialog>
   </section>
 """
 
@@ -89,6 +98,24 @@ RF_CSS = r"""
   #view-rep .rf-tag{display:inline-block;font-size:11.5px;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-left:4px}
   #view-rep .rf-tag.fail{color:var(--bad);border-color:var(--bad)}
   #view-rep .rf-empty{color:var(--muted);padding:12px 2px}
+  #view-rep .rf-toggle{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}
+  #view-rep .rf-toggle input{width:20px;height:20px}
+  #view-rep .rf-toggle.off{opacity:.55;cursor:not-allowed}
+  #view-rep .rf-lvl{margin:10px 0 0;border-left:4px solid var(--line);padding:2px 0 2px 10px}
+  #view-rep .rf-lvl h4{margin:0 0 4px;font-family:var(--disp);font-size:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+  #view-rep .rf-lvl.done{border-left-color:var(--ok)}
+  #view-rep .rf-lvl.next{border-left-color:var(--accent);background:var(--panel2);border-radius:0 8px 8px 0}
+  #view-rep .rf-lvl.later{opacity:.7}
+  #view-rep .rf-lvl ul{list-style:none;margin:0;padding:0;columns:2 340px;column-gap:24px}
+  #view-rep .rf-lvl li{break-inside:avoid;display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0;border-bottom:1px solid var(--line)}
+  #view-rep .rf-lvl li small{color:var(--muted);white-space:nowrap}
+  #view-rep .rf-mt{font:inherit;font-size:13px;color:var(--accent);background:none;border:0;padding:0;min-height:28px;text-align:left;cursor:pointer;text-decoration:underline}
+  #view-rep dialog{max-width:min(720px,92vw);max-height:84vh;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:16px 18px}
+  #view-rep dialog::backdrop{background:rgba(0,0,0,.55)}
+  #view-rep dialog h3{font-family:var(--disp);margin:0 0 10px}
+  #view-rep #rf-dlg-t{white-space:pre-wrap;font-size:14px;line-height:1.5;max-height:62vh;overflow:auto}
+  #view-rep dialog form{margin-top:12px;text-align:right}
+  #view-rep dialog .btn{min-height:44px}
 """
 
 #: Behaviour. Runs after the sessions script (uses SZ.sessions, SZ.pick, SZ.start).
@@ -118,7 +145,19 @@ function orgState(st,o){st.orgs=st.orgs||{}; return st.orgs[o]||(st.orgs[o]={cal
 function lookup(texts){if(!TAB) return null;
   for(const x of texts){const parts=[x]; let i=x.indexOf(': '); while(i>=0){parts.push(x.slice(i+2)); i=x.indexOf(': ',i+2);}
     for(const p of parts){const e=TAB.missions[normT(p)]; if(e) return {title:normT(p),e};}}
+  // Titles with placeholders ("Orange Level Contract: ~mission(Ship) Needs Assistance"): the log has the filled-in name
+  for(const x of texts){const parts=[x]; let i=x.indexOf(': '); while(i>=0){parts.push(x.slice(i+2)); i=x.indexOf(': ',i+2);}
+    for(const p of parts){const n=normT(p), hit=pats().find(q=>q.re.test(n)); if(hit) return {title:hit.title,e:TAB.missions[hit.title]};}}
   return null;}
+let PATS=null;
+// Regular expressions for the table titles that contain ~mission(…) placeholders.
+function pats(){if(PATS) return PATS; PATS=[];
+  for(const tt of Object.keys(TAB.missions)) if(tt.includes('~mission(')){
+    const src=tt.split(/~mission\([^)]*\)/).map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('.+?');
+    PATS.push({re:new RegExp('^'+src+'$'),title:tt});}
+  return PATS;}
+// Title for display: placeholders as [Name].
+const prettyT=s=>String(s).replace(/~mission\(([^)|]*)(?:\|[^)]*)?\)/g,'[$1]');
 // Display name of an organisation id from the log ("FoxwellEnforcement", "BountyHunterGuild").
 function orgName(id){if(!TAB||!id) return id||''; const c=compact(id);
   for(const o of Object.keys(TAB.ladders)){const k=compact(o); if(k===c||k.startsWith(c.slice(0,10))||c.startsWith(k.slice(0,10))) return o;}
@@ -217,6 +256,45 @@ async function readShot(f,form){const res=form.querySelector('.rf-res'), o=form.
     res.className='rf-res'+(warn?' bad':''); res.textContent=T(`Erkannt: ${m.n} Ränge erreicht (bis ${reached[1]})${next?`, Balken ${next[1]} zu ${String(m.pct).replace('.',',')} % gefüllt`:''} · Zeitpunkt ${fmtT(shotTime(f).toISOString())}. Rot markiert ist der gemessene Balken – bitte kurz prüfen und übernehmen.`,`Found: ${m.n} ranks reached (up to ${reached[1]})${next?`, bar ${next[1]} ${m.pct} % filled`:''} · time ${fmtT(shotTime(f).toISOString())}. The measured bar is framed in red – please check and apply.`)+warn;}
   catch(e){res.className='rf-res bad'; res.textContent=T('Bild konnte nicht gelesen werden.','Could not read the image.');}}
 
+/* ---------- missions by rank ---------- */
+const TKEY='scha_rep_texts';
+let INIMAP=null, INIFILE=null;
+const textsOn=()=>{try{return localStorage.getItem(TKEY)==='1';}catch(e){return false;}};
+const iniFile=()=>(typeof SZ!=='undefined'&&SZ.ini)?SZ.ini():null;
+// Missions of one organisation from the table, grouped by minimum rank (XP threshold); null = no rank given.
+function byRank(o){const m=new Map();
+  for(const [title,es] of Object.entries(TAB?TAB.missions:{})){const e=es.filter(x=>x[0]===o); if(!e.length) continue;
+    const min=e.find(x=>x[3]!=null)?.[3]??null, k=min==null?'x':String(min);
+    if(!m.has(k)) m.set(k,{min,list:[]});
+    m.get(k).list.push({title,lo:Math.min(...e.map(x=>x[1])),hi:Math.max(...e.map(x=>x[2])),key:e[0][4]});}
+  return [...m.values()].sort((a,b)=>(a.min==null)-(b.min==null)||(a.min||0)-(b.min||0));}
+function overview(o,est){const groups=byRank(o); if(!groups.length) return '';
+  const n=groups.reduce((s,g)=>s+g.list.length,0), mid=est.cal?(est.lo+est.hi)/2:null, l=ladder(o), canText=textsOn()&&!!iniFile();
+  const nextMin=mid==null?null:(groups.find(g=>g.min!=null&&g.min>mid)||{}).min;
+  const html=groups.map(g=>{const rank=g.min==null?T('Stufe nicht angegeben','Rank not given'):((l.find(r=>r[0]===g.min)||[0,`${fmt(g.min)} XP`])[1]+` (${fmt(g.min)})`);
+    const cls=g.min==null||mid==null?'':g.min<=mid?' done':g.min===nextMin?' next':' later';
+    const tag=g.min==null||mid==null?'':g.min<=mid?`<span class="rf-tag">✓ ${T('freigeschaltet','unlocked')}</span>`:g.min===nextMin?`<span class="rf-tag">→ ${T(`als Nächstes, noch ≈ ${fmt(g.min-mid)} XP`,`next, ≈ ${fmt(g.min-mid)} XP to go`)}</span>`:`<span class="rf-tag">🔒 ${T('später','later')}</span>`;
+    const items=g.list.sort((a,b)=>a.title.localeCompare(b.title)).map(x=>`<li>${canText?`<button type="button" class="rf-mt" data-mt="${esc(x.key)}" data-mtt="${esc(prettyT(x.title))}">${esc(prettyT(x.title))}</button>`:esc(prettyT(x.title))}<small>${x.lo===x.hi?fmt(x.lo):fmt(x.lo)+'–'+fmt(x.hi)} XP</small></li>`).join('');
+    return `<div class="rf-lvl${cls}"><h4>${esc(rank)} <small>· ${g.list.length}</small>${tag}</h4><ul>${items}</ul></div>`;}).join('');
+  const hint=mid==null?`<p class="rf-meta">${T('Nach dem ersten Abgleich siehst du hier, was freigeschaltet ist und was als Nächstes kommt.','After the first alignment you see here what is unlocked and what comes next.')}</p>`:'';
+  return `<details data-ov="${esc(o)}"${OVOPEN.has(o)?' open':''}><summary>${T('Missionen nach Rufstufe','Missions by rank')} (${n})</summary>${hint}${html}</details>`;}
+const OVOPEN=new Set();
+// Read the needed descriptions from the player's global.ini once (only keys of the table).
+async function loadTexts(){const f=iniFile(); if(!f) return null; if(INIMAP&&INIFILE===f) return INIMAP;
+  const need=new Set(Object.values(TAB.missions).flat().map(e=>e[4])), map={}, txt=await f.text();
+  for(const line of txt.split(/\r?\n/)){const i=line.indexOf('='); if(i<0) continue; const k=line.slice(0,i).split(',')[0].toLowerCase(); if(need.has(k)) map[k]=line.slice(i+1);}
+  INIMAP=map; INIFILE=f; return map;}
+// Ini value as plain text: "\n" to line breaks, markup removed, placeholders shortened.
+const iniText=v=>String(v||'').replace(/\\n/g,'\n').replace(/<\/?EM\d>/g,'').replace(/~mission\(([^)|]*)(?:\|[^)]*)?\)/g,'[$1]');
+async function showText(key,title){const dlg=$r('dlg'); $r('dlg-h').textContent=title; $r('dlg-t').textContent=T('Lese Sprachdatei …','Reading language file …');
+  if(!dlg.open) dlg.showModal();
+  try{const map=await loadTexts(); $r('dlg-t').textContent=map&&map[key]?iniText(map[key]):T('Für diese Mission steht kein Text in der Sprachdatei.','No text for this mission in the language file.');}
+  catch(e){$r('dlg-t').textContent=T('Die Sprachdatei konnte nicht gelesen werden – bitte den Log-Ordner neu laden.','The language file could not be read – please load the log folder again.');}}
+function textsBar(){const box=$r('texts'), lab=box.closest('label'), has=!!iniFile(), note=$r('texts-note');
+  box.checked=textsOn(); box.disabled=!has; lab.classList.toggle('off',!has);
+  note.hidden=has||!textsOn();
+  note.textContent=has?'':T('Missionstexte brauchen die Sprachdatei des Spiels (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) im geladenen Ordner – die gibt es nur mit installierter Übersetzung. Lade dafür den ganzen Ordner LIVE.','Mission texts need the game’s language file (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) in the loaded folder – it exists only with a translation installed. Load the whole LIVE folder for it.');}
+
 /* ---------- rendering ---------- */
 function bar(o,est){const mid=(est.lo+est.hi)/2, [cur,next]=band(o,mid);
   if(!next) return {cur,next,html:`<div class="rf-track"><div class="rf-fill" style="width:100%"></div></div>`};
@@ -235,10 +313,10 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
         ${est.unknown?` · <span class="est">+? ${T(`aus ${est.unknown} Missionen ohne Wert`,`from ${est.unknown} missions without a value`)}</span>`:''}
         ${est.shared?` · ${T(`${est.shared} geteilt (halb bis voll gezählt)`,`${est.shared} shared (counted half to full)`)}`:''}
         ${est.failed?` · ${T(`${est.failed} fehlgeschlagen/abgebrochen (0 gezählt)`,`${est.failed} failed/abandoned (counted 0)`)}`:''}</p>`;}
-  const rows=est.after.slice().reverse().map(m=>`<tr><td>${fmtT(m.t)}</td><td>${esc(m.title)}${m.shared?`<span class="rf-tag">${T('geteilt','shared')}</span>`:''}</td><td>${m.res==='Complete'?'✓':`<span class="rf-tag fail">${esc(m.res==='Fail'?T('fehlgeschlagen','failed'):m.res==='Abandon'?T('abgebrochen','abandoned'):m.res)}</span>`}</td><td class="num">${m.lo==null?'?':m.lo===m.hi?fmt(m.lo):fmt(m.lo)+'–'+fmt(m.hi)}</td></tr>`).join('');
+  const rows=est.after.slice().reverse().map(m=>`<tr><td>${fmtT(m.t)}</td><td>${esc(prettyT(m.title))}${m.shared?`<span class="rf-tag">${T('geteilt','shared')}</span>`:''}</td><td>${m.res==='Complete'?'✓':`<span class="rf-tag fail">${esc(m.res==='Fail'?T('fehlgeschlagen','failed'):m.res==='Abandon'?T('abgebrochen','abandoned'):m.res)}</span>`}</td><td class="num">${m.lo==null?'?':m.lo===m.hi?fmt(m.lo):fmt(m.lo)+'–'+fmt(m.hi)}</td></tr>`).join('');
   const det=est.after.length?`<details><summary>${T(est.cal?'Missionen seit dem Abgleich':'Missionen in den geladenen Logs',est.cal?'Missions since the alignment':'Missions in the loaded logs')} (${est.after.length})</summary><div class="tablewrap"><table><thead><tr><th>${T('Ende','End')}</th><th>${T('Mission','Mission')}</th><th>${T('Ergebnis','Result')}</th><th class="num">${T('XP laut Beschreibung','XP as stated')}</th></tr></thead><tbody>${rows}</tbody></table></div></details>`:'';
   const acts=`<div class="rf-acts"><button type="button" class="btn${est.cal?'':' pri'}" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
-  return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${acts}${OPEN===o?form(o,est):''}${det}</article>`;}
+  return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</article>`;}
 // Alignment form: reached rank, fill of the next rank's bar, time of the look into the mobiGlas.
 function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0][1]:(l[0]||[0,''])[1];
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -253,7 +331,7 @@ function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0]
     <p class="rf-err" role="alert"></p></form>`;}
 function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions)?SZ.sessions():[];
   $r('src').textContent=TAB?T(`Ruf-Tabelle: ${Object.keys(TAB.missions).length} Missionstitel, Stand ${TAB.stand}. Quelle: ${TAB.quelle}.`,`Reputation table: ${Object.keys(TAB.missions).length} mission titles, as of ${TAB.stand}. Source: annotations of the German community translation (numbers, titles, rank names only).`):T('Ruf-Tabelle fehlt in diesem Bau.','Reputation table missing in this build.');
-  $r('load').classList.toggle('pri',!S.length);
+  $r('load').classList.toggle('pri',!S.length); textsBar(); if(textsOn()&&iniFile()) loadTexts().catch(()=>{});
   $r('stat').textContent=S.length?(SZ.status?SZ.status():''):'';
   if(!S.length){list.innerHTML=`<p class="rf-empty">${T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU), dann erscheinen hier deine Organisationen.','Load the Star Citizen log folder (LIVE or PTU), then your organisations appear here.')}</p>`; return;}
   const ms=missions(), st=load(), orgs=[...new Set([...ms.map(m=>m.org),...Object.keys(st.orgs||{})])];
@@ -272,7 +350,11 @@ view.addEventListener('click',e=>{const st=load(); let b;
   if((b=e.target.closest('[data-undo]'))){const os=orgState(st,b.dataset.undo); const c=os.cals.pop(); save(st); render();
     $r('stat').textContent=c?T(`Abgleich vom ${fmtT(c.t)} entfernt.`,`Alignment of ${fmtT(c.t)} removed.`):''; return;}
   if(e.target.closest('[data-cancel]')){OPEN=null; render(); return;}
-  if((b=e.target.closest('[data-shot]'))){b.parentElement.querySelector('[data-shotin]').click();}});
+  if((b=e.target.closest('[data-shot]'))){b.parentElement.querySelector('[data-shotin]').click(); return;}
+  if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt);}});
+// Remember which overviews are open across re-renders
+view.addEventListener('toggle',e=>{const d=e.target.closest&&e.target.closest('[data-ov]'); if(d){if(d.open) OVOPEN.add(d.dataset.ov); else OVOPEN.delete(d.dataset.ov);}},true);
+$r('texts').addEventListener('change',e=>{try{localStorage.setItem(TKEY,e.target.checked?'1':'0');}catch(x){} render();});
 view.addEventListener('change',e=>{const i=e.target.closest('[data-shotin]'); if(i&&i.files[0]) readShot(i.files[0],i.closest('form'));});
 view.addEventListener('dragover',e=>{const z=e.target.closest('[data-drop]'); if(z){e.preventDefault(); z.classList.add('drag');}});
 view.addEventListener('dragleave',e=>{const z=e.target.closest('[data-drop]'); if(z) z.classList.remove('drag');});
@@ -288,6 +370,6 @@ view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!
   $r('stat').textContent=T(`${o}: Abgleich gespeichert (${fmt(xp)} XP).`,`${o}: alignment saved (${fmt(xp)} XP).`);});
 
 let started=false;
-return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, _measure:measureShot};
+return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, _measure:measureShot, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
 })();
 """

@@ -7,7 +7,8 @@
 "Vaughn",
 100,
 100,
-null
+null,
+"vaughn_assassination_ve_desc_intro"
 ]
 ],
 "A Complicated Task": [
@@ -15,7 +16,8 @@ null
 "Vaughn",
 150,
 150,
-null
+null,
+"vaughn_assassination_m_desc_001"
 ]
 ],
 "A Difficult Task": [
@@ -23,7 +25,8 @@ null
 "Vaughn",
 200,
 200,
-null
+null,
+"vaughn_assassination_h_desc_001"
 ]
 ],
 "A Fond Farewell": [
@@ -31,7 +34,8 @@ null
 "Vaughn",
 250,
 250,
-null
+null,
+"vaughn_searchbody_space_vh_desc_001"
 ]
 ],
 "A Simple Task": [
@@ -39,7 +43,8 @@ null
 "Vaughn",
 100,
 100,
-null
+null,
+"vaughn_assassination_ve_desc_001"
 ]
 ],
 "A Straightforward Task": [
@@ -47,7 +52,8 @@ null
 "Vaughn",
 100,
 100,
-null
+null,
+"vaughn_assassination_e_desc_001"
 ]
 ],
 "A Swift Reprisal": [
@@ -55,7 +61,8 @@ null
 "Headhunters",
 50,
 50,
-0
+0,
+"headhunters_eliminateall_caves_desc_01"
 ]
 ],
 "A Troublesome Task": [
@@ -63,7 +70,8 @@ null
 "Vaughn",
 300,
 300,
-null
+null,
+"vaughn_assassination_s_desc_001"
 ]
 ],
 "A Very Difficult Task": [
@@ -71,7 +79,8 @@ null
 "Vaughn",
 250,
 250,
-null
+null,
+"vaughn_assassination_vh_desc_001"
 ]
 ],
 "A little retaliation": [
@@ -79,7 +88,8 @@ null
 "Headhunters",
 375,
 375,
-5800
+5800,
+"headhunters_chainelimall_1c_attackcfp_e_desc_001"
 ]
 ],
 "Adagio Holdings in Need of Salvagers": [
@@ -87,7 +97,8 @@ null
 "Adagio Holdings",
 100,
 100,
-0
+0,
+"adagio_industrial_salvage_universal_intro_desc_001"
 ]
 ],
 "Advanced Tracker License Certification": [
@@ -95,7 +106,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_certification_veryhard_desc"
 ]
 ],
 "Alert: ~mission(Location) under attack": [
@@ -103,7 +115,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_chainelimall_1c_elimspec_genattack_e_desc_001"
 ]
 ],
 "Ambush Op": [
@@ -111,7 +124,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_shipambush_m_desc_001"
 ]
 ],
 "Annihilating the Alliance": [
@@ -119,7 +133,8 @@ null
 "Vaughn",
 300,
 300,
-null
+null,
+"vaughn_assassination_pa_s_desc"
 ]
 ],
 "Armor with Vanduul": [
@@ -127,7 +142,8 @@ null
 "Wikelo Emporium",
 25,
 25,
-null
+null,
+"thecollector_recipes_desc_spikeyarmor"
 ]
 ],
 "Armor with horn and string": [
@@ -135,7 +151,8 @@ null
 "Wikelo Emporium",
 25,
 25,
-null
+null,
+"thecollector_recipes_desc_sandarmour"
 ]
 ],
 "Asgard Fight Mod": [
@@ -143,7 +160,8 @@ null
 "Wikelo Emporium",
 250,
 250,
-null
+null,
+"thecollector_ships_anvil_asgard_desc"
 ]
 ],
 "Assist People's Alliance Vessel Tranquility": [
@@ -151,7 +169,8 @@ null
 "InterSec Defense Solutions",
 200,
 200,
-5800
+5800,
+"intersec_tsg_assist_solo_desc_001"
 ]
 ],
 "Assist Retreating Ship": [
@@ -159,7 +178,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-null
+null,
+"cfp_defendship_mrt_bombingrun_desc_001"
 ]
 ],
 "Assistance needed at ~mission(Location)": [
@@ -167,7 +187,8 @@ null
 "Citizens For Prosperity",
 75,
 75,
-0
+0,
+"cfp_defend_cave_generic_desc_001"
 ]
 ],
 "Attack on CFP outpost": [
@@ -175,7 +196,8 @@ null
 "Citizens For Prosperity",
 75,
 75,
-0
+0,
+"cfp_eliminateall_fromcfp_gen_e_desc_001"
 ]
 ],
 "Back up needed at outpost": [
@@ -183,7 +205,8 @@ null
 "Headhunters",
 250,
 250,
-2200
+2200,
+"headhunters_defend_xt_desc_001"
 ]
 ],
 "Backup Needed Now": [
@@ -191,7 +214,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_defendship_mrt_pa_desc_001"
 ]
 ],
 "Bad at Goodbyes": [
@@ -199,7 +223,8 @@ null
 "Bit Zeros",
 300,
 300,
-38000
+38000,
+"bitzeros_blackbox_s_desc_001"
 ]
 ],
 "Big Style LMG": [
@@ -207,7 +232,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_gmni_lmg"
 ]
 ],
 "Blackbox Recovery Request: Investigator Level": [
@@ -215,7 +241,8 @@ null
 "Hockrow Agency",
 150,
 150,
-null
+null,
+"hockrow_blackbox_space_m_desc_001"
 ]
 ],
 "Blackbox Recovery Request: Junior Level": [
@@ -223,7 +250,8 @@ null
 "Hockrow Agency",
 100,
 100,
-null
+null,
+"hockrow_blackbox_space_e_desc_001"
 ]
 ],
 "Blackbox Recovery Request: Lead Investigator Level": [
@@ -231,7 +259,8 @@ null
 "Hockrow Agency",
 250,
 250,
-null
+null,
+"hockrow_blackbox_space_vh_desc_001"
 ]
 ],
 "Blackbox Recovery Request: Probationary Level": [
@@ -239,7 +268,8 @@ null
 "Hockrow Agency",
 100,
 100,
-null
+null,
+"hockrow_blackbox_space_ve_desc_001"
 ]
 ],
 "Blackbox Recovery Request: Senior Investigator Level": [
@@ -247,7 +277,8 @@ null
 "Hockrow Agency",
 200,
 200,
-null
+null,
+"hockrow_blackbox_space_h_desc_001"
 ]
 ],
 "Blackbox Recovery Request: Special Investigator Level": [
@@ -255,7 +286,8 @@ null
 "Hockrow Agency",
 300,
 300,
-null
+null,
+"hockrow_blackbox_space_s_desc_001"
 ]
 ],
 "Blackbox Retrieval": [
@@ -263,7 +295,8 @@ null
 "Recco Battaglia",
 240,
 240,
-6000
+6000,
+"battaglia_rpt_recoveritem_ve_01_desc"
 ]
 ],
 "Blackbox Retrieval Very Dangerous": [
@@ -271,7 +304,8 @@ null
 "Recco Battaglia",
 360,
 360,
-6000
+6000,
+"battaglia_rpt_recoveritem_vh_01_desc"
 ]
 ],
 "Blackbox Retrieval w/Danger": [
@@ -279,7 +313,8 @@ null
 "Recco Battaglia",
 260,
 260,
-6000
+6000,
+"battaglia_rpt_recoveritem_m_01_desc"
 ]
 ],
 "Bleeding Edge Tech": [
@@ -287,7 +322,8 @@ null
 "Bit Zeros",
 100,
 100,
-800
+800,
+"bitzeros_recoveritem_generic_desc_001"
 ]
 ],
 "Block XenoThreat Expansion": [
@@ -295,7 +331,8 @@ null
 "Headhunters",
 250,
 250,
-2200
+2200,
+"headhunters_defend_xt_vh_desc_001"
 ]
 ],
 "Blow Up Citizens for Prosperity Fuel Reserves": [
@@ -303,7 +340,8 @@ null
 "Headhunters",
 150,
 200,
-null
+null,
+"headhunters_bombingrun_m_cfp_desc_001"
 ]
 ],
 "Blow Up XenoThreat Fuel Reserves": [
@@ -311,7 +349,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_bombingrun_h_xt_desc_001"
 ]
 ],
 "Bring Down the Hammer": [
@@ -319,7 +358,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_defendship_multi_hrt_pa_desc_001"
 ]
 ],
 "Build a Mod Scorpius": [
@@ -327,7 +367,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_scorpius_desc"
 ]
 ],
 "COURIER NEEDED FOR RETRIEVAL - EXP: E": [
@@ -335,7 +376,8 @@ null
 "FTL Courier",
 100,
 100,
-null
+null,
+"ftl_recoveritem_e_desc_001"
 ]
 ],
 "COURIER NEEDED FOR RETRIEVAL - EXP: EL": [
@@ -343,7 +385,8 @@ null
 "FTL Courier",
 300,
 300,
-null
+null,
+"ftl_recoveritem_s_desc_001"
 ]
 ],
 "COURIER NEEDED FOR RETRIEVAL - EXP: EX": [
@@ -351,7 +394,8 @@ null
 "FTL Courier",
 250,
 250,
-null
+null,
+"ftl_recoveritem_vh_desc_001"
 ]
 ],
 "COURIER NEEDED FOR RETRIEVAL - EXP: JR": [
@@ -359,7 +403,8 @@ null
 "FTL Courier",
 150,
 150,
-null
+null,
+"ftl_recoveritem_m_desc_001"
 ]
 ],
 "COURIER NEEDED FOR RETRIEVAL - EXP: S": [
@@ -367,7 +412,8 @@ null
 "FTL Courier",
 200,
 200,
-null
+null,
+"ftl_recoveritem_h_desc_001"
 ]
 ],
 "COURIER NEEDED FOR RETRIEVAL - EXP: U": [
@@ -375,7 +421,8 @@ null
 "FTL Courier",
 100,
 100,
-null
+null,
+"ftl_recoveritem_ve_desc_001"
 ]
 ],
 "CRITICAL FLEET REFUEL": [
@@ -383,7 +430,8 @@ null
 "United Wayfarers Club",
 200,
 200,
-15000
+15000,
+"uwc_refueling_multiple_hard_desc_001"
 ]
 ],
 "CRITICAL REFUEL REQUEST: ~mission(Ship)": [
@@ -391,7 +439,8 @@ null
 "United Wayfarers Club",
 200,
 200,
-38000
+38000,
+"uwc_refueling_high_desc_001"
 ]
 ],
 "Call for Help: ~mission(Location)": [
@@ -399,7 +448,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-800
+800,
+"cfp_defend_regionshift_desc_001"
 ]
 ],
 "Campaign to reclaim XenoThreat outposts": [
@@ -407,7 +457,8 @@ null
 "Citizens For Prosperity",
 450,
 450,
-38000
+38000,
+"cfp_chainelimall_3c_elimspec_xtattack_vh_desc_001"
 ]
 ],
 "Capture Arlington Gang Leader Maltrox Arlington": [
@@ -415,7 +466,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"mg_miles_capturegang_desc_006"
 ]
 ],
 "Capture Arlington Gang Member Kass Dent": [
@@ -423,7 +475,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"mg_miles_capturegang_desc_005"
 ]
 ],
 "Capture Arlington Gang Member Les Arlington": [
@@ -431,7 +484,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"mg_miles_capturegang_desc_001"
 ]
 ],
 "Capture Arlington Gang Member Nicks Cantwell": [
@@ -439,7 +493,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"mg_miles_capturegang_desc_002"
 ]
 ],
 "Capture Arlington Gang Member Oslo Arlington": [
@@ -447,7 +502,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"mg_miles_capturegang_desc_004"
 ]
 ],
 "Capture Arlington Gang Member Sam \"Weepy\" Arlington": [
@@ -455,7 +511,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"mg_miles_capturegang_desc_003"
 ]
 ],
 "Carefully Clear Site": [
@@ -463,7 +520,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-5800
+5800,
+"foxwell_eliminateall_nonhostiles_desc_001"
 ]
 ],
 "Cargo Hauling Opportunity with Ling Hauling": [
@@ -471,7 +529,8 @@ null
 "Ling Family Hauling",
 100,
 100,
-0
+0,
+"lingfamily_haulcargo_atob_intro_desc"
 ]
 ],
 "Cargo Transfer from Shuttered Facility": [
@@ -479,7 +538,8 @@ null
 "Red Wind Linehaul",
 50,
 50,
-null
+null,
+"redwind_haulcargo_atob_asd_desc"
 ]
 ],
 "Checking For a Pulse": [
@@ -487,7 +547,8 @@ null
 "Vaughn",
 100,
 100,
-null
+null,
+"vaughn_searchbody_space_e_desc_001"
 ]
 ],
 "Claim #~mission(ClaimNumber): ~mission(Ship) Salvage Rights": [
@@ -495,7 +556,8 @@ null
 "Adagio Holdings",
 100,
 150,
-null
+null,
+"adagio_basicsalvage_desc_01"
 ]
 ],
 "Clear CFP Route of Hostiles": [
@@ -503,7 +565,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-null
+null,
+"cfp_shipwaveattack_clearhostiles_desc_e_001"
 ]
 ],
 "Clear Citizens for Prosperity Servers": [
@@ -511,7 +574,8 @@ null
 "Headhunters",
 75,
 75,
-null
+null,
+"headhunters_sabotage_servers_e_cfp_desc_001"
 ]
 ],
 "Client Needs Combat Support": [
@@ -519,7 +583,8 @@ null
 "Eckhart Security",
 250,
 250,
-15000
+15000,
+"eckhart_defendship_multi_vhrt_sb_desc_001"
 ]
 ],
 "Collect Irradiated Kopion Horns": [
@@ -527,7 +592,8 @@ null
 "Rayari Incorporated",
 150,
 150,
-null
+null,
+"rain_collectresources_storm_desc_001"
 ]
 ],
 "Collect Irradiated Valakkar Eggs": [
@@ -535,7 +601,8 @@ null
 "Rayari Incorporated",
 150,
 150,
-null
+null,
+"rain_collectresources_storm_desc_004"
 ]
 ],
 "Combat Support: ~mission(Location)": [
@@ -543,7 +610,8 @@ null
 "Eckhart Security",
 2000,
 2000,
-null
+null,
+"eckhartsecurity_eliminateall_storm_data_h_desc_001"
 ]
 ],
 "Come to Aid of Convoy": [
@@ -551,7 +619,8 @@ null
 "Citizens For Prosperity",
 300,
 300,
-38000
+38000,
+"cfp_defendship_multi_srt_desc_001"
 ]
 ],
 "Convince Upstarts to Abandon Sector": [
@@ -559,7 +628,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_bombingrun_killship_m_desc_001"
 ]
 ],
 "Convoy Caught in Brutal Attack": [
@@ -567,7 +637,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-5800
+5800,
+"cfp_defendship_multi_hrt_desc_001"
 ]
 ],
 "Convoy Under Attack": [
@@ -575,7 +646,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-15000
+15000,
+"cfp_defendship_multi_vhrt_sb_desc_001"
 ]
 ],
 "Counterstrike Against Vanduul Raiders": [
@@ -583,7 +655,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-15000
+15000,
+"intersec_shipwaveattack_vh_van_desc_001"
 ]
 ],
 "Cracking the Alliance": [
@@ -591,7 +664,8 @@ null
 "Vaughn",
 200,
 200,
-null
+null,
+"vaughn_assassination_pa_h_desc"
 ]
 ],
 "Crash some ships": [
@@ -599,7 +673,8 @@ null
 "Headhunters",
 300,
 300,
-15000
+15000,
+"headhunters_multikillship_base_generic_m_desc_001"
 ]
 ],
 "Crew Hasn't Checked In": [
@@ -607,7 +682,8 @@ null
 "Recco Battaglia",
 160,
 160,
-2400
+2400,
+"battaglia_rpt_misscrew_01_desc"
 ]
 ],
 "Curious Weapon": [
@@ -615,7 +691,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_bigbooma"
 ]
 ],
 "Cut Citizens For Prosperity Power": [
@@ -623,7 +700,8 @@ null
 "Headhunters",
 125,
 125,
-null
+null,
+"headhunters_sabotage_generators_e_cfp_desc_001"
 ]
 ],
 "DEAD SAINTS - Trial Cargo Haul": [
@@ -631,7 +709,8 @@ null
 "Dead Saints",
 50,
 100,
-null
+null,
+"deadsaints_haulcargo_atob_intro_desc"
 ]
 ],
 "Danger: Contraband Weapons Inbound": [
@@ -639,7 +718,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-null
+null,
+"cfp_bounty_desc_headhunters_001"
 ]
 ],
 "Dangerous Ambush": [
@@ -647,7 +727,8 @@ null
 "Eckhart Security",
 250,
 250,
-15000
+15000,
+"eckhart_shipambush_vh_desc"
 ]
 ],
 "Data Transfer": [
@@ -655,7 +736,8 @@ null
 "Bit Zeros",
 100,
 100,
-0
+0,
+"bitzeros_blackbox_intro_desc_001"
 ]
 ],
 "Deal with ~mission(TargetName) and Support Forces": [
@@ -663,7 +745,8 @@ null
 "Eckhart Security",
 500,
 500,
-120000
+120000,
+"eckhartsecurity_multieliminateallandboss_dc_desc_001"
 ]
 ],
 "Death and cargo": [
@@ -671,7 +754,8 @@ null
 "Headhunters",
 150,
 150,
-2200
+2200,
+"headhunters_eliminateall_retrievestolen_base_generic_m_desc_001"
 ]
 ],
 "Deep space hit": [
@@ -679,7 +763,8 @@ null
 "Headhunters",
 50,
 50,
-0
+0,
+"headhunters_eliminatespecific_asteroid_generic_ve_desc_001"
 ]
 ],
 "Defend InterSec Operative": [
@@ -687,7 +772,8 @@ null
 "InterSec Defense Solutions",
 100,
 100,
-0
+0,
+"intersec_defendship_desc_easy_001"
 ]
 ],
 "Defend ~mission(Location) From Mercs": [
@@ -695,7 +781,8 @@ null
 "Headhunters",
 250,
 250,
-15000
+15000,
+"headhunters_defendentitesandescort_vh_desc"
 ]
 ],
 "Defend ~mission(Location) from Outlaws": [
@@ -703,7 +790,8 @@ null
 "Citizens For Prosperity",
 125,
 250,
-0
+0,
+"cfp_defend-criminals_desc_001"
 ]
 ],
 "Defend ~mission(Objects) From Mercs": [
@@ -711,7 +799,8 @@ null
 "Headhunters",
 250,
 250,
-null
+null,
+"headhunters_defenddestructibleentites_vh_desc_001"
 ]
 ],
 "Defenders needed against Headhunters": [
@@ -719,7 +808,8 @@ null
 "Citizens For Prosperity",
 150,
 250,
-800
+800,
+"cfp_eliminateall_fromcfp_hh_m_desc_001"
 ]
 ],
 "Destroy Headhunter Stolen Data": [
@@ -727,7 +817,8 @@ null
 "Citizens For Prosperity",
 125,
 200,
-0
+0,
+"cfp_sabotage_servers_m_hh_desc_001"
 ]
 ],
 "Destroy Outlaw Data Servers": [
@@ -735,7 +826,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-2200
+2200,
+"cfp_sabotage_vh_desc_001"
 ]
 ],
 "Destroy Their Supplies": [
@@ -743,7 +835,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_bombingrun_h_desc_001"
 ]
 ],
 "Destroy XenoThreat Data Servers": [
@@ -751,7 +844,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_sabotage_servers_vh_xt_desc_001"
 ]
 ],
 "Destroy XenoThreat Fuel Reserves": [
@@ -759,7 +853,8 @@ null
 "Headhunters",
 3200,
 3200,
-null
+null,
+"headhunters_bombingrun_vh_xt_desc_001"
 ]
 ],
 "Destroy XenoThreat Logistic Data": [
@@ -767,7 +862,8 @@ null
 "Citizens For Prosperity",
 125,
 125,
-15000
+15000,
+"cfp_sabotage_servers_h_xt_desc_001"
 ]
 ],
 "Destroying the Alliance": [
@@ -775,7 +871,8 @@ null
 "Vaughn",
 100,
 250,
-null
+null,
+"vaughn_assassination_pa_vh_desc"
 ]
 ],
 "Disable Headhunter Comm Towers": [
@@ -783,7 +880,8 @@ null
 "Citizens For Prosperity",
 125,
 125,
-null
+null,
+"cfp_sabotagerelays_hh_001_desc"
 ]
 ],
 "Disable Outlaw Stronghold at ~mission(Location)": [
@@ -791,7 +889,8 @@ null
 "Citizens For Prosperity",
 75,
 75,
-0
+0,
+"cfp_sabotage_generators_ve_desc_001"
 ]
 ],
 "Do Lava Suit": [
@@ -799,7 +898,8 @@ null
 "Wikelo Emporium",
 25,
 25,
-null
+null,
+"thecollector_recipes_desc_molten"
 ]
 ],
 "Down For the Count": [
@@ -807,7 +907,8 @@ null
 "Vaughn",
 200,
 200,
-null
+null,
+"vaughn_searchbody_space_h_desc_001"
 ]
 ],
 "Draw Out Maulers": [
@@ -815,7 +916,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-95250
+95250,
+"intersec_shipwaveattack_drawoutboss_s_van_desc_001"
 ]
 ],
 "Driving CFP out": [
@@ -823,7 +925,8 @@ null
 "Headhunters",
 150,
 150,
-15000
+15000,
+"headhunters_chainelimall_1c_elimspec_attackcfp_m_desc_001"
 ]
 ],
 "Drop a XenoThreat": [
@@ -831,7 +934,8 @@ null
 "Headhunters",
 400,
 400,
-15000
+15000,
+"headhunters_eliminatespecific_xenothreat_desc_001"
 ]
 ],
 "ENTRY LVL. COURIER NEEDED IN NYX": [
@@ -839,7 +943,8 @@ null
 "FTL Courier",
 100,
 100,
-0
+0,
+"ftl_courier_nyx_easy_desc_001"
 ]
 ],
 "ENTRY LVL. COURIER NEEDED IN STANTON": [
@@ -847,7 +952,8 @@ null
 "FTL Courier",
 100,
 500,
-0
+0,
+"ftl_courier_stanton_easy_desc_001"
 ]
 ],
 "Easy Creds for Easy Work": [
@@ -855,7 +961,8 @@ null
 "Dead Saints",
 100,
 100,
-null
+null,
+"deadsaints_recoveritem_intro_desc_001"
 ]
 ],
 "Efficient Miners Wanted": [
@@ -863,7 +970,8 @@ null
 "Recco Battaglia",
 400,
 400,
-6000
+6000,
+"battaglia_rpt_scanmine_05_desc"
 ]
 ],
 "Eliminate Annoyance": [
@@ -871,7 +979,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defendlocation_ve_desc_001"
 ]
 ],
 "Eliminate Fuel Stores": [
@@ -879,7 +988,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-2200
+2200,
+"cfp_bombingrun_e_desc_001"
 ]
 ],
 "Eliminate Vanduul Ship": [
@@ -887,7 +997,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-15000
+15000,
+"intersec_killship_vanduul_desc_super_001"
 ]
 ],
 "Elite Op": [
@@ -895,7 +1006,8 @@ null
 "Headhunters",
 300,
 300,
-null
+null,
+"headhunters_shipambush_s_desc_001"
 ]
 ],
 "Engage Shattered Blade and Vanduul": [
@@ -903,7 +1015,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-null
+null,
+"intersec_3way_desc_hard_001"
 ]
 ],
 "Eradicate All Traces of Headhunter Data": [
@@ -911,7 +1024,8 @@ null
 "Citizens For Prosperity",
 1550,
 1550,
-38000
+38000,
+"cfp_sabotage_server_elimiatespecific_hh_desc_001"
 ]
 ],
 "Eradicate UEE Threat: ~mission(TargetName)": [
@@ -919,7 +1033,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-null
+null,
+"intersec_shipwaveattack_drawoutboss_s_desc_001"
 ]
 ],
 "Establishing Security": [
@@ -927,7 +1042,8 @@ null
 "Citizens For Prosperity",
 25,
 25,
-null
+null,
+"cfp_eliminateall_intro_desc_001"
 ]
 ],
 "Exciting New Opportunities with Foxwell Enforcement": [
@@ -935,7 +1051,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-null
+null,
+"foxwell_mercenary_intro_desc_001"
 ]
 ],
 "Executive Protection Detail": [
@@ -943,7 +1060,8 @@ null
 "Eckhart Security",
 100,
 100,
-800
+800,
+"eckhart_escortships_e_desc"
 ]
 ],
 "Expel Outlaws": [
@@ -951,7 +1069,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"eckhartsecurity_eliminateall_dc_desc_001"
 ]
 ],
 "Experienced Protection Detail Needed": [
@@ -959,7 +1078,8 @@ null
 "Eckhart Security",
 150,
 150,
-2200
+2200,
+"eckhart_escortships_m_desc"
 ]
 ],
 "Extensive Repairs Needed: ~mission(Location)": [
@@ -967,7 +1087,8 @@ null
 "Citizens For Prosperity",
 500,
 500,
-null
+null,
+"cfp_maintenance_h_desc_001"
 ]
 ],
 "Extra Special Job": [
@@ -975,7 +1096,8 @@ null
 "Recco Battaglia",
 800,
 800,
-null
+null,
+"battaglia_rpt_scan_golem_desc"
 ]
 ],
 "Extremely Dangerous Defense": [
@@ -983,7 +1105,8 @@ null
 "Eckhart Security",
 300,
 300,
-38000
+38000,
+"eckhart_defendship_multi_srt_desc_001"
 ]
 ],
 "FIND SERVERS AT ASD SITE AND DESTROY": [
@@ -991,7 +1114,8 @@ null
 "Eckhart Security",
 50,
 50,
-null
+null,
+"eckhartsecurity_destroyservers_facilitydelving_desc_003"
 ]
 ],
 "Firebird Mod": [
@@ -999,7 +1123,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_firebird_desc"
 ]
 ],
 "First Haul in System": [
@@ -1007,7 +1132,8 @@ null
 "Citizens For Prosperity",
 75,
 75,
-null
+null,
+"cfp_hauling_intro_desc_001"
 ]
 ],
 "Fortune ship for you": [
@@ -1015,7 +1141,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_fortune_indus_desc"
 ]
 ],
 "Fracturing the Alliance": [
@@ -1023,7 +1150,8 @@ null
 "Vaughn",
 150,
 150,
-null
+null,
+"vaughn_assassination_pa_m_desc"
 ]
 ],
 "Fun Kopion Skull Gun": [
@@ -1031,7 +1159,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_kopskull"
 ]
 ],
 "Fun Military Skull Gun": [
@@ -1039,7 +1168,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_miltskull"
 ]
 ],
 "Gather Irradiated Valakkar Fangs": [
@@ -1047,7 +1177,8 @@ null
 "Rayari Incorporated",
 150,
 150,
-null
+null,
+"rain_collectresources_storm_desc_003"
 ]
 ],
 "Get My Gear Back": [
@@ -1055,7 +1186,8 @@ null
 "Dead Saints",
 150,
 150,
-null
+null,
+"deadsaints_recoveritem_m_desc_001"
 ]
 ],
 "Getting Our Gear Back": [
@@ -1063,7 +1195,8 @@ null
 "Dead Saints",
 100,
 100,
-800
+800,
+"deadsaints_recoveritem_generic_desc_001"
 ]
 ],
 "Getting Our Goods Back": [
@@ -1071,7 +1204,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_haulcargo_multitosingle_desc_01"
 ]
 ],
 "Getting To the Bottom of It": [
@@ -1079,7 +1213,8 @@ null
 "Bit Zeros",
 100,
 100,
-800
+800,
+"bitzeros_blackbox_e_desc_001"
 ]
 ],
 "Getting What They Deserve": [
@@ -1087,7 +1222,8 @@ null
 "Dead Saints",
 250,
 250,
-null
+null,
+"deadsaints_recoveritem_vh_desc_001"
 ]
 ],
 "Getting the Drop on the Enemy": [
@@ -1095,7 +1231,8 @@ null
 "Headhunters",
 300,
 300,
-null
+null,
+"headhunters_bombingrun_s_desc_001"
 ]
 ],
 "Ghost some XenoTrash": [
@@ -1103,7 +1240,8 @@ null
 "Headhunters",
 3200,
 3200,
-95250
+95250,
+"headhunters_killship_xenothreat_ert_desc_001"
 ]
 ],
 "Go on the warpath": [
@@ -1111,7 +1249,8 @@ null
 "Headhunters",
 400,
 400,
-95250
+95250,
+"headhunters_chainelimall_attackgen_e_desc_001"
 ]
 ],
 "Green light on ~mission(Location)": [
@@ -1119,7 +1258,8 @@ null
 "Headhunters",
 150,
 150,
-800
+800,
+"headhunters_eliminateall_xt_desc_001"
 ]
 ],
 "Green light on ~mission(TargetName|Last)": [
@@ -1127,7 +1267,8 @@ null
 "Headhunters",
 1200,
 1200,
-38000
+38000,
+"headhunters_eliminatespecific_generic_vh_desc_001"
 ]
 ],
 "Guard ~mission(Location) From Rivals": [
@@ -1135,7 +1276,8 @@ null
 "Headhunters",
 300,
 300,
-15000
+15000,
+"headhunters_defendentitesandescort_s_desc"
 ]
 ],
 "Guard ~mission(Objects) At All Costs": [
@@ -1143,7 +1285,8 @@ null
 "Headhunters",
 300,
 300,
-null
+null,
+"headhunters_defenddestructibleentites_s_desc_001"
 ]
 ],
 "Guardian Fight Mod": [
@@ -1151,7 +1294,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_guardian_desc"
 ]
 ],
 "Guardian WiK-X": [
@@ -1159,7 +1303,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_guardianmx_desc"
 ]
 ],
 "Guardian take down ship": [
@@ -1167,7 +1312,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_guardianqi_desc"
 ]
 ],
 "Handle Vanduul Attack on Ship": [
@@ -1175,7 +1321,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-15000
+15000,
+"intersec_defendship_vanduul_desc_super_001"
 ]
 ],
 "Hauling ask.": [
@@ -1183,7 +1330,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_haulcargo_regionlink_desc_001"
 ]
 ],
 "Headhunter Needs Help": [
@@ -1191,7 +1339,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defendship_lrt_pa_desc_001"
 ]
 ],
 "Headhunter Pilot Needs a Hand": [
@@ -1199,7 +1348,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defendship_vlrt_desc_001"
 ]
 ],
 "Headhunter Pilot in Trouble": [
@@ -1207,7 +1357,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_defendship_lrt_desc_001"
 ]
 ],
 "Headhunter Ship Needs Backup": [
@@ -1215,7 +1366,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_defendship_mrt_desc_001"
 ]
 ],
 "Headhunter attack on ~mission(Location)": [
@@ -1223,7 +1375,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-5800
+5800,
+"cfp_defend_headhunters_h_desc_001"
 ]
 ],
 "Heavy and Bright": [
@@ -1231,7 +1384,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_superheavycombat"
 ]
 ],
 "Help Ambushed Convoy": [
@@ -1239,7 +1393,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-5800
+5800,
+"cfp_defendship_multi_hrt_sb_desc_001"
 ]
 ],
 "Help Deal with Outlaw Hunting Party": [
@@ -1247,7 +1402,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-null
+null,
+"cfp_shipwaveattack_clearhostiles_desc_ve_001"
 ]
 ],
 "Help Headhunters Prospect": [
@@ -1255,7 +1411,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defendship_vlrt_pa_desc_001"
 ]
 ],
 "Help Headhunters at ~mission(DefendLocationWrapperLocation)": [
@@ -1263,7 +1420,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_defendlocation_h_desc_001"
 ]
 ],
 "Help Protect Site": [
@@ -1271,7 +1429,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_eliminateall_allies_desc_001"
 ]
 ],
 "Help defend ~mission(Location) from Headhunters": [
@@ -1279,7 +1438,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_chainelimall_1c_hhattack_m_desc_001"
 ]
 ],
 "Hide Snow Suit": [
@@ -1287,7 +1447,8 @@ null
 "Wikelo Emporium",
 25,
 25,
-null
+null,
+"thecollector_recipes_desc_hush"
 ]
 ],
 "High-Risk Bounty: ~mission(TargetName)": [
@@ -1295,7 +1456,8 @@ null
 "Eckhart Security",
 500,
 500,
-5000
+5000,
+"eckhartsecurity_eliminateboss_dc_desc_001"
 ]
 ],
 "High-Risk Ship Encounter": [
@@ -1303,7 +1465,8 @@ null
 "Eckhart Security",
 200,
 200,
-5800
+5800,
+"eckhart_defendship_multi_hrt_desc_001"
 ]
 ],
 "Highly Dangerous Ambush": [
@@ -1311,7 +1474,8 @@ null
 "Eckhart Security",
 300,
 300,
-38000
+38000,
+"eckhart_shipambush_s_desc"
 ]
 ],
 "Hit XenoThreat at ~mission(Location)": [
@@ -1319,7 +1483,8 @@ null
 "Headhunters",
 300,
 300,
-5800
+5800,
+"headhunters_eliminateall_xenothreat_h_desc_001"
 ]
 ],
 "Hit a CFP Complex": [
@@ -1327,7 +1492,8 @@ null
 "Headhunters",
 300,
 300,
-38000
+38000,
+"headhunters_chainelimall_3c_elimspec_attackcfp_vh_desc_001"
 ]
 ],
 "Hit a CFP Ship": [
@@ -1335,7 +1501,8 @@ null
 "Headhunters",
 300,
 300,
-5800
+5800,
+"headhunters_killship_cfp_mrt_desc_001"
 ]
 ],
 "Hit on XenoThreat command": [
@@ -1343,7 +1510,8 @@ null
 "Headhunters",
 400,
 400,
-95250
+95250,
+"headhunters_chainelimall_boss_xenothreat_vh_desc_001"
 ]
 ],
 "Hitting a CFP site": [
@@ -1351,7 +1519,8 @@ null
 "Headhunters",
 50,
 50,
-800
+800,
+"headhunters_eliminateall_cfp_e_desc_001"
 ]
 ],
 "Hot Shot": [
@@ -1359,7 +1528,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_nonepistol"
 ]
 ],
 "Hunt Bounty: ~mission(TargetName)": [
@@ -1367,7 +1537,8 @@ null
 "Eckhart Security",
 750,
 750,
-null
+null,
+"eckhartsecurity_eliminatespecific_dc_desc_001"
 ]
 ],
 "Hunt Some Heads": [
@@ -1375,7 +1546,8 @@ null
 "Headhunters",
 300,
 300,
-null
+null,
+"headhunters_securitypatrol_s_desc_001"
 ]
 ],
 "INFILITRATE ASD SITE AND DESTROY SERVERS": [
@@ -1383,7 +1555,8 @@ null
 "Eckhart Security",
 50,
 50,
-null
+null,
+"eckhartsecurity_destroyservers_facilitydelving_desc_001"
 ]
 ],
 "Idea for Isaac": [
@@ -1391,7 +1564,8 @@ null
 "Recco Battaglia",
 800,
 800,
-6000
+6000,
+"battaglia_story03_desc"
 ]
 ],
 "Inter-Outpost Delivery at ~mission(Destination)": [
@@ -1399,7 +1573,8 @@ null
 "Citizens For Prosperity",
 50,
 50,
-null
+null,
+"cfp_delivery_outpost_desc_001"
 ]
 ],
 "Intercept Vanduul Fleet": [
@@ -1407,7 +1582,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-15000
+15000,
+"intersec_shipwaveattack_s_van_desc_001"
 ]
 ],
 "Interdict Vanduul Maulers": [
@@ -1415,7 +1591,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-95250
+95250,
+"intersec_shipwaveattack_drawoutboss_vh_van_desc_001"
 ]
 ],
 "JR. LVL. COURIER NEEDED IN STANTON": [
@@ -1423,7 +1600,8 @@ null
 "FTL Courier",
 100,
 100,
-800
+800,
+"ftl_courier_stanton_medium_desc_001"
 ]
 ],
 "Journeyman Tracker License Certification": [
@@ -1431,7 +1609,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_certification_hard_desc"
 ]
 ],
 "Keep ~mission(Location) Safe": [
@@ -1439,7 +1618,8 @@ null
 "Headhunters",
 100,
 100,
-2200
+2200,
+"headhunters_defendentitesandescort_ve_desc"
 ]
 ],
 "Keep ~mission(Objects) Safe From Upstarts": [
@@ -1447,7 +1627,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defenddestructibleentites_ve_desc_001"
 ]
 ],
 "Keeping the Upstarts Down": [
@@ -1455,7 +1636,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_bombingrun_ve_desc_001"
 ]
 ],
 "Kill Order": [
@@ -1463,7 +1645,8 @@ null
 "Headhunters",
 600,
 600,
-15000
+15000,
+"headhunters_killship_cfp_hrt_desc_001"
 ]
 ],
 "Kill the king": [
@@ -1471,7 +1654,8 @@ null
 "Headhunters",
 100,
 100,
-0
+0,
+"headhunters_eliminatespecific_generic_e_desc_001"
 ]
 ],
 "Knock Power Out": [
@@ -1479,7 +1663,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_sabotage_generators_multi_m_desc_001"
 ]
 ],
 "Launch Surprise Attack": [
@@ -1487,7 +1672,8 @@ null
 "Eckhart Security",
 150,
 150,
-2200
+2200,
+"eckhart_shipambush_m_desc"
 ]
 ],
 "Legendary Info?": [
@@ -1495,7 +1681,8 @@ null
 "Bit Zeros",
 200,
 200,
-5800
+5800,
+"bitzeros_blackbox_h_desc_001"
 ]
 ],
 "Locate Missing Agent: ~mission(TargetName)": [
@@ -1503,7 +1690,8 @@ null
 "Hockrow Agency",
 200,
 200,
-null
+null,
+"hockrow_searchbody_space_h_desc_001"
 ]
 ],
 "Locate Missing Friend: ~mission(TargetName)": [
@@ -1511,7 +1699,8 @@ null
 "Hockrow Agency",
 150,
 150,
-null
+null,
+"hockrow_searchbody_space_m_desc_001"
 ]
 ],
 "Locate Missing Person: ~mission(TargetName)": [
@@ -1519,7 +1708,8 @@ null
 "Hockrow Agency",
 100,
 100,
-null
+null,
+"hockrow_searchbody_space_ve_desc_001"
 ]
 ],
 "Locate Missing Pilot: ~mission(TargetName)": [
@@ -1527,7 +1717,8 @@ null
 "Hockrow Agency",
 250,
 250,
-null
+null,
+"hockrow_searchbody_space_vh_desc_001"
 ]
 ],
 "Long Distance Covalex Delivery Stanton": [
@@ -1535,7 +1726,8 @@ null
 "Covalex",
 100,
 100,
-null
+null,
+"covalex_delivery_stanton_hard_desc_001"
 ]
 ],
 "Looking For Trouble": [
@@ -1543,7 +1735,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_securitypatrol_h_desc_001"
 ]
 ],
 "Looking for a Damn Hero": [
@@ -1551,7 +1744,8 @@ null
 "Headhunters",
 300,
 300,
-null
+null,
+"headhunters_defendship_multi_srt_pa_desc_001"
 ]
 ],
 "Looking for a little revenge": [
@@ -1559,7 +1753,8 @@ null
 "Headhunters",
 150,
 150,
-800
+800,
+"headhunters_eliminateall_cfp_desc_001"
 ]
 ],
 "Low Risk Protection Detail": [
@@ -1567,7 +1762,8 @@ null
 "Eckhart Security",
 100,
 100,
-0
+0,
+"eckhart_escortships_ve_desc"
 ]
 ],
 "Lrg. Purchase Order: Hand Mined Materials": [
@@ -1575,7 +1771,22 @@ null
 "Shubin Interstellar",
 150,
 150,
-2200
+2200,
+"shubin_industrial_handmining_stanton_h_planetary_solar_desc_001"
+],
+[
+"Shubin Interstellar",
+150,
+150,
+2200,
+"shubin_industrial_handmining_pyro_h_planetarysystem_desc_001"
+],
+[
+"Shubin Interstellar",
+150,
+150,
+2200,
+"shubin_industrial_handmining_stanton_h_planetarysystem_desc_001"
 ]
 ],
 "Lrg. Purchase Order: Ship Mined Ore ?": [
@@ -1583,13 +1794,43 @@ null
 "Shubin Interstellar",
 200,
 200,
-5800
+5800,
+"shubin_industrial_shipmining_stanton_h_primarysecondary_desc_001"
+],
+[
+"Shubin Interstellar",
+200,
+200,
+5800,
+"shubin_industrial_shipmining_stanton_h_secondary_desc_001"
+],
+[
+"Shubin Interstellar",
+200,
+200,
+5800,
+"shubin_industrial_shipmining_nyx_h_secondary_desc_001"
+],
+[
+"Shubin Interstellar",
+200,
+200,
+5800,
+"shubin_industrial_shipmining_pyro_h_primarysecondary_desc_001"
+],
+[
+"Shubin Interstellar",
+200,
+200,
+5800,
+"shubin_industrial_shipmining_pyro_h_secondary_desc_001"
 ],
 [
 "Shubin Interstellar",
 250,
 250,
-15000
+15000,
+"shubin_industrial_shipmining_stanton_h_secondary_interstellar_desc_001"
 ]
 ],
 "Lrg. Purchase Order: Vehicle Mined Ore": [
@@ -1597,7 +1838,8 @@ null
 "Shubin Interstellar",
 200,
 200,
-null
+null,
+"shubin_industrial_groundvehicle_pyro_h_solar_desc_001"
 ]
 ],
 "Make ATLS shoot": [
@@ -1605,7 +1847,8 @@ null
 "Wikelo Emporium",
 20,
 20,
-null
+null,
+"thecollector_recipes_desc_atlspew"
 ]
 ],
 "Make VOLT shotgun angrier": [
@@ -1613,7 +1856,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_voltthwack"
 ]
 ],
 "Make a Ursa Mod": [
@@ -1621,7 +1865,8 @@ null
 "Wikelo Emporium",
 20,
 20,
-null
+null,
+"thecollector_ships_ursa_desc"
 ]
 ],
 "Make glowy armor": [
@@ -1629,7 +1874,8 @@ null
 "Wikelo Emporium",
 25,
 25,
-null
+null,
+"thecollector_recipes_desc_irrarm"
 ]
 ],
 "Make jumpy ATLS shoot": [
@@ -1637,7 +1883,8 @@ null
 "Wikelo Emporium",
 20,
 20,
-null
+null,
+"thecollector_recipes_desc_atlsjump"
 ]
 ],
 "Making the Most of a Bad Situation": [
@@ -1645,7 +1892,8 @@ null
 "Dead Saints",
 200,
 200,
-null
+null,
+"deadsaints_recoveritem_h_desc_001"
 ]
 ],
 "Master Tracker License Certification": [
@@ -1653,7 +1901,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_certification_super_desc"
 ]
 ],
 "Med. Distance Covalex Delivery Nyx": [
@@ -1661,7 +1910,8 @@ null
 "Covalex",
 100,
 100,
-null
+null,
+"covalex_delivery_nyx_medium_desc_001"
 ]
 ],
 "Med. Distance Covalex Delivery Stanton": [
@@ -1669,7 +1919,8 @@ null
 "Covalex",
 100,
 100,
-null
+null,
+"covalex_delivery_stanton_medium_desc_001"
 ]
 ],
 "Med. Purchase Order: Hand Mined Materials": [
@@ -1677,7 +1928,15 @@ null
 "Shubin Interstellar",
 100,
 100,
-800
+800,
+"shubin_industrial_handmining_stanton_m_discoverplanetary_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+800,
+"shubin_industrial_handmining_pyro_m_discoverplanetary_desc_001"
 ]
 ],
 "Med. Purchase Order: Ship Mined Ore ?": [
@@ -1685,7 +1944,22 @@ null
 "Shubin Interstellar",
 150,
 150,
-2200
+2200,
+"shubin_industrial_shipmining_nyx_m_solar_desc_001"
+],
+[
+"Shubin Interstellar",
+150,
+150,
+2200,
+"shubin_industrial_shipmining_stanton_m_solar_desc_001"
+],
+[
+"Shubin Interstellar",
+150,
+150,
+2200,
+"shubin_industrial_shipmining_pyro_m_solar_desc_001"
 ]
 ],
 "Med. Purchase Order: Vehicle Mined Ore": [
@@ -1693,13 +1967,15 @@ null
 "Shubin Interstellar",
 150,
 150,
-null
+null,
+"shubin_industrial_groundvehicle_pyro_m_planetarysystem_desc_001"
 ],
 [
 "Shubin Interstellar",
 200,
 200,
-null
+null,
+"shubin_industrial_groundvehicle_stanton_h_solar_desc_001"
 ]
 ],
 "Mining and Data Collection": [
@@ -1707,7 +1983,8 @@ null
 "Recco Battaglia",
 600,
 600,
-6000
+6000,
+"battaglia_rpt_scanmine_06_desc"
 ]
 ],
 "Mining und MOLE": [
@@ -1715,7 +1992,8 @@ null
 "Recco Battaglia",
 800,
 800,
-null
+null,
+"battaglia_rpt_scanmine_mole_desc"
 ]
 ],
 "Minor Mining Job": [
@@ -1723,7 +2001,8 @@ null
 "Recco Battaglia",
 200,
 200,
-null
+null,
+"battaglia_rpt_scanmine_01_desc"
 ]
 ],
 "Missing Mining Team": [
@@ -1731,7 +2010,8 @@ null
 "Recco Battaglia",
 200,
 200,
-2400
+2400,
+"battaglia_rpt_misscrew_02_desc"
 ]
 ],
 "Missing Persons": [
@@ -1739,7 +2019,8 @@ null
 "Recco Battaglia",
 240,
 240,
-6000
+6000,
+"battaglia_rpt_misscrew_03_desc"
 ]
 ],
 "Mjr. Purchase Order: Ship Mined Ore ?": [
@@ -1747,7 +2028,22 @@ null
 "Shubin Interstellar",
 250,
 250,
-38000
+38000,
+"shubin_industrial_shipmining_pyro_s_secondary_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+38000,
+"shubin_industrial_shipmining_nyx_s_secondary_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+38000,
+"shubin_industrial_shipmining_stanton_s_secondary_desc_001"
 ]
 ],
 "Moderate Repairs Needed: ~mission(Location)": [
@@ -1755,7 +2051,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-null
+null,
+"cfp_maintenance_m_desc_001"
 ]
 ],
 "Monolith Armor Very Smooth": [
@@ -1763,7 +2060,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_greyheavycombat"
 ]
 ],
 "Moraine Data Retrieval": [
@@ -1771,7 +2069,8 @@ null
 "Recco Battaglia",
 200,
 200,
-2400
+2400,
+"battaglia_rpt_datadownload_01_desc"
 ]
 ],
 "Moraine Movements": [
@@ -1779,7 +2078,8 @@ null
 "Recco Battaglia",
 300,
 300,
-6000
+6000,
+"battaglia_rpt_createuplink_01_desc"
 ]
 ],
 "More than a Max": [
@@ -1787,7 +2087,8 @@ null
 "Wikelo Emporium",
 250,
 250,
-null
+null,
+"thecollector_ships_starlift_max_desc"
 ]
 ],
 "My Deepest Condolences": [
@@ -1795,7 +2096,8 @@ null
 "Vaughn",
 150,
 150,
-null
+null,
+"vaughn_searchbody_space_m_desc_001"
 ]
 ],
 "NEW HIRE: Locate Missing Person": [
@@ -1803,7 +2105,8 @@ null
 "Hockrow Agency",
 100,
 100,
-null
+null,
+"hockrow_searchbody_space_intro_desc_001"
 ]
 ],
 "NEW RETRIEVAL RUN AVAILABLE": [
@@ -1811,7 +2114,8 @@ null
 "FTL Courier",
 100,
 100,
-null
+null,
+"ftl_recoveritem_intro_desc_001"
 ]
 ],
 "Need Some Ore Mined": [
@@ -1819,7 +2123,8 @@ null
 "Recco Battaglia",
 220,
 220,
-0
+0,
+"battaglia_rpt_scanmine_02_desc"
 ]
 ],
 "Need a CFP taken down": [
@@ -1827,7 +2132,8 @@ null
 "Headhunters",
 100,
 125,
-800
+800,
+"headhunters_eliminatespecific_cfp_m_desc_001"
 ]
 ],
 "Need a Hauler": [
@@ -1835,7 +2141,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-null
+null,
+"cfp_haulcargo_regionlink_desc_001"
 ]
 ],
 "Need a death at ~mission(Location)": [
@@ -1843,7 +2150,8 @@ null
 "Headhunters",
 300,
 300,
-2200
+2200,
+"headhunters_eliminatespecific_asteroid_generic_m_desc_001"
 ]
 ],
 "Need a hitter": [
@@ -1851,7 +2159,8 @@ null
 "Headhunters",
 50,
 50,
-800
+800,
+"headhunters_eliminateall_base_generic_e_desc_001"
 ]
 ],
 "Need multiple CFP outposts retaken": [
@@ -1859,7 +2168,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-15000
+15000,
+"cfp_chainelimall_3c_elimspec_genattack_m_desc_001"
 ]
 ],
 "Need someone taken out": [
@@ -1867,7 +2177,8 @@ null
 "Headhunters",
 50,
 75,
-0
+0,
+"headhunters_eliminatespecific_generic_m_desc_001"
 ]
 ],
 "Neutralize Dangerous Criminal Fleet": [
@@ -1875,7 +2186,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-null
+null,
+"cfp_shipwaveattack_clearhostiles_desc_h_001"
 ]
 ],
 "Neutralize UEE Threat: ~mission(TargetName)": [
@@ -1883,7 +2195,8 @@ null
 "InterSec Defense Solutions",
 150,
 150,
-800
+800,
+"intersec_killship_desc_medium_001"
 ]
 ],
 "Neutralize Vanduul Target": [
@@ -1891,7 +2204,8 @@ null
 "InterSec Defense Solutions",
 250,
 250,
-5800
+5800,
+"intersec_killship_vanduul_desc_veryhard_001"
 ]
 ],
 "Neutralize Vanduul and Shattered Blade Threat": [
@@ -1899,7 +2213,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-15000
+15000,
+"intersec_3way_desc_veryhard_001"
 ]
 ],
 "New Defense Contract: ~mission(TargetName) Elimination": [
@@ -1907,7 +2222,8 @@ null
 "InterSec Defense Solutions",
 100,
 100,
-0
+0,
+"intersec_killship_desc_intro_001"
 ]
 ],
 "New Move Big Starlancer Ship": [
@@ -1915,7 +2231,8 @@ null
 "Wikelo Emporium",
 250,
 250,
-null
+null,
+"thecollector_ships_starlancer_atc_desc"
 ]
 ],
 "New Opportunity - Ambush Strike": [
@@ -1923,7 +2240,8 @@ null
 "Eckhart Security",
 100,
 100,
-0
+0,
+"eckhart_shipambush_intro_desc"
 ]
 ],
 "No Fly Zone": [
@@ -1931,7 +2249,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_bombingrun_e_desc_001"
 ]
 ],
 "No Honor Amongst Assassins": [
@@ -1939,7 +2258,8 @@ null
 "Vaughn",
 300,
 300,
-null
+null,
+"vaughn_searchbody_space_s_desc_001"
 ]
 ],
 "Notfall: Blinding Hope in Schwierigkeiten": [
@@ -1947,7 +2267,8 @@ null
 "Recco Battaglia",
 800,
 800,
-2400
+2400,
+"battaglia_story02_desc"
 ]
 ],
 "Now make Polaris. Short Time Deal": [
@@ -1955,7 +2276,8 @@ null
 "Wikelo Emporium",
 1000,
 1000,
-null
+null,
+"thecollector_menu_desc_polarisship"
 ]
 ],
 "Noxy Mod": [
@@ -1963,7 +2285,8 @@ null
 "Wikelo Emporium",
 20,
 20,
-null
+null,
+"thecollector_ships_nox_desc"
 ]
 ],
 "Obtain Irradiated Valakkar Pearls": [
@@ -1971,7 +2294,8 @@ null
 "Rayari Incorporated",
 150,
 150,
-null
+null,
+"rain_collectresources_storm_desc_002"
 ]
 ],
 "Operative Extraction": [
@@ -1979,7 +2303,8 @@ null
 "InterSec Defense Solutions",
 150,
 150,
-800
+800,
+"intersec_defendship_desc_medium_001"
 ]
 ],
 "Opportunity for Independent Cargo Hauler": [
@@ -1987,7 +2312,8 @@ null
 "Covalex",
 100,
 100,
-null
+null,
+"covalex_haulcargo_atob_intro_desc"
 ]
 ],
 "Orange Level Contract: Destroy Outlaw Infrastructure": [
@@ -1995,7 +2321,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-5800
+5800,
+"foxwell_bombingrun_h_desc_001"
 ]
 ],
 "Orange Level Contract: Destroy Outlaw Threat": [
@@ -2003,7 +2330,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_shipwaveattack_clearhostiles_desc_m_001"
 ]
 ],
 "Orange Level Contract: Potential Security Threat": [
@@ -2011,7 +2339,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-5800
+5800,
+"foxwell_securitypatrol_h_desc_001"
 ]
 ],
 "Orange Level Contract: Protect Our Client's Interests": [
@@ -2019,7 +2348,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-2200
+2200,
+"foxwell_defendlocation_h_desc_001"
 ]
 ],
 "Orange Level Contract: Return the Favor": [
@@ -2027,7 +2357,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-5800
+5800,
+"foxwell_shipambush_h_desc_001"
 ]
 ],
 "Orange Level Contract: Security Patrol": [
@@ -2035,7 +2366,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_securitypatrol_m_desc_001"
 ]
 ],
 "Orange Level Contract: Ship Protection Needed": [
@@ -2043,7 +2375,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_defendlocation_m_desc_001"
 ]
 ],
 "Orange Level Contract: Spring a Trap": [
@@ -2051,7 +2384,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_shipambush_m_desc_001"
 ]
 ],
 "Orange Level Contract: Take Out Criminal Fleet": [
@@ -2059,7 +2393,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-5800
+5800,
+"foxwell_shipwaveattack_clearhostiles_desc_h_001"
 ]
 ],
 "Orange Level Contract: Take Out Fuel Supplies": [
@@ -2067,7 +2402,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_bombingrun_m_desc_001"
 ]
 ],
 "Orange Level Contract: ~mission(Ship) Needs Assistance": [
@@ -2075,7 +2411,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-800
+800,
+"foxwell_defendship_m_desc_001"
 ]
 ],
 "Orange Lvl. Contract: Defend ~mission(Objects)": [
@@ -2083,7 +2420,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_defenddestructibleentites_m_desc_001"
 ]
 ],
 "Orange Lvl. Contract: Defend ~mission(Objects) and Escort Employees": [
@@ -2091,7 +2429,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-5800
+5800,
+"foxwell_defendentitesandescort_m_desc"
 ]
 ],
 "Orange Lvl. Contract: Protect ~mission(Objects)": [
@@ -2099,7 +2438,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-2200
+2200,
+"foxwell_defenddestructibleentites_h_desc_001"
 ]
 ],
 "Orange Lvl. Contract: Protect ~mission(Objects) and Escort Employees": [
@@ -2107,7 +2447,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-5800
+5800,
+"foxwell_defendentitesandescort_h_desc"
 ]
 ],
 "Ore Needs Gathering": [
@@ -2115,7 +2456,8 @@ null
 "Recco Battaglia",
 380,
 380,
-2400
+2400,
+"battaglia_rpt_scanmine_04_desc"
 ]
 ],
 "Our Version of The Truth": [
@@ -2123,7 +2465,8 @@ null
 "Bit Zeros",
 250,
 250,
-15000
+15000,
+"bitzeros_blackbox_vh_desc_001"
 ]
 ],
 "Outlaw attack at ~mission(Location)": [
@@ -2131,7 +2474,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_chainelimall_2c_elimspec_genattack_m_desc_001"
 ]
 ],
 "PURGE ASD SERVERS": [
@@ -2139,7 +2483,8 @@ null
 "Eckhart Security",
 50,
 50,
-null
+null,
+"eckhartsecurity_destroyservers_facilitydelving_desc_002"
 ]
 ],
 "Paid Target in CFP": [
@@ -2147,7 +2492,8 @@ null
 "Headhunters",
 1200,
 1200,
-38000
+38000,
+"headhunters_eliminatespecific_cfp_h_desc_001"
 ]
 ],
 "Patrol Dangerous Outlaw Sector": [
@@ -2155,7 +2501,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-null
+null,
+"cfp_securitypatrol_vh_desc_001"
 ]
 ],
 "Patrol Dangerous Sector": [
@@ -2163,7 +2510,8 @@ null
 "InterSec Defense Solutions",
 200,
 200,
-0
+0,
+"intersec_securitypatrol_h_desc_001"
 ]
 ],
 "Patrol Dangerous Travel Lanes": [
@@ -2171,7 +2519,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-null
+null,
+"cfp_securitypatrol_m_desc_001"
 ]
 ],
 "Patrol Extremely Dangerous Sector": [
@@ -2179,7 +2528,8 @@ null
 "Citizens For Prosperity",
 300,
 300,
-null
+null,
+"cfp_securitypatrol_s_desc_001"
 ]
 ],
 "Patrol Outlaw Hunting Grounds": [
@@ -2187,7 +2537,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-null
+null,
+"cfp_securitypatrol_h_desc_001"
 ]
 ],
 "Patrol Risky Travel Lanes": [
@@ -2195,7 +2546,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-null
+null,
+"cfp_securitypatrol_e_desc_001"
 ]
 ],
 "Patrol Travel Lanes": [
@@ -2203,7 +2555,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-null
+null,
+"cfp_securitypatrol_ve_desc_001"
 ]
 ],
 "Patrol Vanduul Hunting Ground": [
@@ -2211,7 +2564,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-2200
+2200,
+"intersec_securitypatrol_s_desc_001"
 ]
 ],
 "Patrol to Prevent Possible Attack": [
@@ -2219,7 +2573,8 @@ null
 "InterSec Defense Solutions",
 250,
 250,
-800
+800,
+"intersec_securitypatrol_vh_desc_001"
 ]
 ],
 "Peregrine Wikelo Mod": [
@@ -2227,7 +2582,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_peregrine_desc"
 ]
 ],
 "Pick Up and Drop Off": [
@@ -2235,7 +2591,8 @@ null
 "Dead Saints",
 100,
 100,
-null
+null,
+"deadsaints_recoveritem_ve_desc_001"
 ]
 ],
 "Pick Up, Put Down": [
@@ -2243,7 +2600,8 @@ null
 "Bit Zeros",
 100,
 100,
-0
+0,
+"bitzeros_blackbox_ve_desc_001"
 ]
 ],
 "Pilot Seeking Combat Support": [
@@ -2251,7 +2609,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-800
+800,
+"cfp_defendship_lrt_desc_001"
 ]
 ],
 "Pilot Under Fire From Vanduul": [
@@ -2259,7 +2618,8 @@ null
 "InterSec Defense Solutions",
 250,
 250,
-5800
+5800,
+"intersec_defendship_vanduul_desc_veryhard_001"
 ]
 ],
 "Pilot in Distress": [
@@ -2267,7 +2627,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-0
+0,
+"cfp_defendship_vlrt_desc_001"
 ]
 ],
 "Plug a traitor": [
@@ -2275,7 +2636,8 @@ null
 "Headhunters",
 100,
 100,
-800
+800,
+"headhunters_eliminatespecific_defector_desc_001"
 ]
 ],
 "Potential Assassin Victim: ~mission(TargetName)": [
@@ -2283,7 +2645,8 @@ null
 "Hockrow Agency",
 100,
 100,
-null
+null,
+"hockrow_searchbody_space_e_desc_001"
 ]
 ],
 "Precision Strike on ~mission(TargetName)": [
@@ -2291,7 +2654,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_eliminatespecific_nonhostiles_desc_001"
 ]
 ],
 "Preemptive Strike On ~mission(TargetName)": [
@@ -2299,7 +2663,8 @@ null
 "InterSec Defense Solutions",
 200,
 200,
-2200
+2200,
+"intersec_killship_desc_hard_001"
 ]
 ],
 "Preliminary Bounty: ~mission(TargetName)": [
@@ -2307,7 +2672,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_bounty_desc_fps_intro"
 ]
 ],
 "Primo Target": [
@@ -2315,7 +2681,8 @@ null
 "Headhunters",
 1200,
 1200,
-38000
+38000,
+"headhunters_killship_cfp_vhrt_desc_001"
 ]
 ],
 "Pro Tem Bounty Assignment: ~mission(TargetName)": [
@@ -2323,7 +2690,8 @@ null
 "Northrock Service Group",
 150,
 150,
-null
+null,
+"northrock_bounty_olp_boss_h_desc_001"
 ]
 ],
 "Prospects Look Good": [
@@ -2331,7 +2699,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_misc_prospector_desc"
 ]
 ],
 "Protect Location": [
@@ -2339,7 +2708,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"eckhartsecurity_defend_m_desc_001"
 ]
 ],
 "Protect Our Site": [
@@ -2347,7 +2717,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defendlocation_e_desc_001"
 ]
 ],
 "Protect Vital Asset": [
@@ -2355,7 +2726,8 @@ null
 "InterSec Defense Solutions",
 200,
 200,
-2200
+2200,
+"intersec_defendship_desc_hard_001"
 ]
 ],
 "Protect ~mission(Location) from XenoThreat Attack": [
@@ -2363,7 +2735,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_defend-xenothreat_desc_001"
 ]
 ],
 "Protect ~mission(Location) from XenoThreat Incursion": [
@@ -2371,7 +2744,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-15000
+15000,
+"cfp_defend-xenothreat_desc_003"
 ]
 ],
 "Protect ~mission(Location) from XenoThreat Raid": [
@@ -2379,7 +2753,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-5800
+5800,
+"cfp_defend-xenothreat_desc_002"
 ]
 ],
 "Protect ~mission(Objects) From Luggers": [
@@ -2387,7 +2762,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_defenddestructibleentites_e_desc_001"
 ]
 ],
 "Protecting outpost from XenoThreat": [
@@ -2395,7 +2771,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-2200
+2200,
+"cfp_eliminateall_fromcfp_xt_m_desc_001"
 ]
 ],
 "Protection Detail Needed. High Risk.": [
@@ -2403,7 +2780,8 @@ null
 "Eckhart Security",
 250,
 250,
-15000
+15000,
+"eckhart_escortships_vh_desc"
 ]
 ],
 "Protection against ~mission(TargetName|Last)": [
@@ -2411,7 +2789,8 @@ null
 "Citizens For Prosperity",
 125,
 125,
-null
+null,
+"cfp_eliminatespecific_generic_e_desc_001"
 ]
 ],
 "Provide Combat Support": [
@@ -2419,7 +2798,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-800
+800,
+"cfp_defendship_lrt_sb_desc_001"
 ]
 ],
 "Provide Protection at ~mission(Location)": [
@@ -2427,7 +2807,8 @@ null
 "Headhunters",
 100,
 100,
-2200
+2200,
+"headhunters_defendentitesandescort_e_desc"
 ]
 ],
 "Prowler More Utility": [
@@ -2435,7 +2816,8 @@ null
 "Wikelo Emporium",
 250,
 250,
-null
+null,
+"thecollector_ships_prowler_util_desc"
 ]
 ],
 "Pulse Plus": [
@@ -2443,7 +2825,8 @@ null
 "Wikelo Emporium",
 20,
 20,
-null
+null,
+"thecollector_ships_pulse_desc"
 ]
 ],
 "Purge XenoThreat Servers": [
@@ -2451,7 +2834,8 @@ null
 "Headhunters",
 3200,
 3200,
-null
+null,
+"headhunters_sabotage_servers_vh_xt_desc_001"
 ]
 ],
 "Putting a Mind at Ease": [
@@ -2459,7 +2843,8 @@ null
 "Vaughn",
 100,
 100,
-null
+null,
+"vaughn_searchbody_space_ve_desc_001"
 ]
 ],
 "RED WIND - Challenging Package Recovery": [
@@ -2467,7 +2852,8 @@ null
 "Red Wind Linehaul",
 200,
 200,
-null
+null,
+"redwind_recoveritem_h_desc_001"
 ]
 ],
 "RED WIND - Dangerous Package Recovery": [
@@ -2475,7 +2861,8 @@ null
 "Red Wind Linehaul",
 250,
 250,
-null
+null,
+"redwind_recoveritem_vh_desc_001"
 ]
 ],
 "RED WIND - Easy Package Recovery": [
@@ -2483,7 +2870,8 @@ null
 "Red Wind Linehaul",
 100,
 100,
-null
+null,
+"redwind_recoveritem_e_desc_001"
 ]
 ],
 "RED WIND - Package Recovery": [
@@ -2491,7 +2879,8 @@ null
 "Red Wind Linehaul",
 100,
 100,
-null
+null,
+"redwind_recoveritem_ve_desc_001"
 ]
 ],
 "RED WIND - Seeking New Couriers": [
@@ -2499,7 +2888,8 @@ null
 "Red Wind Linehaul",
 100,
 100,
-null
+null,
+"redwind_recoveritem_intro_desc_001"
 ]
 ],
 "RED WIND - Seeking New Haulers": [
@@ -2507,7 +2897,8 @@ null
 "Red Wind Linehaul",
 100,
 300,
-null
+null,
+"redwind_haulcargo_desc_intro"
 ]
 ],
 "RED WIND - Straightforward Package Recovery": [
@@ -2515,7 +2906,8 @@ null
 "Red Wind Linehaul",
 150,
 150,
-null
+null,
+"redwind_recoveritem_m_desc_001"
 ]
 ],
 "REFUEL REQUEST: ~mission(Ship)": [
@@ -2523,7 +2915,8 @@ null
 "United Wayfarers Club",
 100,
 200,
-0
+0,
+"uwc_refueling_easy_desc_001"
 ]
 ],
 "RSI Meteor Mod": [
@@ -2531,7 +2924,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_meteor_desc"
 ]
 ],
 "Rally to Help Clips Convoy": [
@@ -2539,7 +2933,8 @@ null
 "Headhunters",
 250,
 250,
-null
+null,
+"headhunters_defendship_multi_vhrt_pa_desc_001"
 ]
 ],
 "Ready for RAFT?": [
@@ -2547,7 +2942,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_argo_raft_desc"
 ]
 ],
 "Reclaim Headhunter Outpost": [
@@ -2555,7 +2951,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-800
+800,
+"cfp_eliminateall_hh_e_desc_001"
 ]
 ],
 "Reclaim XenoThreat Outpost": [
@@ -2563,7 +2960,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-2200
+2200,
+"cfp_eliminateall_xt_e_desc_001"
 ]
 ],
 "Reclaiming Clusters from Headhunters": [
@@ -2571,7 +2969,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-15000
+15000,
+"cfp_chainelimall_3c_elimspec_hhattack_vh_desc_001"
 ]
 ],
 "Reclaiming Outposts from XenoThreat": [
@@ -2579,7 +2978,8 @@ null
 "Citizens For Prosperity",
 450,
 450,
-38000
+38000,
+"cfp_chainelimall_2c_elimspec_xtattack_h_desc_001"
 ]
 ],
 "Reclusive Bounty: ~mission(TargetName) | Extreme Risk": [
@@ -2587,7 +2987,8 @@ null
 "Bounty Hunters Guild",
 300,
 300,
-null
+null,
+"bhg_shipwaveattack_drawoutboss_s_desc_001"
 ]
 ],
 "Reclusive Bounty: ~mission(TargetName) | High Risk": [
@@ -2595,7 +2996,8 @@ null
 "Bounty Hunters Guild",
 200,
 200,
-null
+null,
+"bhg_shipwaveattack_drawoutboss_h_desc_001"
 ]
 ],
 "Reclusive Bounty: ~mission(TargetName) | Very-High Risk": [
@@ -2603,7 +3005,8 @@ null
 "Bounty Hunters Guild",
 250,
 250,
-null
+null,
+"bhg_shipwaveattack_drawoutboss_vh_desc_001"
 ]
 ],
 "Red Fight Armor": [
@@ -2611,7 +3014,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_redhunterarmor"
 ]
 ],
 "Red Fight Shotgun": [
@@ -2619,7 +3023,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_gmni_shotgun"
 ]
 ],
 "Red Level Contract: Ambush Attack Squad": [
@@ -2627,7 +3032,8 @@ null
 "Foxwell Enforcement",
 250,
 250,
-15000
+15000,
+"foxwell_shipambush_vh_desc_001"
 ]
 ],
 "Red Level Contract: Destroy Outlaw Infrastructure": [
@@ -2635,7 +3041,8 @@ null
 "Foxwell Enforcement",
 300,
 300,
-38000
+38000,
+"foxwell_bombingrun_s_desc_001"
 ]
 ],
 "Red Level Contract: Fuel Container Demolition": [
@@ -2643,7 +3050,8 @@ null
 "Foxwell Enforcement",
 250,
 250,
-15000
+15000,
+"foxwell_bombingrun_vh_desc_001"
 ]
 ],
 "Red Level Contract: High-Risk Security Patrol": [
@@ -2651,7 +3059,8 @@ null
 "Foxwell Enforcement",
 250,
 250,
-15000
+15000,
+"foxwell_securitypatrol_vh_desc_001"
 ]
 ],
 "Red Level Contract: Save Ships at ~mission(DefendLocationWrapperLocation)": [
@@ -2659,7 +3068,8 @@ null
 "Foxwell Enforcement",
 250,
 250,
-5800
+5800,
+"foxwell_defendlocation_vh_desc_001"
 ]
 ],
 "Red Level Contract: Secure Threatened Space": [
@@ -2667,7 +3077,8 @@ null
 "Foxwell Enforcement",
 300,
 300,
-38000
+38000,
+"foxwell_securitypatrol_s_desc_001"
 ]
 ],
 "Red Level Contract: Ship Under Attack": [
@@ -2675,7 +3086,8 @@ null
 "Foxwell Enforcement",
 200,
 200,
-800
+800,
+"foxwell_defendship_h_desc_001"
 ]
 ],
 "Red Level Contract: Support VIP Clients": [
@@ -2683,7 +3095,8 @@ null
 "Foxwell Enforcement",
 300,
 16000,
-5800
+5800,
+"foxwell_defendlocation_s_desc_001"
 ]
 ],
 "Red Level Contract: Surprise Attack": [
@@ -2691,7 +3104,8 @@ null
 "Foxwell Enforcement",
 300,
 300,
-38000
+38000,
+"foxwell_shipambush_s_desc_001"
 ]
 ],
 "Red Lvl. Contract: Defend ~mission(Objects)": [
@@ -2699,7 +3113,8 @@ null
 "Foxwell Enforcement",
 250,
 250,
-5800
+5800,
+"foxwell_defenddestructibleentites_vh_desc_001"
 ]
 ],
 "Red Lvl. Contract: Defend ~mission(Objects) and Escort Employees": [
@@ -2707,7 +3122,8 @@ null
 "Foxwell Enforcement",
 250,
 250,
-15000
+15000,
+"foxwell_defendentitesandescort_vh_desc"
 ]
 ],
 "Red Lvl. Contract: Protect ~mission(Objects)": [
@@ -2715,7 +3131,8 @@ null
 "Foxwell Enforcement",
 300,
 300,
-5800
+5800,
+"foxwell_defenddestructibleentites_s_desc_001"
 ]
 ],
 "Red Lvl. Contract: Protect ~mission(Objects) and Escort Employees": [
@@ -2723,7 +3140,8 @@ null
 "Foxwell Enforcement",
 300,
 300,
-15000
+15000,
+"foxwell_defendentitesandescort_s_desc"
 ]
 ],
 "Reduce Outlaw's Operational Readiness": [
@@ -2731,7 +3149,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_bombingrun_sabotage_generators_desc_001"
 ]
 ],
 "Reduce Valakkar Breaker Station Population": [
@@ -2739,7 +3158,8 @@ null
 "Highpoint Wilderness Specialists",
 100,
 100,
-0
+0,
+"highpoint_killanimals_rockcracker_desc_e_001"
 ]
 ],
 "Remove Upstart Gang From Sector": [
@@ -2747,7 +3167,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-null
+null,
+"cfp_shipwaveattack_clearhostiles_desc_m_001"
 ]
 ],
 "Repel Raiders": [
@@ -2755,7 +3176,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"eckhartsecurity_defend_h_desc_001"
 ]
 ],
 "Repel Shattered Blade Ships": [
@@ -2763,7 +3185,8 @@ null
 "Eckhart Security",
 150,
 150,
-2200
+2200,
+"eckhart_defendship_mrt_sb_desc_001"
 ]
 ],
 "Reprisal Attack": [
@@ -2771,7 +3194,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_shipambush_h_desc_001"
 ]
 ],
 "Reputation Management": [
@@ -2779,7 +3203,8 @@ null
 "Headhunters",
 75,
 300,
-0
+0,
+"headhunters_eliminateall_outpost_desc_01"
 ]
 ],
 "Request for Ship Support": [
@@ -2787,7 +3212,8 @@ null
 "Eckhart Security",
 100,
 100,
-800
+800,
+"eckhart_defendship_lrt_sb_desc_001"
 ]
 ],
 "Requesting Help": [
@@ -2795,7 +3221,8 @@ null
 "Eckhart Security",
 2000,
 2000,
-null
+null,
+"eckhartsecurity_eliminateall_storm_shut_h_desc_001"
 ]
 ],
 "Respond to Distress Beacon": [
@@ -2803,7 +3230,8 @@ null
 "Citizens For Prosperity",
 250,
 250,
-15000
+15000,
+"cfp_defendship_multi_vhrt_desc_001"
 ]
 ],
 "Restore Order at ~mission(DefendLocationWrapperLocation)": [
@@ -2811,7 +3239,8 @@ null
 "Headhunters",
 300,
 300,
-null
+null,
+"headhunters_defendlocation_s_desc_001"
 ]
 ],
 "Retake Boarded Vessel": [
@@ -2819,7 +3248,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-null
+null,
+"intersec_boardship_shatteredblade_desc_001"
 ]
 ],
 "Retaking Outposts from Headhunters": [
@@ -2827,7 +3257,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-15000
+15000,
+"cfp_chainelimall_2c_elimspec_hhattack_h_desc_001"
 ]
 ],
 "SEEK AND DESTROY ASD DATA": [
@@ -2835,7 +3266,8 @@ null
 "Eckhart Security",
 50,
 50,
-null
+null,
+"eckhartsecurity_destroyservers_facilitydelving_desc_004"
 ]
 ],
 "Salvage Job: Large": [
@@ -2843,7 +3275,8 @@ null
 "Recco Battaglia",
 600,
 600,
-6000
+6000,
+"battaglia_rpt_salvage_h_01_desc"
 ]
 ],
 "Salvage Job: Mid": [
@@ -2851,7 +3284,8 @@ null
 "Recco Battaglia",
 400,
 400,
-6000
+6000,
+"battaglia_rpt_salvage_m_01_desc"
 ]
 ],
 "Salvage Job: Small": [
@@ -2859,7 +3293,8 @@ null
 "Recco Battaglia",
 200,
 200,
-6000
+6000,
+"battaglia_rpt_salvage_e_01_desc"
 ]
 ],
 "Salvager Needed (Lrg. Special Order of RMC / UCM / Components)": [
@@ -2867,7 +3302,22 @@ null
 "Adagio Holdings",
 150,
 150,
-2200
+2200,
+"adagio_industrial_component_salvage_stanton_h_desc_001"
+],
+[
+"Adagio Holdings",
+150,
+150,
+2200,
+"adagio_industrial_component_salvage_levski_h_desc_001"
+],
+[
+"Adagio Holdings",
+150,
+150,
+2200,
+"adagio_industrial_component_salvage_pyro_h_desc_001"
 ]
 ],
 "Salvager Needed (Lrg. Supply of RMC / UCM / Components)": [
@@ -2875,7 +3325,8 @@ null
 "Adagio Holdings",
 150,
 150,
-2200
+2200,
+"adagio_industrial_component_salvage_universal_h_desc_001"
 ]
 ],
 "Salvager Needed (Med. Special Order of RMC / UCM / Components)": [
@@ -2883,7 +3334,22 @@ null
 "Adagio Holdings",
 100,
 100,
-800
+800,
+"adagio_industrial_component_salvage_levski_m_desc_001"
+],
+[
+"Adagio Holdings",
+100,
+100,
+800,
+"adagio_industrial_component_salvage_pyro_m_desc_001"
+],
+[
+"Adagio Holdings",
+100,
+100,
+800,
+"adagio_industrial_component_salvage_stanton_m_desc_001"
 ]
 ],
 "Salvager Needed (Med. Supply of RMC / UCM / Components)": [
@@ -2891,7 +3357,8 @@ null
 "Adagio Holdings",
 100,
 100,
-800
+800,
+"adagio_industrial_component_salvage_universal_m_desc_001"
 ]
 ],
 "Salvager Needed (Med. Supply of RMC)": [
@@ -2899,7 +3366,8 @@ null
 "Adagio Holdings",
 100,
 100,
-800
+800,
+"adagio_industrial_salvage_universal_m_desc_001"
 ]
 ],
 "Salvager Needed (Small Special Order of RMC / Components)": [
@@ -2907,7 +3375,22 @@ null
 "Adagio Holdings",
 100,
 100,
-null
+null,
+"adagio_industrial_component_salvage_levski_e_desc_001"
+],
+[
+"Adagio Holdings",
+100,
+100,
+null,
+"adagio_industrial_component_salvage_stanton_e_desc_001"
+],
+[
+"Adagio Holdings",
+100,
+100,
+null,
+"adagio_industrial_component_salvage_pyro_e_desc_001"
 ]
 ],
 "Salvager Needed (Small Supply of RMC / Components)": [
@@ -2915,7 +3398,8 @@ null
 "Adagio Holdings",
 100,
 100,
-null
+null,
+"adagio_industrial_component_salvage_universal_e_desc_001"
 ]
 ],
 "Salvager Needed (Small Supply of RMC / UCM)": [
@@ -2923,7 +3407,8 @@ null
 "Adagio Holdings",
 100,
 100,
-0
+0,
+"adagio_industrial_salvage_universal_e_desc_002"
 ]
 ],
 "Salvager Needed (Small Supply of RMC)": [
@@ -2931,7 +3416,8 @@ null
 "Adagio Holdings",
 100,
 100,
-0
+0,
+"adagio_industrial_salvage_universal_e_desc_001"
 ]
 ],
 "Save Ship": [
@@ -2939,7 +3425,8 @@ null
 "Eckhart Security",
 100,
 100,
-0
+0,
+"eckhart_defendship_vlrt_desc_001"
 ]
 ],
 "Scan And Mining Needed": [
@@ -2947,7 +3434,8 @@ null
 "Recco Battaglia",
 260,
 260,
-2400
+2400,
+"battaglia_rpt_scanmine_03_desc"
 ]
 ],
 "Scan with a Prospector Payout": [
@@ -2955,7 +3443,8 @@ null
 "Recco Battaglia",
 800,
 800,
-null
+null,
+"battaglia_rpt_scan_prosp_desc"
 ]
 ],
 "Scout and Scan": [
@@ -2963,7 +3452,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_securitypatrol_e_desc_001"
 ]
 ],
 "Secure Our Airspace": [
@@ -2971,7 +3461,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_defendlocation_m_desc_001"
 ]
 ],
 "Secure Site": [
@@ -2979,7 +3470,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"eckhartsecurity_defend_e_desc_001"
 ]
 ],
 "Secure ~mission(Location) from Upstarts": [
@@ -2987,7 +3479,8 @@ null
 "Headhunters",
 150,
 150,
-5800
+5800,
+"headhunters_defendentitesandescort_m_desc"
 ]
 ],
 "Secure ~mission(Objects) From Rivals": [
@@ -2995,7 +3488,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_defenddestructibleentites_m_desc_001"
 ]
 ],
 "Security Contractor Evaluation": [
@@ -3003,7 +3497,8 @@ null
 "Eckhart Security",
 50,
 50,
-null
+null,
+"eckhartsecurity_mercenary_intro_desc_001"
 ]
 ],
 "Security Contractor Reevaluation": [
@@ -3011,7 +3506,8 @@ null
 "Eckhart Security",
 500,
 500,
-null
+null,
+"eckhartsecurity_mercenary_rehire_desc_001"
 ]
 ],
 "See What's Out There": [
@@ -3019,7 +3515,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_securitypatrol_ve_desc_001"
 ]
 ],
 "Seek and Destroy Super Stingers": [
@@ -3027,7 +3524,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-null
+null,
+"intersec_shipwaveattack_drawoutboss_h_van_desc_001"
 ]
 ],
 "Seeking Experienced Combat Pilots": [
@@ -3035,7 +3533,8 @@ null
 "Citizens For Prosperity",
 50,
 50,
-null
+null,
+"cfp_defendship_intro_desc_001"
 ]
 ],
 "Serious Shattered Blade Attack": [
@@ -3043,7 +3542,8 @@ null
 "Eckhart Security",
 200,
 200,
-5800
+5800,
+"eckhart_defendship_multi_hrt_sb_desc_001"
 ]
 ],
 "Setting a Rat Trap": [
@@ -3051,7 +3551,8 @@ null
 "Headhunters",
 250,
 250,
-null
+null,
+"headhunters_bombingrun_vh_desc_001"
 ]
 ],
 "Setting a Trap": [
@@ -3059,7 +3560,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_shipambush_intro_desc_001"
 ]
 ],
 "Settle a Score": [
@@ -3067,7 +3569,8 @@ null
 "Eckhart Security",
 100,
 100,
-0
+0,
+"eckhart_shipambush_ve_desc"
 ]
 ],
 "Shattered Blade Strike": [
@@ -3075,7 +3578,8 @@ null
 "Eckhart Security",
 300,
 300,
-38000
+38000,
+"eckhart_defendship_multi_srt_sb_desc_001"
 ]
 ],
 "Ship In Distress": [
@@ -3083,7 +3587,8 @@ null
 "Recco Battaglia",
 300,
 300,
-null
+null,
+"battaglia_rpt_boardship_01_desc"
 ]
 ],
 "Ship Needs Emergency Assistance": [
@@ -3091,7 +3596,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-2200
+2200,
+"cfp_defendship_mrt_desc_001"
 ]
 ],
 "Shot in the chaos": [
@@ -3099,7 +3605,8 @@ null
 "Headhunters",
 50,
 50,
-800
+800,
+"headhunters_eliminatespecific_cfp_e_desc_001"
 ]
 ],
 "Shut Off Power at ~mission(Location)": [
@@ -3107,7 +3614,8 @@ null
 "Headhunters",
 25,
 25,
-null
+null,
+"headhunters_sabotage_generators_ve_desc_001"
 ]
 ],
 "Shutdown CFP's Comms": [
@@ -3115,7 +3623,8 @@ null
 "Headhunters",
 125,
 125,
-null
+null,
+"headhunters_sabotagerelays_cfp_001_desc"
 ]
 ],
 "Shutdown Xenothreat Comm Towers": [
@@ -3123,7 +3632,8 @@ null
 "Citizens For Prosperity",
 175,
 175,
-null
+null,
+"cfp_sabotagerelays_xt_001_desc"
 ]
 ],
 "Silence the Xenothreat": [
@@ -3131,7 +3641,8 @@ null
 "Headhunters",
 175,
 175,
-null
+null,
+"headhunters_sabotagerelays_xt_001_desc"
 ]
 ],
 "Silent Strike": [
@@ -3139,7 +3650,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_shipambush_e_desc_001"
 ]
 ],
 "Simple Hit": [
@@ -3147,7 +3659,8 @@ null
 "Headhunters",
 75,
 75,
-800
+800,
+"headhunters_killship_gen_lrt_desc_001"
 ]
 ],
 "Small Mining Order: Sadaryx": [
@@ -3155,7 +3668,8 @@ null
 "Shubin Interstellar",
 100,
 100,
-null
+null,
+"shubin_industrial_handmining_nyx_m_planetarysystem_desc_001"
 ]
 ],
 "Small Purchase Order: Hand Mined Materials": [
@@ -3163,7 +3677,29 @@ null
 "Shubin Interstellar",
 100,
 100,
-0
+0,
+"shubin_industrial_handmining_intro_local_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+0,
+"shubin_industrial_handmining_stanton_e_local_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+0,
+"shubin_industrial_handmining_pyro_e_local_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+0,
+"shubin_industrial_handmining_stanton_e_planetarysystem_desc_001"
 ]
 ],
 "Small Purchase Order: Ship Mined Ore": [
@@ -3171,7 +3707,22 @@ null
 "Shubin Interstellar",
 100,
 100,
-800
+800,
+"shubin_industrial_shipmining_stanton_e_local_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+800,
+"shubin_industrial_shipmining_nyx_e_local_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+800,
+"shubin_industrial_shipmining_pyro_e_local_desc_001"
 ]
 ],
 "Small Purchase Order: Vehicle Mined Ore": [
@@ -3179,13 +3730,22 @@ null
 "Shubin Interstellar",
 100,
 100,
-null
+null,
+"shubin_industrial_groundvehicle_stanton_e_discoverplanetary_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+null,
+"shubin_industrial_groundvehicle_pyro_e_discoverplanetary_desc_001"
 ],
 [
 "Shubin Interstellar",
 150,
 150,
-null
+null,
+"shubin_industrial_groundvehicle_stanton_m_planetarysystem_desc_001"
 ]
 ],
 "Sneaky Stabber": [
@@ -3193,7 +3753,8 @@ null
 "Wikelo Emporium",
 250,
 250,
-null
+null,
+"thecollector_ships_f8c_stealth_desc"
 ]
 ],
 "Sneaky Starfighter Ion": [
@@ -3201,7 +3762,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_starfighter_ion_desc"
 ]
 ],
 "Snow Snipe": [
@@ -3209,7 +3771,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_zipzap"
 ]
 ],
 "Space Patrol": [
@@ -3217,7 +3780,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_securitypatrol_m_desc_001"
 ]
 ],
 "Special Covalex Delivery Stanton System": [
@@ -3225,7 +3789,8 @@ null
 "Covalex",
 200,
 200,
-null
+null,
+"covalex_delivery_stanton_super_desc_001"
 ]
 ],
 "Special Purchase Order: Mined Materials ?": [
@@ -3233,7 +3798,8 @@ null
 "Shubin Interstellar",
 250,
 250,
-15000
+15000,
+"shubin_industrial_shipmining_vh_org_desc_001"
 ]
 ],
 "Spirit Cargo mod": [
@@ -3241,7 +3807,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_spirit_c1_desc"
 ]
 ],
 "Splintering the Alliance": [
@@ -3249,7 +3816,8 @@ null
 "Vaughn",
 100,
 100,
-null
+null,
+"vaughn_assassination_pa_e_desc"
 ]
 ],
 "Stand Our Ground": [
@@ -3257,7 +3825,8 @@ null
 "Headhunters",
 250,
 250,
-null
+null,
+"headhunters_securitypatrol_vh_desc_001"
 ]
 ],
 "Starfighter Inferno Special": [
@@ -3265,7 +3834,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_starfighter_inferno_desc"
 ]
 ],
 "Starlifter A2 War Mod": [
@@ -3273,7 +3843,8 @@ null
 "Wikelo Emporium",
 500,
 500,
-null
+null,
+"thecollector_ships_crusader_a2_desc"
 ]
 ],
 "Still Looking for Work?": [
@@ -3281,7 +3852,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_mercenary_rehire_desc_001"
 ]
 ],
 "Stop Attack at ~mission(DefendLocationWrapperLocation)": [
@@ -3289,7 +3861,8 @@ null
 "Headhunters",
 250,
 250,
-null
+null,
+"headhunters_defendlocation_vh_desc_001"
 ]
 ],
 "Stop Attack on High-Profile Client": [
@@ -3297,7 +3870,8 @@ null
 "Eckhart Security",
 150,
 150,
-2200
+2200,
+"eckhart_defendship_mrt_desc_001"
 ]
 ],
 "Stop Attack on Ship": [
@@ -3305,7 +3879,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-2200
+2200,
+"cfp_defendship_mrt_sb_desc_001"
 ]
 ],
 "Stop Deadly Ship Attack": [
@@ -3313,7 +3888,8 @@ null
 "Eckhart Security",
 250,
 250,
-15000
+15000,
+"eckhart_defendship_multi_vhrt_desc_001"
 ]
 ],
 "Stop Gang From Destroying ~mission(Objects)": [
@@ -3321,7 +3897,8 @@ null
 "Headhunters",
 200,
 200,
-null
+null,
+"headhunters_defenddestructibleentites_h_desc_001"
 ]
 ],
 "Stop Rival Attack at ~mission(Location)": [
@@ -3329,7 +3906,8 @@ null
 "Headhunters",
 200,
 200,
-5800
+5800,
+"headhunters_defendentitesandescort_h_desc"
 ]
 ],
 "Stop Rivals from Launching Heist": [
@@ -3337,7 +3915,8 @@ null
 "Headhunters",
 3200,
 3200,
-null
+null,
+"headhunters_bombingrun_sabotage_servers_vh_desc_001"
 ]
 ],
 "Stop Savage Shattered Blade Attack": [
@@ -3345,7 +3924,8 @@ null
 "Citizens For Prosperity",
 300,
 300,
-38000
+38000,
+"cfp_defendship_multi_srt_sb_desc_001"
 ]
 ],
 "Stop Shattered Blade Attack": [
@@ -3353,7 +3933,8 @@ null
 "Eckhart Security",
 100,
 100,
-0
+0,
+"eckhart_defendship_vlrt_sb_desc_001"
 ]
 ],
 "Stop Vanduul and Shattered Blade Hostilities": [
@@ -3361,7 +3942,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-15000
+15000,
+"intersec_3way_desc_super_001"
 ]
 ],
 "Strategic Bombing": [
@@ -3369,7 +3951,8 @@ null
 "InterSec Defense Solutions",
 200,
 200,
-5800
+5800,
+"intersec_tsg_bombrun_solo_desc_001"
 ]
 ],
 "Suit Up Take Off": [
@@ -3377,7 +3960,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_vglflightsuit"
 ]
 ],
 "Supply Order: Sadaryx Focus Lenses": [
@@ -3385,7 +3969,8 @@ null
 "Shubin Interstellar",
 100,
 100,
-null
+null,
+"shubin_rockcracker_collectlenses_desc_001"
 ]
 ],
 "Support Client Under Attack": [
@@ -3393,7 +3978,8 @@ null
 "Eckhart Security",
 100,
 100,
-800
+800,
+"eckhart_defendship_lrt_desc_001"
 ]
 ],
 "Support Ship Under Attack": [
@@ -3401,7 +3987,8 @@ null
 "Citizens For Prosperity",
 100,
 100,
-0
+0,
+"cfp_defendship_vlrt_sb_desc_001"
 ]
 ],
 "Surprise Party": [
@@ -3409,7 +3996,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_shipambush_ve_desc_001"
 ]
 ],
 "Sweep and Clear Location": [
@@ -3417,7 +4005,8 @@ null
 "Foxwell Enforcement",
 150,
 150,
-2200
+2200,
+"foxwell_eliminateall_desc_001"
 ]
 ],
 "Sweep and clear some CFP haunts": [
@@ -3425,7 +4014,8 @@ null
 "Headhunters",
 300,
 300,
-15000
+15000,
+"headhunters_chainelimall_2c_elimspec_attackcfp_h_desc_001"
 ]
 ],
 "Tactical Strike": [
@@ -3433,7 +4023,8 @@ null
 "Headhunters",
 250,
 250,
-null
+null,
+"headhunters_shipambush_vh_desc_001"
 ]
 ],
 "Tactical Strike Group Needed": [
@@ -3441,7 +4032,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-5800
+5800,
+"intersec_tsg_group_desc_001"
 ]
 ],
 "Take Out Citizens for Prosperity Fuel Supply": [
@@ -3449,7 +4041,8 @@ null
 "Headhunters",
 150,
 200,
-null
+null,
+"headhunters_bombingrun_e_cfp_desc_001"
 ]
 ],
 "Take Outlaws at ~mission(Location) Offline": [
@@ -3457,7 +4050,8 @@ null
 "Citizens For Prosperity",
 200,
 200,
-2200
+2200,
+"cfp_sabotage_generators_m_desc_001"
 ]
 ],
 "Taking Out the Competition": [
@@ -3465,7 +4059,8 @@ null
 "Headhunters",
 150,
 150,
-null
+null,
+"headhunters_bombingrun_m_desc_001"
 ]
 ],
 "Taking XenoThreat Turf": [
@@ -3473,7 +4068,8 @@ null
 "Headhunters",
 300,
 300,
-15000
+15000,
+"headhunters_chainelimall_2c_elimspec_attackxt_h_desc_001"
 ]
 ],
 "Taking back from the Headhunters": [
@@ -3481,7 +4077,8 @@ null
 "Citizens For Prosperity",
 350,
 350,
-5800
+5800,
+"cfp_chainelimall_1c_elimspec_hhattack_m_desc_001"
 ]
 ],
 "Taking down a XenoThreat Hideout": [
@@ -3489,7 +4086,8 @@ null
 "Headhunters",
 400,
 400,
-38000
+38000,
+"headhunters_chainelimall_3c_elimspec_attackxt_vh_desc_001"
 ]
 ],
 "Taking out some XenoThreat trash": [
@@ -3497,7 +4095,8 @@ null
 "Headhunters",
 150,
 150,
-5800
+5800,
+"headhunters_chainelimall_1c_attackxt_m_desc_001"
 ]
 ],
 "Target at ~mission(Location)": [
@@ -3505,7 +4104,8 @@ null
 "Headhunters",
 50,
 50,
-800
+800,
+"headhunters_killship_asteroid_rank1_desc_001"
 ]
 ],
 "Target takedown for a fast track in": [
@@ -3513,7 +4113,8 @@ null
 "Headhunters",
 50,
 50,
-0
+0,
+"headhunters_killship_asteroid_rank0_desc_001"
 ]
 ],
 "Teach Citizens for Prosperity A Lesson": [
@@ -3521,7 +4122,8 @@ null
 "Headhunters",
 100,
 100,
-null
+null,
+"headhunters_bombingrun_multi_e_cfp_desc_001"
 ]
 ],
 "Terminate UEE Threat: ~mission(TargetName)": [
@@ -3529,7 +4131,8 @@ null
 "InterSec Defense Solutions",
 250,
 250,
-null
+null,
+"intersec_shipwaveattack_drawoutboss_vh_desc_001"
 ]
 ],
 "Terrorist ~mission(TargetName) to be Neutralized": [
@@ -3537,7 +4140,8 @@ null
 "InterSec Defense Solutions",
 100,
 100,
-0
+0,
+"intersec_killship_desc_easy_001"
 ]
 ],
 "Test Armor": [
@@ -3545,7 +4149,8 @@ null
 "Wikelo Emporium",
 25,
 25,
-null
+null,
+"thecollector_recipes_desc_battle"
 ]
 ],
 "Time to Teach a Lesson": [
@@ -3553,7 +4158,8 @@ null
 "Eckhart Security",
 100,
 100,
-800
+800,
+"eckhart_shipambush_e_desc"
 ]
 ],
 "Time to roll on CFP": [
@@ -3561,7 +4167,8 @@ null
 "Headhunters",
 400,
 400,
-38000
+38000,
+"headhunters_chainelimall_attackcfp_e_desc_001"
 ]
 ],
 "Too Much Gun": [
@@ -3569,7 +4176,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_apargatlinggun"
 ]
 ],
 "Too Smart For Our Own Good": [
@@ -3577,7 +4185,8 @@ null
 "Bit Zeros",
 150,
 150,
-2200
+2200,
+"bitzeros_blackbox_m_desc_001"
 ]
 ],
 "Top Tier Operator Needed": [
@@ -3585,7 +4194,8 @@ null
 "Eckhart Security",
 300,
 300,
-38000
+38000,
+"eckhart_escortships_s_desc"
 ]
 ],
 "Track Down ~mission(TargetName)": [
@@ -3593,7 +4203,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_eliminatespecific_desc_001"
 ]
 ],
 "Tracker Beginner's Permit Certification": [
@@ -3601,7 +4212,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_certification_easy_desc"
 ]
 ],
 "Tracker License Certification": [
@@ -3609,7 +4221,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_certification_medium_desc"
 ]
 ],
 "Tracker Training Permit Certification": [
@@ -3617,7 +4230,8 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_certification_veryeasy_desc"
 ]
 ],
 "Treat yourself to a fight": [
@@ -3625,7 +4239,8 @@ null
 "Headhunters",
 300,
 300,
-5800
+5800,
+"headhunters_killship_gen_mrt_desc_001"
 ]
 ],
 "Tricky Ambush": [
@@ -3633,7 +4248,8 @@ null
 "Eckhart Security",
 200,
 200,
-5800
+5800,
+"eckhart_shipambush_h_desc"
 ]
 ],
 "Turf War": [
@@ -3641,7 +4257,8 @@ null
 "Headhunters",
 250,
 250,
-2200
+2200,
+"headhunters_eliminateall_xt_derelicts_desc_01"
 ]
 ],
 "URGENT CAPITAL FLEET REFUEL": [
@@ -3649,7 +4266,8 @@ null
 "United Wayfarers Club",
 200,
 200,
-95250
+95250,
+"uwc_refuelling_bespokecapital_desc"
 ]
 ],
 "URGENT CONVOY REFUEL": [
@@ -3657,7 +4275,8 @@ null
 "United Wayfarers Club",
 100,
 200,
-0
+0,
+"uwc_refueling_multiple_med_desc_001"
 ]
 ],
 "UWC'S HIRING REFUELERS": [
@@ -3665,7 +4284,8 @@ null
 "United Wayfarers Club",
 200,
 200,
-null
+null,
+"uwc_refueling_intro_desc_001"
 ]
 ],
 "Upgrade Intrepid": [
@@ -3673,7 +4293,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_intrepid_desc"
 ]
 ],
 "Urgent: Boarding Action In Progress": [
@@ -3681,7 +4302,8 @@ null
 "Northrock Service Group",
 8000,
 8000,
-null
+null,
+"northrock_boarders_890j_desc_001"
 ]
 ],
 "VIP Client Needs Protection": [
@@ -3689,7 +4311,8 @@ null
 "Eckhart Security",
 200,
 200,
-5800
+5800,
+"eckhart_escortships_h_desc"
 ]
 ],
 "Vanduul Strike Group Detected": [
@@ -3697,7 +4320,8 @@ null
 "InterSec Defense Solutions",
 300,
 300,
-null
+null,
+"intersec_shipwaveattack_h_van_desc_001"
 ]
 ],
 "Verified Bounty: ~mission(TargetName) at ~mission(Location)": [
@@ -3705,7 +4329,15 @@ null
 "Bounty Hunters Guild",
 50,
 50,
-null
+null,
+"bhg_bounty_desc_asd_engineering_001"
+],
+[
+"Bounty Hunters Guild",
+50,
+50,
+null,
+"bhg_bounty_desc_asd_research_001"
 ]
 ],
 "Verified Bounty: ~mission(TargetName) | XenoThreat | ~mission(Danger)": [
@@ -3713,7 +4345,8 @@ null
 "Bounty Hunters Guild",
 16000,
 16000,
-null
+null,
+"bhg_bounty_desc_xt_001"
 ]
 ],
 "Verify Deceased Criminal: ~mission(TargetName)": [
@@ -3721,7 +4354,8 @@ null
 "Hockrow Agency",
 300,
 300,
-null
+null,
+"hockrow_searchbody_space_s_desc_001"
 ]
 ],
 "Very Long Distance Covalex Delivery Stanton": [
@@ -3729,7 +4363,8 @@ null
 "Covalex",
 150,
 150,
-null
+null,
+"covalex_delivery_stanton_veryhard_desc_001"
 ]
 ],
 "Wanna be a Headhunter?": [
@@ -3737,7 +4372,8 @@ null
 "Headhunters",
 50,
 50,
-0
+0,
+"headhunters_killship_gen_vlrt_rank0_desc_001"
 ]
 ],
 "Want Taurus ship": [
@@ -3745,7 +4381,8 @@ null
 "Wikelo Emporium",
 250,
 250,
-null
+null,
+"thecollector_ships_constellation_taurus_desc"
 ]
 ],
 "Wanted: ~mission(TargetName)": [
@@ -3753,7 +4390,15 @@ null
 "Headhunters",
 600,
 600,
-15000
+15000,
+"headhunters_killship_gen_hrt_desc_001"
+],
+[
+"Headhunters",
+600,
+600,
+15000,
+"headhunters_eliminatespecific_xenothreat_vh_desc_001"
 ]
 ],
 "What is Terrapin?": [
@@ -3761,7 +4406,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_terrapin_medic_desc"
 ]
 ],
 "Where Wolf? Here Wolf": [
@@ -3769,7 +4415,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_kruger_wolf_desc"
 ]
 ],
 "Wikelo Arrive to System": [
@@ -3777,7 +4424,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_intro_desc"
 ]
 ],
 "Wikelo Navy F7": [
@@ -3785,7 +4433,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_f7_mk2_desc"
 ]
 ],
 "Willkommen im System": [
@@ -3793,7 +4442,8 @@ null
 "Recco Battaglia",
 800,
 800,
-null
+null,
+"battaglia_story01_desc"
 ]
 ],
 "Wipe Citizens for Prosperity Data Farm": [
@@ -3801,7 +4451,8 @@ null
 "Headhunters",
 125,
 200,
-null
+null,
+"headhunters_sabotage_servers_m_cfp_desc_001"
 ]
 ],
 "Wipe Out XenoThreat Servers": [
@@ -3809,7 +4460,8 @@ null
 "Headhunters",
 125,
 1500,
-null
+null,
+"headhunters_sabotage_servers_h_xt_desc_001"
 ]
 ],
 "Write Off": [
@@ -3817,7 +4469,8 @@ null
 "Dead Saints",
 100,
 100,
-null
+null,
+"deadsaints_recoveritem_e_desc_001"
 ]
 ],
 "XL Purchase Order: Hand Mined Materials": [
@@ -3825,7 +4478,22 @@ null
 "Shubin Interstellar",
 200,
 200,
-5800
+5800,
+"shubin_industrial_handmining_stanton_vh_solar_desc_001"
+],
+[
+"Shubin Interstellar",
+200,
+200,
+5800,
+"shubin_industrial_handmining_pyro_vh_interstellar_desc_001"
+],
+[
+"Shubin Interstellar",
+200,
+200,
+5800,
+"shubin_industrial_handmining_pyro_nyx_vh_interstellar_desc_001"
 ]
 ],
 "XL Purchase Order: Ship Mined Ore ?": [
@@ -3833,13 +4501,43 @@ null
 "Shubin Interstellar",
 250,
 250,
-5800
+15000,
+"shubin_industrial_shipmining_pyro_vh_secondary_desc_001"
 ],
 [
 "Shubin Interstellar",
 250,
 250,
-15000
+15000,
+"shubin_industrial_shipmining_stanton_vh_secondary_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+5800,
+"shubin_industrial_shipmining_nyx_vh_secondary_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+15000,
+"shubin_industrial_shipmining_stanton_vh_secondary_interstellar_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+15000,
+"shubin_industrial_shipmining_nyx_vh_interstellar_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+15000,
+"shubin_industrial_shipmining_stanton_vh_interstellar_desc_001"
 ]
 ],
 "XL Purchase Order: Vehicle Mined Ore": [
@@ -3847,7 +4545,22 @@ null
 "Shubin Interstellar",
 250,
 250,
-null
+null,
+"shubin_industrial_groundvehicle_nyx_vh_interstellar_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+null,
+"shubin_industrial_groundvehicle_stanton_vh_solar_desc_001"
+],
+[
+"Shubin Interstellar",
+250,
+250,
+null,
+"shubin_industrial_groundvehicle_pyro_vh_interstellar_desc_001"
 ]
 ],
 "XS Purchase Order: Ship Mined Ore": [
@@ -3855,7 +4568,15 @@ null
 "Shubin Interstellar",
 100,
 100,
-0
+0,
+"shubin_industrial_shipmining_nyx_ve_local_desc_001"
+],
+[
+"Shubin Interstellar",
+100,
+100,
+0,
+"shubin_industrial_shipmining_stanton_ve_local_desc_001"
 ]
 ],
 "XenoThreat Lieutenant needs some killing": [
@@ -3863,7 +4584,8 @@ null
 "Headhunters",
 125,
 125,
-5800
+5800,
+"headhunters_eliminatespecific_xenothreat_h_desc_001"
 ]
 ],
 "Yellow Level Contract: Ambush An Amateur": [
@@ -3871,7 +4593,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_shipambush_ve_desc_001"
 ]
 ],
 "Yellow Level Contract: Clear Out PAF": [
@@ -3879,7 +4602,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_eliminateall_paf_m_desc_001"
 ]
 ],
 "Yellow Level Contract: Clear Shipjacking Group": [
@@ -3887,7 +4611,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_shipwaveattack_clearhostiles_desc_ve_001"
 ]
 ],
 "Yellow Level Contract: Defend ~mission(DefendLocationWrapperLocation)": [
@@ -3895,7 +4620,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_defendlocation_e_desc_001"
 ]
 ],
 "Yellow Level Contract: Disrupt Operations": [
@@ -3903,7 +4629,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_bombingrun_e_desc_001"
 ]
 ],
 "Yellow Level Contract: Limiting Potential Threat": [
@@ -3911,7 +4638,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_bombingrun_ve_desc_001"
 ]
 ],
 "Yellow Level Contract: Merc Work": [
@@ -3919,7 +4647,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_eliminateall_olp_m_desc_001"
 ]
 ],
 "Yellow Level Contract: Neutralize Shipjacking Gang": [
@@ -3927,7 +4656,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_shipwaveattack_clearhostiles_desc_e_001"
 ]
 ],
 "Yellow Level Contract: Routine Patrol": [
@@ -3935,7 +4665,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_securitypatrol_ve_desc_001"
 ]
 ],
 "Yellow Level Contract: Security Sweep": [
@@ -3943,7 +4674,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_securitypatrol_e_desc_001"
 ]
 ],
 "Yellow Level Contract: Ship Under Attack": [
@@ -3951,7 +4683,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-0
+0,
+"foxwell_defendship_e_desc_001"
 ]
 ],
 "Yellow Level Contract: Stand Up to Aggressors": [
@@ -3959,7 +4692,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_defendlocation_ve_desc_001"
 ]
 ],
 "Yellow Level Contract: Surprise Strike": [
@@ -3967,7 +4701,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_shipambush_e_desc_001"
 ]
 ],
 "Yellow Lvl. Contract: Defend ~mission(Objects)": [
@@ -3975,7 +4710,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_defenddestructibleentites_ve_desc_001"
 ]
 ],
 "Yellow Lvl. Contract: Defend ~mission(Objects) and Escort Employees": [
@@ -3983,7 +4719,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-2200
+2200,
+"foxwell_defendentitesandescort_ve_desc"
 ]
 ],
 "Yellow Lvl. Contract: Protect ~mission(Objects)": [
@@ -3991,7 +4728,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-800
+800,
+"foxwell_defenddestructibleentites_e_desc_001"
 ]
 ],
 "Yellow Lvl. Contract: Protect ~mission(Objects) and Escort Employees": [
@@ -3999,7 +4737,8 @@ null
 "Foxwell Enforcement",
 100,
 100,
-2200
+2200,
+"foxwell_defendentitesandescort_e_desc"
 ]
 ],
 "Yormandi Gun": [
@@ -4007,7 +4746,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_slimylmg"
 ]
 ],
 "Your Best Shot": [
@@ -4015,7 +4755,8 @@ null
 "Wikelo Emporium",
 10,
 10,
-null
+null,
+"thecollector_recipes_desc_nonear"
 ]
 ],
 "Zeus Cargo Special": [
@@ -4023,7 +4764,8 @@ null
 "Wikelo Emporium",
 100,
 100,
-null
+null,
+"thecollector_ships_zeuscl_desc"
 ]
 ],
 "Zeus Special": [
@@ -4031,7 +4773,8 @@ null
 "Wikelo Emporium",
 30,
 30,
-null
+null,
+"thecollector_ships_zeuses_desc"
 ]
 ],
 "Ziel der Shattered Blade: ~mission(TargetName)": [
@@ -4039,7 +4782,8 @@ null
 "InterSec Defense Solutions",
 150,
 150,
-800
+800,
+"intersec_elimaux_shatteredblade_med_desc_001"
 ]
 ],
 "~mission(Destination) Errand": [
@@ -4047,7 +4791,8 @@ null
 "Headhunters",
 50,
 50,
-null
+null,
+"headhunters_delivery_outpost_desc_001"
 ]
 ],
 "~mission(Location) has been greenlit": [
@@ -4055,7 +4800,8 @@ null
 "Headhunters",
 150,
 150,
-800
+800,
+"headhunters_eliminateall_cfp_m_desc_001"
 ]
 ],
 "~mission(Location) needs a bunch of repairs": [
@@ -4063,7 +4809,8 @@ null
 "Headhunters, Citizens For Prosperity",
 150,
 150,
-null
+null,
+"headhunters_maintenance_m_desc_001"
 ]
 ],
 "~mission(Location) needs assistance": [
@@ -4071,7 +4818,8 @@ null
 "Citizens For Prosperity",
 150,
 150,
-800
+800,
+"cfp_defend_headhunters_m_desc_001"
 ]
 ],
 "~mission(Location) needs massive repairs": [
@@ -4079,7 +4827,8 @@ null
 "Headhunters, Citizens For Prosperity",
 450,
 450,
-null
+null,
+"headhunters_maintenance_h_desc_001"
 ]
 ],
 "~mission(Location) needs some repairs": [
@@ -4087,7 +4836,8 @@ null
 "Headhunters, Citizens For Prosperity",
 75,
 100,
-null
+null,
+"headhunters_maintenance_local_e_desc_001"
 ]
 ],
 "~mission(Location|Address) needs help": [
@@ -4095,7 +4845,8 @@ null
 "Citizens For Prosperity",
 850,
 850,
-15000
+15000,
+"cfp_defend_boss_generic_desc_001"
 ]
 ],
 "~mission(TargetName) needs stomping": [
@@ -4103,7 +4854,8 @@ null
 "Headhunters",
 50,
 50,
-800
+800,
+"headhunters_killship_gen_vlrt_desc_001"
 ]
 ]
 },
