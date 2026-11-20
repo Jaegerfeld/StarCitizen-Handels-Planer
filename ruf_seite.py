@@ -19,6 +19,13 @@
 #   Spanne (halber bis voller Betrag), Missionen ohne Wert und Fehlschläge mit 0,
 #   werden aber angezeigt. Abgleiche und Favoriten liegen im Browser
 #   (localStorage); nichts verlässt den Rechner.
+#   Abgleich von Hand (Rang + Balken in %) oder per Screenshot der mobiGlas-
+#   Seite „Ruf“ (Schritt 2): Die Seite zählt die vollen Balken (= erreichte
+#   Ränge), findet die hervorgehobene Kachel (grüner Rahmen = nächster Rang)
+#   und misst deren Balken als grüne Lauflänge mit Teilpixeln an den Enden;
+#   den Zeitpunkt nimmt sie aus dem Dateinamen (ScreenShot-JJJJ-MM-TT_hh-mm-ss).
+#   Geprüft an sechs Screenshots (2000×837): ±2 Prozentpunkte zur Handmessung.
+#   Das Bild wird nur im Browser gelesen.
 #   Konzept: Konzept_Ruf-Tracker.md, Entscheidungen R1–R8 vom 20.11.2026.
 #   Eigenständiges Modul für das spätere Spieler-Cockpit.
 # =============================================================================
@@ -72,6 +79,12 @@ RF_CSS = r"""
   #view-rep .rf-form .rf-help{grid-column:1/-1;color:var(--muted);font-size:12.5px;margin:0}
   #view-rep .rf-form .rf-err{grid-column:1/-1;color:var(--bad);font-size:13px;margin:0}
   #view-rep .rf-form .rf-btns{display:flex;gap:8px;flex-wrap:wrap}
+  #view-rep .rf-shot{grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border:2px dashed var(--line);border-radius:10px;padding:10px}
+  #view-rep .rf-shot.drag{border-color:var(--accent);background:var(--panel2)}
+  #view-rep .rf-shot .btn{min-height:44px}
+  #view-rep .rf-shot canvas{max-width:min(420px,100%);height:auto;border-radius:6px;border:1px solid var(--line)}
+  #view-rep .rf-shot .rf-res{flex:1 1 240px;font-size:13px;margin:0}
+  #view-rep .rf-shot .rf-res.bad{color:var(--bad)}
   #view-rep details summary{cursor:pointer;color:var(--accent);min-height:32px;margin-top:6px}
   #view-rep .rf-tag{display:inline-block;font-size:11.5px;border:1px solid var(--line);border-radius:6px;padding:0 6px;margin-left:4px}
   #view-rep .rf-tag.fail{color:var(--bad);border-color:var(--bad)}
@@ -150,6 +163,60 @@ function estimate(o,list,st){const os=orgState(st,o), cal=os.cals[os.cals.length
     unknown:after.filter(m=>m.res==='Complete'&&m.lo==null).length, failed:after.filter(m=>m.res==='Fail'||m.res==='Abandon').length,
     shared:after.filter(m=>m.res==='Complete'&&m.shared).length};}
 
+/* ---------- screenshot of the mobiGlas ---------- */
+// Measures the reputation tiles of a mobiGlas screenshot: number of full bars (= ranks reached), the highlighted
+// tile (green frame = next rank) and the fill of its bar. Sizes scale with the image height (tested at 837 px).
+function measureShot(cv){const W=cv.width, H=cv.height, d=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,W,H).data, s=H/837;
+  const P=(x,y)=>{const i=(y*W+x)*4; return [d[i],d[i+1],d[i+2]];};
+  const bright=(x,y)=>{const [r,g]=P(x,y); return g>150&&g-r>60;};
+  const frame=(x,y)=>{const [r,g]=P(x,y); return g>120&&g-r>35;};
+  const runs=test=>{const out=[]; for(let y=Math.floor(H*.2);y<Math.floor(H*.85);y++){let x=0; while(x<W){if(test(x,y)){const a=x; while(x<W&&test(x,y)) x++; out.push([y,a,x-a]);} x++;}} return out;};
+  // Bars: runs of 60..115 px, at least two rows thick (the 1-px tile frame is not)
+  let bars=[]; for(const [y,a,n] of runs(bright)){if(n<60*s||n>115*s) continue;
+    const b=bars.find(b=>Math.abs(b.a-a)<=30*s&&y-b.yl>0&&y-b.yl<=1);
+    if(b){b.rows++; b.yl=y; if(n>b.n){b.y=y; b.a=a; b.n=n;}} else bars.push({y,yl:y,a,n,rows:1});}
+  bars=bars.filter(b=>b.rows>=2);
+  if(!bars.length) return {err:T('Keine Ruf-Balken gefunden. Ist es die mobiGlas-Seite „Ruf“ mit den Rang-Kacheln einer Organisation?','No reputation bars found. Is it the mobiGlas “Reputation” page with the rank tiles of an organisation?')};
+  const L=Math.max(...bars.map(b=>b.n)), full=bars.filter(b=>b.n>=L-3*s).sort((a,b)=>(a.y-b.y>12*s?1:b.y-a.y>12*s?-1:a.a-b.a));
+  const y1=Math.min(...full.map(b=>b.y)), cols=full.filter(b=>b.y-y1<12*s).map(b=>b.a).sort((a,b)=>a-b);
+  const dx=cols.length>1?cols[1]-cols[0]:184*s;
+  const edge=(x,y)=>x<0||x>=W?0:Math.min(1,Math.max(0,(P(x,y)[1]-100)/150));
+  // Green run length from the bar start, with the partly green boundary pixels as fractions
+  const runAt=(x0,y)=>{let a=-1; for(let x=Math.floor(x0-4*s);x<x0+6*s;x++) if(x>=0&&x<W&&bright(x,y)){a=x; break;}
+    if(a<0) return edge(Math.round(x0),y)>.5?edge(Math.round(x0),y):0; let b=a; while(b+1<W&&bright(b+1,y)) b++; return b-a+1+edge(a-1,y)+edge(b+1,y);};
+  const cover=(x0,y)=>Math.max(runAt(x0,y-1),runAt(x0,y),runAt(x0,y+1));
+  const Lc=Math.max(...full.map(b=>cover(b.a,b.y)));
+  const fr=runs(frame).find(([,,n])=>n>=130*s&&n<=190*s);
+  let x0,yb,idx,guess=false;
+  if(fr){const [by,bx]=fr, col=Math.round((bx+30*s-cols[0])/dx); x0=cols[0]+col*dx;
+    const yp=Math.round(by+102*s), gr=yy=>{let t=0; for(let x=Math.round(x0);x<x0+L;x++) if(x<W){const p=P(x,yy); t+=p[1]-p[0];} return t;};
+    yb=yp; let best=-1e9; for(let yy=yp-Math.round(8*s);yy<=yp+Math.round(8*s);yy++){const v=gr(yy); if(v>best){best=v; yb=yy;}}
+    idx=(yb-y1>40*s?4:0)+col;}
+  else{idx=full.length; guess=true; x0=cols[0]+(idx%4)*dx; yb=y1+Math.floor(idx/4)*Math.round(190*s);}
+  const pct=Math.max(0,Math.min(100,cover(x0,yb)/Lc*100));
+  return {n:full.length, idx, pct:Math.round(pct*10)/10, guess, box:[x0,yb,L], full};}
+// Time of the screenshot from its file name ("ScreenShot-2026-11-20_11-59-18-B56.jpg"), else the file date.
+function shotTime(f){const m=/(\d{4})-(\d\d)-(\d\d)_(\d\d)-(\d\d)-(\d\d)/.exec(f.name||''); return m?new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6]):new Date(f.lastModified||Date.now());}
+const localISO=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+// Read a screenshot file into the open form: measure, show a preview with the measured bar marked, fill the fields.
+async function readShot(f,form){const res=form.querySelector('.rf-res'), o=form.dataset.form, l=ladder(o);
+  res.className='rf-res'; res.textContent=T('Lese Screenshot …','Reading screenshot …');
+  try{// Image element instead of createImageBitmap: works in more browsers (and in headless tests)
+    const url=URL.createObjectURL(f), bm=new Image(); bm.src=url; await new Promise((ok,no)=>{bm.onload=ok; bm.onerror=no;}); URL.revokeObjectURL(url);
+    const cv=document.createElement('canvas'); cv.width=bm.naturalWidth; cv.height=bm.naturalHeight; cv.getContext('2d').drawImage(bm,0,0);
+    const m=measureShot(cv);
+    if(m.err){res.className='rf-res bad'; res.textContent=m.err; return;}
+    const reached=l[m.n-1], next=l[m.n];
+    if(!reached){res.className='rf-res bad'; res.textContent=T(`${m.n} volle Balken erkannt, aber die Rangleiter von ${o} hat nur ${l.length} Stufen. Ist es der Screenshot dieser Organisation?`,`${m.n} full bars found, but the rank ladder of ${o} has only ${l.length} steps. Is it the screenshot of this organisation?`); return;}
+    form.rank.value=String(reached[0]); form.pct.type='text'; form.pct.value=next?String(m.pct).replace('.',L()==='en'?'.':','):'0'; form.t.value=localISO(shotTime(f));
+    // Preview: the tile area, the measured bar framed
+    const [bx,by,bl]=m.box, x0=Math.max(0,m.full[0].a-60*cv.height/837), y0=Math.max(0,Math.min(...m.full.map(b=>b.y))-140*cv.height/837), w=Math.min(cv.width-x0,800*cv.height/837), h=Math.min(cv.height-y0,420*cv.height/837);
+    const pv=form.querySelector('canvas'); pv.width=420; pv.height=Math.round(420*h/w); const c=pv.getContext('2d'); c.drawImage(cv,x0,y0,w,h,0,0,pv.width,pv.height);
+    const k=pv.width/w; c.strokeStyle='#ff5a5a'; c.lineWidth=2; c.strokeRect((bx-x0-4)*k,(by-y0-8)*k,(bl+8)*k,16*k); pv.hidden=false;
+    const warn=m.guess?T(' Hervorgehobene Kachel nicht gefunden – nächste Stufe nach der Reihenfolge angenommen.',' Highlighted tile not found – next rank assumed by order.'):m.idx!==m.n?T(` Achtung: hervorgehoben ist Kachel ${m.idx+1}, voll sind ${m.n} – bitte prüfen.`,` Note: tile ${m.idx+1} is highlighted, ${m.n} are full – please check.`):'';
+    res.className='rf-res'+(warn?' bad':''); res.textContent=T(`Erkannt: ${m.n} Ränge erreicht (bis ${reached[1]})${next?`, Balken ${next[1]} zu ${String(m.pct).replace('.',',')} % gefüllt`:''} · Zeitpunkt ${fmtT(shotTime(f).toISOString())}. Rot markiert ist der gemessene Balken – bitte kurz prüfen und übernehmen.`,`Found: ${m.n} ranks reached (up to ${reached[1]})${next?`, bar ${next[1]} ${m.pct} % filled`:''} · time ${fmtT(shotTime(f).toISOString())}. The measured bar is framed in red – please check and apply.`)+warn;}
+  catch(e){res.className='rf-res bad'; res.textContent=T('Bild konnte nicht gelesen werden.','Could not read the image.');}}
+
 /* ---------- rendering ---------- */
 function bar(o,est){const mid=(est.lo+est.hi)/2, [cur,next]=band(o,mid);
   if(!next) return {cur,next,html:`<div class="rf-track"><div class="rf-fill" style="width:100%"></div></div>`};
@@ -176,7 +243,9 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
 function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0][1]:(l[0]||[0,''])[1];
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
   return `<form class="rf-form" data-form="${esc(o)}" novalidate>
-    <p class="rf-help">${T('mobiGlas → Ruf → Organisation: Die <b>hervorgehobene Kachel</b> ist der nächste Rang. Der höchste volle Rang ist „erreicht“; schätze, wie weit der Balken der hervorgehobenen Kachel gefüllt ist.','mobiGlas → Reputation → organisation: the <b>highlighted tile</b> is the next rank. The highest full rank is “reached”; estimate how far the bar of the highlighted tile is filled.')}</p>
+    <p class="rf-help">${T('mobiGlas → Ruf → Organisation: Die <b>hervorgehobene Kachel</b> ist der nächste Rang. Der höchste volle Rang ist „erreicht“. Am genauesten: Screenshot auswerten lassen; sonst schätzen, wie weit der Balken der hervorgehobenen Kachel gefüllt ist.','mobiGlas → Reputation → organisation: the <b>highlighted tile</b> is the next rank. The highest full rank is “reached”. Most precise: let the page read a screenshot; otherwise estimate how far the bar of the highlighted tile is filled.')}</p>
+    <div class="rf-shot" data-drop><button type="button" class="btn" data-shot>📷 ${T('Screenshot auswerten …','Read screenshot …')}</button><input type="file" accept="image/*" hidden data-shotin>
+      <p class="rf-res" role="status">${T('Screenshot der Ruf-Seite dieser Organisation wählen oder hierher ziehen (Ordner <code>StarCitizen\\LIVE\\screenshots</code>). Die Felder werden ausgefüllt.','Choose or drop a screenshot of this organisation’s reputation page (folder <code>StarCitizen\\LIVE\\screenshots</code>). The fields get filled in.')}</p><canvas hidden></canvas></div>
     <label>${T('Erreichter Rang','Rank reached')}<select name="rank">${l.map(([x,n])=>`<option value="${x}"${n===cur?' selected':''}>${esc(n)} (${fmt(x)})</option>`).join('')}</select></label>
     <label>${T('Balken der nächsten Stufe in %','Bar of the next rank in %')}<input name="pct" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="0"></label>
     <label>${T('Zeitpunkt des Blicks','Time of the look')}<input name="t" type="datetime-local" value="${now}"></label>
@@ -202,7 +271,13 @@ view.addEventListener('click',e=>{const st=load(); let b;
   if((b=e.target.closest('[data-align]'))){OPEN=OPEN===b.dataset.align?null:b.dataset.align; render(); return;}
   if((b=e.target.closest('[data-undo]'))){const os=orgState(st,b.dataset.undo); const c=os.cals.pop(); save(st); render();
     $r('stat').textContent=c?T(`Abgleich vom ${fmtT(c.t)} entfernt.`,`Alignment of ${fmtT(c.t)} removed.`):''; return;}
-  if(e.target.closest('[data-cancel]')){OPEN=null; render();}});
+  if(e.target.closest('[data-cancel]')){OPEN=null; render(); return;}
+  if((b=e.target.closest('[data-shot]'))){b.parentElement.querySelector('[data-shotin]').click();}});
+view.addEventListener('change',e=>{const i=e.target.closest('[data-shotin]'); if(i&&i.files[0]) readShot(i.files[0],i.closest('form'));});
+view.addEventListener('dragover',e=>{const z=e.target.closest('[data-drop]'); if(z){e.preventDefault(); z.classList.add('drag');}});
+view.addEventListener('dragleave',e=>{const z=e.target.closest('[data-drop]'); if(z) z.classList.remove('drag');});
+view.addEventListener('drop',e=>{const z=e.target.closest('[data-drop]'); if(!z) return; e.preventDefault(); z.classList.remove('drag');
+  const f=[...(e.dataTransfer?.files||[])].find(f=>f.type.startsWith('image/')); if(f) readShot(f,z.closest('form'));});
 view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!f) return; e.preventDefault();
   const o=f.dataset.form, l=ladder(o), x0=+f.rank.value, i=l.findIndex(r=>r[0]===x0), next=l[i+1];
   const pct=parseFloat(String(f.pct.value).replace(',','.')), err=f.querySelector('.rf-err');
@@ -213,6 +288,6 @@ view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!
   $r('stat').textContent=T(`${o}: Abgleich gespeichert (${fmt(xp)} XP).`,`${o}: alignment saved (${fmt(xp)} XP).`);});
 
 let started=false;
-return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band};
+return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, _measure:measureShot};
 })();
 """
