@@ -2,6 +2,20 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.16.0] – 2026-11-20
+
+### Hinzugefügt
+- **Ruf: Rangleitern von sc-market.space.** Bisher kannte der Reiter nur die Stufen, die in Missionsbeschreibungen als Mindest- oder Höchststufe vorkommen; viele Organisationen bekamen deshalb die Auftragnehmer-Stufen nur angenommen. Jetzt ergänzt `ruf_daten.py --sc-market` die Leitern aus der öffentlichen Spieldaten-Schnittstelle von sc-market.space (Stand 4.10-LIVE, Spieldaten vom 14.11.2026). 21 von 22 Organisationen der Ruf-Tabelle haben damit eine belegte Leiter:
+  - **Auftragnehmer-Leiter bestätigt** für Adagio, InterSec, FTL Courier, Dead Saints, Highpoint, United Wayfarers Club, neu belegt für Vaughn, Hockrow Agency und Rayari.
+  - **Frachtleiter** (Anwärter 0 · Neuling 50 · Junior 250 · Mitglied 5.250 · Erfahren 27.750 · Senior 77.750 · Meister 237.750) für Covalex, Red Wind Linehaul und Ling Family Hauling.
+  - **Recco Battaglia** vollständig bis Prestige 3 (neu: Prestige 1 bei 10.800, Prestige 2 bei 30.000).
+  - **Bounty Hunters Guild** (Bewerber bis Gildenverwalter, 480.000) und **Wikelo** (Neuer Kunde · Sehr guter Kunde 340 · Bester Kunde 999).
+  - Deutsche Rangnamen aus der Sprachdatei des Spiels; Northrock Service Group bleibt ohne Leiter (ihre Missionen verteilen sich ohne klare Mehrheit auf mehrere Laufbahnen).
+- Je Organisation zeigt das mobiGlas eine Leiter (von Robert geprüft); bei Organisationen mit Missionen in mehreren Laufbahnen (z. B. Covalex: Fracht und Auftragnehmer) gilt die Leiter, auf die die meisten Missionen gehen.
+
+### Geändert
+- Die Ruf-Tabelle wird reproduzierbar gebaut (feste Reihenfolge bei gleichen Missionstiteln).
+
 ## [1.15.1] – 2026-11-20
 
 ### Behoben
