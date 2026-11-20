@@ -35,6 +35,8 @@
 #   Die Organisationen werden nach Gilden gruppiert; wer nicht in der Liste steht,
 #   kommt unter „Keiner Gilde zugeordnet“. Alle bekannten Organisationen sind von
 #   Anfang an sichtbar, auch ohne Logs; ohne Abgleich lassen sie sich ausblenden.
+#   „Aufs Handy …“ (handy_seite.py) überträgt Rang und Balken der abgeglichenen
+#   Organisationen; das Handy zeigt diesen Stand nur an, bis man die Ansicht beendet.
 #   Konzept: Konzept_Ruf-Tracker.md, Entscheidungen R1–R8 vom 20.11.2026.
 #   Eigenständiges Modul für das spätere Spieler-Cockpit.
 # =============================================================================
@@ -52,6 +54,7 @@ RF_HTML = r"""
       <button type="button" class="btn" id="rf-load">📁 <span class="de">Log-Ordner laden …</span><span class="en">Load log folder …</span></button>
       <label class="rf-toggle"><input type="checkbox" id="rf-hide"> <span class="de">Ohne Abgleich ausblenden</span><span class="en">Hide not aligned</span></label>
       <label class="rf-toggle"><input type="checkbox" id="rf-texts"> <span class="de">Missionstexte anzeigen</span><span class="en">Show mission texts</span></label>
+      <button type="button" class="btn" id="rf-handy">📱 <span class="de">Aufs Handy …</span><span class="en">To the phone …</span></button>
       <span class="rf-stat" id="rf-stat" role="status"></span>
     </div>
     <p class="rf-note" id="rf-texts-note" hidden></p>
@@ -108,6 +111,9 @@ RF_CSS = r"""
   #view-rep .rf-toggle{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}
   #view-rep .rf-toggle input{width:20px;height:20px}
   #view-rep .rf-guild{margin:0 0 14px;border-top:1px solid var(--line)}
+  #view-rep.rf-snapmode .rf-bar,#view-rep.rf-snapmode .rf-note{display:none}
+  #view-rep .rf-snap{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;border:2px solid var(--accent);border-radius:12px;padding:10px 14px;margin:0 0 12px;background:var(--panel2);font-size:14px}
+  #view-rep .rf-snap .btn{min-height:44px}
   #view-rep .rf-guild>summary{list-style:none;cursor:pointer;min-height:44px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0}
   #view-rep .rf-guild>summary::-webkit-details-marker{display:none}
   #view-rep .rf-guild>summary::before{content:"▸";color:var(--accent);font-size:16px;transition:transform .15s}
@@ -327,6 +333,27 @@ function textsBar(){const box=$r('texts'), lab=box.closest('label'), has=!!iniFi
   note.hidden=has||!textsOn();
   note.textContent=has?'':T('Missionstexte brauchen die Sprachdatei des Spiels (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) im geladenen Ordner – die gibt es nur mit installierter Übersetzung. Lade dafür den ganzen Ordner LIVE.','Mission texts need the game’s language file (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) in the loaded folder – it exists only with a translation installed. Load the whole LIVE folder for it.');}
 
+/* ---------- to the phone ---------- */
+const PKEY='scha_rep_snap';
+const loadSnap=()=>{try{return JSON.parse(localStorage.getItem(PKEY)||'null');}catch(e){return null;}};
+// Rank and bar of every aligned organisation (for the phone, which has no logs)
+function handyData(){const ms=missions(), st=load(), out=[];
+  for(const o of Object.keys(st.orgs||{})){const os=st.orgs[o]; if(!os.cals||!os.cals.length) continue;
+    const e=estimate(o,ms,st), mid=(e.lo+e.hi)/2, [cur,next]=band(o,mid);
+    out.push([o,cur[1],cur[0],next?next[1]:null,next?next[0]:null,Math.round(e.lo),Math.round(e.hi),os.fav?1:0]);}
+  return {t:new Date().toISOString(),o:out};}
+function fromHandy(d){if(!d||!Array.isArray(d.o)) throw new Error('format'); try{localStorage.setItem(PKEY,JSON.stringify(d));}catch(e){} render();}
+function renderSnap(d){const list=$r('list');
+  const card=([o,rank,cx,next,nx,lo,hi])=>{const mid=(lo+hi)/2, span=nx!=null?nx-cx:0, p=x=>span?Math.max(0,Math.min(100,(x-cx)/span*100)):100;
+    return `<article class="rf-org"><div class="rf-head"><h3>${esc(o)}</h3></div><div class="rf-head"><span class="rf-rank">${esc(rank)}</span></div>
+      <div class="rf-track" role="img" aria-label="${T('Fortschritt','Progress')} ${Math.round(p(mid))} %"><div class="rf-fill" style="width:${p(lo)}%"></div><div class="rf-unc" style="left:${p(lo)}%;width:${Math.max(0,p(hi)-p(lo))}%"></div></div>
+      <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b>${hi-lo>=1?` <small>(${fmt(lo)}–${fmt(hi)})</small>`:''}</span><span>${next?T(`noch ≈ ${fmt(Math.max(0,nx-mid))} bis ${esc(next)}`,`≈ ${fmt(Math.max(0,nx-mid))} to ${esc(next)}`):T('höchster Rang','top rank')}</span></div></article>`;};
+  const rows=d.o.slice().sort((a,b)=>b[7]-a[7]||a[0].localeCompare(b[0]));
+  const groups=[...GUILDS.map(g=>({g,list:rows.filter(r=>guildOf(r[0])===g)})),{g:null,list:rows.filter(r=>!guildOf(r[0]))}].filter(x=>x.list.length);
+  list.innerHTML=`<div class="rf-snap"><span>📱 ${T(`Stand vom PC · ${fmtT(d.t)} · nur ansehen`,`State from the PC · ${fmtT(d.t)} · view only`)}</span><button type="button" class="btn" data-snapend>${T('Ansicht beenden','End view')}</button></div>`
+    +(groups.length?groups.map(x=>`<details class="rf-guild" open><summary><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length}</small></summary><div class="rf-cards">${x.list.map(card).join('')}</div></details>`).join('')
+    :`<p class="rf-empty">${T('Im übertragenen Stand ist keine Organisation abgeglichen.','No organisation is aligned in the transferred state.')}</p>`);}
+
 /* ---------- rendering ---------- */
 function bar(o,est){const mid=(est.lo+est.hi)/2, [cur,next]=band(o,mid);
   if(!next) return {cur,next,html:`<div class="rf-track"><div class="rf-fill" style="width:100%"></div></div>`};
@@ -363,6 +390,7 @@ function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0]
     <div class="rf-btns"><button type="submit" class="btn pri">✓ ${T('Übernehmen','Apply')}</button><button type="button" class="btn" data-cancel>${T('Abbrechen','Cancel')}</button></div>
     <p class="rf-err" role="alert"></p></form>`;}
 function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions)?SZ.sessions():[];
+  const snapD=loadSnap(); document.getElementById('view-rep').classList.toggle('rf-snapmode',!!snapD); if(snapD){renderSnap(snapD); return;}
   $r('src').textContent=TAB?T(`Ruf-Tabelle: ${Object.keys(TAB.missions).length} Missionstitel, Stand ${TAB.stand}. Quelle: ${TAB.quelle}.`,`Reputation table: ${Object.keys(TAB.missions).length} mission titles, as of ${TAB.stand}. Source: annotations of the German community translation (numbers, titles, rank names only).`):T('Ruf-Tabelle fehlt in diesem Bau.','Reputation table missing in this build.');
   $r('load').classList.toggle('pri',!S.length); textsBar(); if(textsOn()&&iniFile()) loadTexts().catch(()=>{});
   $r('stat').textContent=S.length?(SZ.status?SZ.status():''):'';
@@ -396,7 +424,11 @@ view.addEventListener('click',e=>{const st=load(); let b;
     $r('stat').textContent=c?T(`Abgleich vom ${fmtT(c.t)} entfernt.`,`Alignment of ${fmtT(c.t)} removed.`):''; return;}
   if(e.target.closest('[data-cancel]')){OPEN=null; render(); return;}
   if((b=e.target.closest('[data-shot]'))){b.parentElement.querySelector('[data-shotin]').click(); return;}
-  if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt);}});
+  if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt); return;}
+  if(e.target.closest('[data-snapend]')){try{localStorage.removeItem(PKEY);}catch(x){} render();}});
+$r('handy').addEventListener('click',()=>{const d=handyData();
+  if(!d.o.length){$r('stat').textContent=T('Noch keine Organisation abgeglichen – erst abgleichen, dann aufs Handy.','No organisation aligned yet – align first, then send to the phone.'); return;}
+  HY.share('ruf',d,T('Ruf aufs Handy','Reputation to the phone'),T(`Rang und Balken von ${d.o.length} abgeglichenen Organisationen, Stand jetzt. Das Handy zeigt ihn nur an; für einen neuen Stand hier wieder scannen.`,`Rank and bar of ${d.o.length} aligned organisations, as of now. The phone only shows it; scan again here for a newer state.`));});
 // Remember which overviews are open across re-renders
 view.addEventListener('toggle',e=>{const d=e.target.closest&&e.target.closest('[data-ov]'); if(d){if(d.open) OVOPEN.add(d.dataset.ov); else OVOPEN.delete(d.dataset.ov);}},true);
 const HKEY='scha_rep_hide', GKEY='scha_rep_gclosed';
@@ -422,6 +454,6 @@ view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!
   $r('stat').textContent=T(`${o}: Abgleich gespeichert (${fmt(xp)} XP).`,`${o}: alignment saved (${fmt(xp)} XP).`);});
 
 let started=false;
-return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, _measure:measureShot, _guildOf:o=>(guildOf(o)||{}).n||'', _orgName:orgName, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
+return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, handyData, fromHandy, _measure:measureShot, _guildOf:o=>(guildOf(o)||{}).n||'', _orgName:orgName, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
 })();
 """

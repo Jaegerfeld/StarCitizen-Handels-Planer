@@ -45,6 +45,7 @@ LB_HTML = r"""
       <button type="button" class="btn" id="lb-xlsx">⬇ <span class="de">Export XLSX</span><span class="en">Export XLSX</span></button>
       <button type="button" class="btn" id="lb-json">⬇ <span class="de">Export JSON</span><span class="en">Export JSON</span></button>
       <button type="button" class="btn" id="lb-imp">⬆ <span class="de">JSON einlesen</span><span class="en">Import JSON</span></button>
+      <button type="button" class="btn" id="lb-handy">📱 <span class="de">Aufs Handy …</span><span class="en">To the phone …</span></button>
       <button type="button" class="btn" id="lb-store">💾 <span class="de">Speicherort …</span><span class="en">Storage …</span></button>
       <input type="file" id="lb-file" accept=".json,application/json" hidden>
     </div>
@@ -450,6 +451,14 @@ let dlgAct=null;
 function download(name,blob){const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);}
 const stamp=()=>new Date().toISOString().slice(0,10);
 function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
+// Ships and cargo for the phone (no journal, it is not needed there).
+function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock};}
+// Take over a ledger sent from the PC; asks before replacing a non-empty ledger.
+function fromHandy(d){if(!d||!Array.isArray(d.ships)||!Array.isArray(d.stock)) throw new Error('format');
+  const when=new Date(d.t||Date.now()).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'});
+  if((S.ships.length||S.stock.length)&&!confirm(T(`Logbuch vom PC (Stand ${when}) übernehmen? Es ersetzt den Stand auf diesem Gerät (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Take over the ledger from the PC (as of ${when})? It replaces the state on this device (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
+  snap(); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); S.sel=null;
+  commit(T(`Vom PC übernommen (Stand ${when}): ${S.ships.length} Schiffe, ${S.stock.length} Posten`,`Taken over from the PC (as of ${when}): ${S.ships.length} ships, ${S.stock.length} posts`));}
 function importJson(file){const r=new FileReader(); r.onload=()=>{try{const o=JSON.parse(r.result);
     if(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock)) throw new Error('format');
     if(!confirm(T(`Logbuch aus „${file.name}“ einlesen? Es ersetzt den Stand in diesem Browser (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Import the ledger from “${file.name}”? It replaces the state in this browser (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
@@ -504,6 +513,9 @@ view.addEventListener('click',e=>{const wl=e.target.closest('[data-wares]');
 $l('addship').addEventListener('click',()=>openShip(false));
 $l('undo').addEventListener('click',undo);
 $l('json').addEventListener('click',exportJson);
+// To the phone: ships and cargo as a link / QR code (handy_seite.py); the phone takes it over as its ledger.
+$l('handy').addEventListener('click',()=>{if(!S.ships.length&&!S.stock.length){toast(T('Das Logbuch ist leer.','The ledger is empty.')); return;}
+  HY.share('lb',handyData(),T('Fracht-Logbuch aufs Handy','Cargo ledger to the phone'),T(`${S.ships.length} Schiffe und ${S.stock.length} Frachtposten, Stand jetzt. Das Handy übernimmt sie als sein Logbuch (Rückgängig möglich).`,`${S.ships.length} ships and ${S.stock.length} cargo posts, as of now. The phone takes them over as its ledger (undo possible).`));});
 $l('xlsx').addEventListener('click',exportXlsx);
 $l('imp').addEventListener('click',()=>$l('file').click());
 $l('file').addEventListener('change',e=>{const f=e.target.files[0]; if(f) importJson(f); e.target.value='';});
@@ -526,6 +538,6 @@ document.addEventListener('keydown',e=>{if(view.classList.contains('hide')||$l('
 load(); fsInit();
 // Open a place in the ledger (used by the sessions tab).
 function openLoc(loc){S.sel=loc; save(); showView('ledger'); window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'});}
-return {render, openLoc, places:M.places, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};
+return {render, openLoc, places:M.places, handyData, fromHandy, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};
 })();
 """

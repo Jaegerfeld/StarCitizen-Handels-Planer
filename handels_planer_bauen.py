@@ -24,7 +24,8 @@
 #   beim Bau nicht erreichbar, entsteht die Seite trotzdem. Reiter „Sitzungen“
 #   (sitzungen_seite.py) liest die Spiel-Logs im Browser; Reiter „Ruf“
 #   (ruf_seite.py) schätzt daraus den Ruf je Organisation mit der eingebetteten
-#   Ruf-Tabelle ruf_tabelle.json (aus ruf_daten.py). Die Seite ruft star-head
+#   Ruf-Tabelle ruf_tabelle.json (aus ruf_daten.py). „Aufs Handy“ (handy_seite.py)
+#   überträgt Ruf und Logbuch per Link/QR-Code. Die Seite ruft star-head
 #   nie selbst auf; aktuelle Daten kommen nur aus dem täglichen Build.
 # =============================================================================
 """Build the trade planner page, data.json, the route guide and optionally the Excel file.
@@ -44,6 +45,7 @@ import handel_core as hc
 import kopfzeile as kz
 import logbuch_daten as lb
 import sc_design as sd
+from handy_seite import HY_CSS, HY_HTML, HY_JS
 from logbuch_seite import LB_CSS, LB_HTML, LB_JS, LB_TAB
 from ruf_seite import RF_CSS, RF_HTML, RF_JS, RF_TAB
 from sitzungen_seite import SZ_CSS, SZ_HTML, SZ_JS, SZ_TAB
@@ -224,10 +226,11 @@ def main(argv):
     ruf_path = HERE / "ruf_tabelle.json"
     ruf_json = ruf_path.read_text(encoding="utf-8").replace("</", "<\\/") if ruf_path.exists() else "null"
     html = (html.replace("/*LB_CSS*/", LB_CSS).replace("<!--LB_TAB-->\n", LB_TAB)
-                .replace("<!--LB_HTML-->", LB_HTML + SZ_HTML + RF_HTML)
+                .replace("<!--LB_HTML-->", LB_HTML + SZ_HTML + RF_HTML + HY_HTML)
                 .replace("/*LB_JS*/", LB_JS.replace("/*__LB__*/null", lb_json) + SZ_JS
-                         + RF_JS.replace("/*__RUF__*/null", ruf_json)))
-    html = html.replace("/*SZ_CSS*/", SZ_CSS + RF_CSS).replace("<!--SZ_TAB-->\n", SZ_TAB + RF_TAB)
+                         + RF_JS.replace("/*__RUF__*/null", ruf_json)
+                         + HY_JS.replace("__ONLINE__", DATA_URL.rsplit("/", 1)[0] + "/")))
+    html = html.replace("/*SZ_CSS*/", SZ_CSS + RF_CSS + HY_CSS).replace("<!--SZ_TAB-->\n", SZ_TAB + RF_TAB)
     html = html.replace("/*__DATA__*/{}", payload).replace("__DATA_URL__", DATA_URL)
     OUT_HTML.write_text(html, encoding="utf-8")
     OUT_JSON.write_text(payload, encoding="utf-8")

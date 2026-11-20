@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.15.0] – 2026-11-20
+
+### Hinzugefügt
+- **„Aufs Handy …“ in den Reitern „Ruf“ und „Fracht-Logbuch“.** Auf dem Handy läuft kein Star Citizen, es gibt dort weder Logs noch Screenshots. Der PC zeigt deshalb einen QR-Code (und den Link zum Kopieren) mit dem aktuellen Stand; mit der Handy-Kamera scannen öffnet die Online-Seite mit diesem Stand.
+  - **Ruf:** Rang und Balken der abgeglichenen Organisationen, nach Gilden; das Handy zeigt den Stand nur an („Stand vom PC · Zeitpunkt · nur ansehen“), bis man die Ansicht beendet.
+  - **Fracht-Logbuch:** Schiffe und Frachtposten; das Handy übernimmt sie als sein Logbuch (fragt vorher, wenn dort schon etwas steht; Rückgängig möglich).
+  - Der Stand steckt komprimiert hinter dem „#“ des Links; dieser Teil wird nie an einen Server geschickt und nach dem Öffnen aus der Adresszeile entfernt. Ist er für einen QR-Code zu groß, bleibt der Link zum Selbstschicken.
+  - QR-Code: qrcode-generator 1.4.4 (Kazuhiko Arase, MIT), erst beim Öffnen des Dialogs von jsDelivr geladen (feste Version mit Prüfsumme); offline gibt es nur den Link.
+
 ## [1.14.0] – 2026-11-20
 
 ### Geändert
