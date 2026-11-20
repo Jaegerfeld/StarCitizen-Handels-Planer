@@ -1,0 +1,4496 @@
+{
+"stand": "2026-11-20",
+"quelle": "Anmerkungen der deutschen Community-Übersetzung (global.ini): nur Zahlen, Titel, Rangnamen",
+"missions": {
+"A Chance to Impress": [
+[
+"Vaughn",
+100,
+100,
+null
+]
+],
+"A Complicated Task": [
+[
+"Vaughn",
+150,
+150,
+null
+]
+],
+"A Difficult Task": [
+[
+"Vaughn",
+200,
+200,
+null
+]
+],
+"A Fond Farewell": [
+[
+"Vaughn",
+250,
+250,
+null
+]
+],
+"A Simple Task": [
+[
+"Vaughn",
+100,
+100,
+null
+]
+],
+"A Straightforward Task": [
+[
+"Vaughn",
+100,
+100,
+null
+]
+],
+"A Swift Reprisal": [
+[
+"Headhunters",
+50,
+50,
+0
+]
+],
+"A Troublesome Task": [
+[
+"Vaughn",
+300,
+300,
+null
+]
+],
+"A Very Difficult Task": [
+[
+"Vaughn",
+250,
+250,
+null
+]
+],
+"A little retaliation": [
+[
+"Headhunters",
+375,
+375,
+5800
+]
+],
+"Adagio Holdings in Need of Salvagers": [
+[
+"Adagio Holdings",
+100,
+100,
+0
+]
+],
+"Advanced Tracker License Certification": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Alert: ~mission(Location) under attack": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"Ambush Op": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Annihilating the Alliance": [
+[
+"Vaughn",
+300,
+300,
+null
+]
+],
+"Armor with Vanduul": [
+[
+"Wikelo Emporium",
+25,
+25,
+null
+]
+],
+"Armor with horn and string": [
+[
+"Wikelo Emporium",
+25,
+25,
+null
+]
+],
+"Asgard Fight Mod": [
+[
+"Wikelo Emporium",
+250,
+250,
+null
+]
+],
+"Assist People's Alliance Vessel Tranquility": [
+[
+"InterSec Defense Solutions",
+200,
+200,
+5800
+]
+],
+"Assist Retreating Ship": [
+[
+"Citizens For Prosperity",
+200,
+200,
+null
+]
+],
+"Assistance needed at ~mission(Location)": [
+[
+"Citizens For Prosperity",
+75,
+75,
+0
+]
+],
+"Attack on CFP outpost": [
+[
+"Citizens For Prosperity",
+75,
+75,
+0
+]
+],
+"Back up needed at outpost": [
+[
+"Headhunters",
+250,
+250,
+2200
+]
+],
+"Backup Needed Now": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Bad at Goodbyes": [
+[
+"Bit Zeros",
+300,
+300,
+38000
+]
+],
+"Big Style LMG": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Blackbox Recovery Request: Investigator Level": [
+[
+"Hockrow Agency",
+150,
+150,
+null
+]
+],
+"Blackbox Recovery Request: Junior Level": [
+[
+"Hockrow Agency",
+100,
+100,
+null
+]
+],
+"Blackbox Recovery Request: Lead Investigator Level": [
+[
+"Hockrow Agency",
+250,
+250,
+null
+]
+],
+"Blackbox Recovery Request: Probationary Level": [
+[
+"Hockrow Agency",
+100,
+100,
+null
+]
+],
+"Blackbox Recovery Request: Senior Investigator Level": [
+[
+"Hockrow Agency",
+200,
+200,
+null
+]
+],
+"Blackbox Recovery Request: Special Investigator Level": [
+[
+"Hockrow Agency",
+300,
+300,
+null
+]
+],
+"Blackbox Retrieval": [
+[
+"Recco Battaglia",
+240,
+240,
+6000
+]
+],
+"Blackbox Retrieval Very Dangerous": [
+[
+"Recco Battaglia",
+360,
+360,
+6000
+]
+],
+"Blackbox Retrieval w/Danger": [
+[
+"Recco Battaglia",
+260,
+260,
+6000
+]
+],
+"Bleeding Edge Tech": [
+[
+"Bit Zeros",
+100,
+100,
+800
+]
+],
+"Block XenoThreat Expansion": [
+[
+"Headhunters",
+250,
+250,
+2200
+]
+],
+"Blow Up Citizens for Prosperity Fuel Reserves": [
+[
+"Headhunters",
+150,
+200,
+null
+]
+],
+"Blow Up XenoThreat Fuel Reserves": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Bring Down the Hammer": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Build a Mod Scorpius": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"COURIER NEEDED FOR RETRIEVAL - EXP: E": [
+[
+"FTL Courier",
+100,
+100,
+null
+]
+],
+"COURIER NEEDED FOR RETRIEVAL - EXP: EL": [
+[
+"FTL Courier",
+300,
+300,
+null
+]
+],
+"COURIER NEEDED FOR RETRIEVAL - EXP: EX": [
+[
+"FTL Courier",
+250,
+250,
+null
+]
+],
+"COURIER NEEDED FOR RETRIEVAL - EXP: JR": [
+[
+"FTL Courier",
+150,
+150,
+null
+]
+],
+"COURIER NEEDED FOR RETRIEVAL - EXP: S": [
+[
+"FTL Courier",
+200,
+200,
+null
+]
+],
+"COURIER NEEDED FOR RETRIEVAL - EXP: U": [
+[
+"FTL Courier",
+100,
+100,
+null
+]
+],
+"CRITICAL FLEET REFUEL": [
+[
+"United Wayfarers Club",
+200,
+200,
+15000
+]
+],
+"CRITICAL REFUEL REQUEST: ~mission(Ship)": [
+[
+"United Wayfarers Club",
+200,
+200,
+38000
+]
+],
+"Call for Help: ~mission(Location)": [
+[
+"Citizens For Prosperity",
+150,
+150,
+800
+]
+],
+"Campaign to reclaim XenoThreat outposts": [
+[
+"Citizens For Prosperity",
+450,
+450,
+38000
+]
+],
+"Capture Arlington Gang Leader Maltrox Arlington": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Capture Arlington Gang Member Kass Dent": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Capture Arlington Gang Member Les Arlington": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Capture Arlington Gang Member Nicks Cantwell": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Capture Arlington Gang Member Oslo Arlington": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Capture Arlington Gang Member Sam \"Weepy\" Arlington": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Carefully Clear Site": [
+[
+"Foxwell Enforcement",
+200,
+200,
+5800
+]
+],
+"Cargo Hauling Opportunity with Ling Hauling": [
+[
+"Ling Family Hauling",
+100,
+100,
+0
+]
+],
+"Cargo Transfer from Shuttered Facility": [
+[
+"Red Wind Linehaul",
+50,
+50,
+null
+]
+],
+"Checking For a Pulse": [
+[
+"Vaughn",
+100,
+100,
+null
+]
+],
+"Claim #~mission(ClaimNumber): ~mission(Ship) Salvage Rights": [
+[
+"Adagio Holdings",
+100,
+150,
+null
+]
+],
+"Clear CFP Route of Hostiles": [
+[
+"Citizens For Prosperity",
+100,
+100,
+null
+]
+],
+"Clear Citizens for Prosperity Servers": [
+[
+"Headhunters",
+75,
+75,
+null
+]
+],
+"Client Needs Combat Support": [
+[
+"Eckhart Security",
+250,
+250,
+15000
+]
+],
+"Collect Irradiated Kopion Horns": [
+[
+"Rayari Incorporated",
+150,
+150,
+null
+]
+],
+"Collect Irradiated Valakkar Eggs": [
+[
+"Rayari Incorporated",
+150,
+150,
+null
+]
+],
+"Combat Support: ~mission(Location)": [
+[
+"Eckhart Security",
+2000,
+2000,
+null
+]
+],
+"Come to Aid of Convoy": [
+[
+"Citizens For Prosperity",
+300,
+300,
+38000
+]
+],
+"Convince Upstarts to Abandon Sector": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Convoy Caught in Brutal Attack": [
+[
+"Citizens For Prosperity",
+200,
+200,
+5800
+]
+],
+"Convoy Under Attack": [
+[
+"Citizens For Prosperity",
+250,
+250,
+15000
+]
+],
+"Counterstrike Against Vanduul Raiders": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+15000
+]
+],
+"Cracking the Alliance": [
+[
+"Vaughn",
+200,
+200,
+null
+]
+],
+"Crash some ships": [
+[
+"Headhunters",
+300,
+300,
+15000
+]
+],
+"Crew Hasn't Checked In": [
+[
+"Recco Battaglia",
+160,
+160,
+2400
+]
+],
+"Curious Weapon": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Cut Citizens For Prosperity Power": [
+[
+"Headhunters",
+125,
+125,
+null
+]
+],
+"DEAD SAINTS - Trial Cargo Haul": [
+[
+"Dead Saints",
+50,
+100,
+null
+]
+],
+"Danger: Contraband Weapons Inbound": [
+[
+"Citizens For Prosperity",
+200,
+200,
+null
+]
+],
+"Dangerous Ambush": [
+[
+"Eckhart Security",
+250,
+250,
+15000
+]
+],
+"Data Transfer": [
+[
+"Bit Zeros",
+100,
+100,
+0
+]
+],
+"Deal with ~mission(TargetName) and Support Forces": [
+[
+"Eckhart Security",
+500,
+500,
+120000
+]
+],
+"Death and cargo": [
+[
+"Headhunters",
+150,
+150,
+2200
+]
+],
+"Deep space hit": [
+[
+"Headhunters",
+50,
+50,
+0
+]
+],
+"Defend InterSec Operative": [
+[
+"InterSec Defense Solutions",
+100,
+100,
+0
+]
+],
+"Defend ~mission(Location) From Mercs": [
+[
+"Headhunters",
+250,
+250,
+15000
+]
+],
+"Defend ~mission(Location) from Outlaws": [
+[
+"Citizens For Prosperity",
+125,
+250,
+0
+]
+],
+"Defend ~mission(Objects) From Mercs": [
+[
+"Headhunters",
+250,
+250,
+null
+]
+],
+"Defenders needed against Headhunters": [
+[
+"Citizens For Prosperity",
+150,
+250,
+800
+]
+],
+"Destroy Headhunter Stolen Data": [
+[
+"Citizens For Prosperity",
+125,
+200,
+0
+]
+],
+"Destroy Outlaw Data Servers": [
+[
+"Citizens For Prosperity",
+150,
+150,
+2200
+]
+],
+"Destroy Their Supplies": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Destroy XenoThreat Data Servers": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"Destroy XenoThreat Fuel Reserves": [
+[
+"Headhunters",
+3200,
+3200,
+null
+]
+],
+"Destroy XenoThreat Logistic Data": [
+[
+"Citizens For Prosperity",
+125,
+125,
+15000
+]
+],
+"Destroying the Alliance": [
+[
+"Vaughn",
+100,
+250,
+null
+]
+],
+"Disable Headhunter Comm Towers": [
+[
+"Citizens For Prosperity",
+125,
+125,
+null
+]
+],
+"Disable Outlaw Stronghold at ~mission(Location)": [
+[
+"Citizens For Prosperity",
+75,
+75,
+0
+]
+],
+"Do Lava Suit": [
+[
+"Wikelo Emporium",
+25,
+25,
+null
+]
+],
+"Down For the Count": [
+[
+"Vaughn",
+200,
+200,
+null
+]
+],
+"Draw Out Maulers": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+95250
+]
+],
+"Driving CFP out": [
+[
+"Headhunters",
+150,
+150,
+15000
+]
+],
+"Drop a XenoThreat": [
+[
+"Headhunters",
+400,
+400,
+15000
+]
+],
+"ENTRY LVL. COURIER NEEDED IN NYX": [
+[
+"FTL Courier",
+100,
+100,
+0
+]
+],
+"ENTRY LVL. COURIER NEEDED IN STANTON": [
+[
+"FTL Courier",
+100,
+500,
+0
+]
+],
+"Easy Creds for Easy Work": [
+[
+"Dead Saints",
+100,
+100,
+null
+]
+],
+"Efficient Miners Wanted": [
+[
+"Recco Battaglia",
+400,
+400,
+6000
+]
+],
+"Eliminate Annoyance": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Eliminate Fuel Stores": [
+[
+"Citizens For Prosperity",
+250,
+250,
+2200
+]
+],
+"Eliminate Vanduul Ship": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+15000
+]
+],
+"Elite Op": [
+[
+"Headhunters",
+300,
+300,
+null
+]
+],
+"Engage Shattered Blade and Vanduul": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+null
+]
+],
+"Eradicate All Traces of Headhunter Data": [
+[
+"Citizens For Prosperity",
+1550,
+1550,
+38000
+]
+],
+"Eradicate UEE Threat: ~mission(TargetName)": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+null
+]
+],
+"Establishing Security": [
+[
+"Citizens For Prosperity",
+25,
+25,
+null
+]
+],
+"Exciting New Opportunities with Foxwell Enforcement": [
+[
+"Foxwell Enforcement",
+100,
+100,
+null
+]
+],
+"Executive Protection Detail": [
+[
+"Eckhart Security",
+100,
+100,
+800
+]
+],
+"Expel Outlaws": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Experienced Protection Detail Needed": [
+[
+"Eckhart Security",
+150,
+150,
+2200
+]
+],
+"Extensive Repairs Needed: ~mission(Location)": [
+[
+"Citizens For Prosperity",
+500,
+500,
+null
+]
+],
+"Extra Special Job": [
+[
+"Recco Battaglia",
+800,
+800,
+null
+]
+],
+"Extremely Dangerous Defense": [
+[
+"Eckhart Security",
+300,
+300,
+38000
+]
+],
+"FIND SERVERS AT ASD SITE AND DESTROY": [
+[
+"Eckhart Security",
+50,
+50,
+null
+]
+],
+"Firebird Mod": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"First Haul in System": [
+[
+"Citizens For Prosperity",
+75,
+75,
+null
+]
+],
+"Fortune ship for you": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Fracturing the Alliance": [
+[
+"Vaughn",
+150,
+150,
+null
+]
+],
+"Fun Kopion Skull Gun": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Fun Military Skull Gun": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Gather Irradiated Valakkar Fangs": [
+[
+"Rayari Incorporated",
+150,
+150,
+null
+]
+],
+"Get My Gear Back": [
+[
+"Dead Saints",
+150,
+150,
+null
+]
+],
+"Getting Our Gear Back": [
+[
+"Dead Saints",
+100,
+100,
+800
+]
+],
+"Getting Our Goods Back": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Getting To the Bottom of It": [
+[
+"Bit Zeros",
+100,
+100,
+800
+]
+],
+"Getting What They Deserve": [
+[
+"Dead Saints",
+250,
+250,
+null
+]
+],
+"Getting the Drop on the Enemy": [
+[
+"Headhunters",
+300,
+300,
+null
+]
+],
+"Ghost some XenoTrash": [
+[
+"Headhunters",
+3200,
+3200,
+95250
+]
+],
+"Go on the warpath": [
+[
+"Headhunters",
+400,
+400,
+95250
+]
+],
+"Green light on ~mission(Location)": [
+[
+"Headhunters",
+150,
+150,
+800
+]
+],
+"Green light on ~mission(TargetName|Last)": [
+[
+"Headhunters",
+1200,
+1200,
+38000
+]
+],
+"Guard ~mission(Location) From Rivals": [
+[
+"Headhunters",
+300,
+300,
+15000
+]
+],
+"Guard ~mission(Objects) At All Costs": [
+[
+"Headhunters",
+300,
+300,
+null
+]
+],
+"Guardian Fight Mod": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Guardian WiK-X": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Guardian take down ship": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Handle Vanduul Attack on Ship": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+15000
+]
+],
+"Hauling ask.": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Headhunter Needs Help": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Headhunter Pilot Needs a Hand": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Headhunter Pilot in Trouble": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Headhunter Ship Needs Backup": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Headhunter attack on ~mission(Location)": [
+[
+"Citizens For Prosperity",
+250,
+250,
+5800
+]
+],
+"Heavy and Bright": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Help Ambushed Convoy": [
+[
+"Citizens For Prosperity",
+200,
+200,
+5800
+]
+],
+"Help Deal with Outlaw Hunting Party": [
+[
+"Citizens For Prosperity",
+100,
+100,
+null
+]
+],
+"Help Headhunters Prospect": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Help Headhunters at ~mission(DefendLocationWrapperLocation)": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Help Protect Site": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Help defend ~mission(Location) from Headhunters": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"Hide Snow Suit": [
+[
+"Wikelo Emporium",
+25,
+25,
+null
+]
+],
+"High-Risk Bounty: ~mission(TargetName)": [
+[
+"Eckhart Security",
+500,
+500,
+5000
+]
+],
+"High-Risk Ship Encounter": [
+[
+"Eckhart Security",
+200,
+200,
+5800
+]
+],
+"Highly Dangerous Ambush": [
+[
+"Eckhart Security",
+300,
+300,
+38000
+]
+],
+"Hit XenoThreat at ~mission(Location)": [
+[
+"Headhunters",
+300,
+300,
+5800
+]
+],
+"Hit a CFP Complex": [
+[
+"Headhunters",
+300,
+300,
+38000
+]
+],
+"Hit a CFP Ship": [
+[
+"Headhunters",
+300,
+300,
+5800
+]
+],
+"Hit on XenoThreat command": [
+[
+"Headhunters",
+400,
+400,
+95250
+]
+],
+"Hitting a CFP site": [
+[
+"Headhunters",
+50,
+50,
+800
+]
+],
+"Hot Shot": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Hunt Bounty: ~mission(TargetName)": [
+[
+"Eckhart Security",
+750,
+750,
+null
+]
+],
+"Hunt Some Heads": [
+[
+"Headhunters",
+300,
+300,
+null
+]
+],
+"INFILITRATE ASD SITE AND DESTROY SERVERS": [
+[
+"Eckhart Security",
+50,
+50,
+null
+]
+],
+"Idea for Isaac": [
+[
+"Recco Battaglia",
+800,
+800,
+6000
+]
+],
+"Inter-Outpost Delivery at ~mission(Destination)": [
+[
+"Citizens For Prosperity",
+50,
+50,
+null
+]
+],
+"Intercept Vanduul Fleet": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+15000
+]
+],
+"Interdict Vanduul Maulers": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+95250
+]
+],
+"JR. LVL. COURIER NEEDED IN STANTON": [
+[
+"FTL Courier",
+100,
+100,
+800
+]
+],
+"Journeyman Tracker License Certification": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Keep ~mission(Location) Safe": [
+[
+"Headhunters",
+100,
+100,
+2200
+]
+],
+"Keep ~mission(Objects) Safe From Upstarts": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Keeping the Upstarts Down": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Kill Order": [
+[
+"Headhunters",
+600,
+600,
+15000
+]
+],
+"Kill the king": [
+[
+"Headhunters",
+100,
+100,
+0
+]
+],
+"Knock Power Out": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Launch Surprise Attack": [
+[
+"Eckhart Security",
+150,
+150,
+2200
+]
+],
+"Legendary Info?": [
+[
+"Bit Zeros",
+200,
+200,
+5800
+]
+],
+"Locate Missing Agent: ~mission(TargetName)": [
+[
+"Hockrow Agency",
+200,
+200,
+null
+]
+],
+"Locate Missing Friend: ~mission(TargetName)": [
+[
+"Hockrow Agency",
+150,
+150,
+null
+]
+],
+"Locate Missing Person: ~mission(TargetName)": [
+[
+"Hockrow Agency",
+100,
+100,
+null
+]
+],
+"Locate Missing Pilot: ~mission(TargetName)": [
+[
+"Hockrow Agency",
+250,
+250,
+null
+]
+],
+"Long Distance Covalex Delivery Stanton": [
+[
+"Covalex",
+100,
+100,
+null
+]
+],
+"Looking For Trouble": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Looking for a Damn Hero": [
+[
+"Headhunters",
+300,
+300,
+null
+]
+],
+"Looking for a little revenge": [
+[
+"Headhunters",
+150,
+150,
+800
+]
+],
+"Low Risk Protection Detail": [
+[
+"Eckhart Security",
+100,
+100,
+0
+]
+],
+"Lrg. Purchase Order: Hand Mined Materials": [
+[
+"Shubin Interstellar",
+150,
+150,
+2200
+]
+],
+"Lrg. Purchase Order: Ship Mined Ore ?": [
+[
+"Shubin Interstellar",
+200,
+200,
+5800
+],
+[
+"Shubin Interstellar",
+250,
+250,
+15000
+]
+],
+"Lrg. Purchase Order: Vehicle Mined Ore": [
+[
+"Shubin Interstellar",
+200,
+200,
+null
+]
+],
+"Make ATLS shoot": [
+[
+"Wikelo Emporium",
+20,
+20,
+null
+]
+],
+"Make VOLT shotgun angrier": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Make a Ursa Mod": [
+[
+"Wikelo Emporium",
+20,
+20,
+null
+]
+],
+"Make glowy armor": [
+[
+"Wikelo Emporium",
+25,
+25,
+null
+]
+],
+"Make jumpy ATLS shoot": [
+[
+"Wikelo Emporium",
+20,
+20,
+null
+]
+],
+"Making the Most of a Bad Situation": [
+[
+"Dead Saints",
+200,
+200,
+null
+]
+],
+"Master Tracker License Certification": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Med. Distance Covalex Delivery Nyx": [
+[
+"Covalex",
+100,
+100,
+null
+]
+],
+"Med. Distance Covalex Delivery Stanton": [
+[
+"Covalex",
+100,
+100,
+null
+]
+],
+"Med. Purchase Order: Hand Mined Materials": [
+[
+"Shubin Interstellar",
+100,
+100,
+800
+]
+],
+"Med. Purchase Order: Ship Mined Ore ?": [
+[
+"Shubin Interstellar",
+150,
+150,
+2200
+]
+],
+"Med. Purchase Order: Vehicle Mined Ore": [
+[
+"Shubin Interstellar",
+150,
+150,
+null
+],
+[
+"Shubin Interstellar",
+200,
+200,
+null
+]
+],
+"Mining and Data Collection": [
+[
+"Recco Battaglia",
+600,
+600,
+6000
+]
+],
+"Mining und MOLE": [
+[
+"Recco Battaglia",
+800,
+800,
+null
+]
+],
+"Minor Mining Job": [
+[
+"Recco Battaglia",
+200,
+200,
+null
+]
+],
+"Missing Mining Team": [
+[
+"Recco Battaglia",
+200,
+200,
+2400
+]
+],
+"Missing Persons": [
+[
+"Recco Battaglia",
+240,
+240,
+6000
+]
+],
+"Mjr. Purchase Order: Ship Mined Ore ?": [
+[
+"Shubin Interstellar",
+250,
+250,
+38000
+]
+],
+"Moderate Repairs Needed: ~mission(Location)": [
+[
+"Citizens For Prosperity",
+100,
+100,
+null
+]
+],
+"Monolith Armor Very Smooth": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Moraine Data Retrieval": [
+[
+"Recco Battaglia",
+200,
+200,
+2400
+]
+],
+"Moraine Movements": [
+[
+"Recco Battaglia",
+300,
+300,
+6000
+]
+],
+"More than a Max": [
+[
+"Wikelo Emporium",
+250,
+250,
+null
+]
+],
+"My Deepest Condolences": [
+[
+"Vaughn",
+150,
+150,
+null
+]
+],
+"NEW HIRE: Locate Missing Person": [
+[
+"Hockrow Agency",
+100,
+100,
+null
+]
+],
+"NEW RETRIEVAL RUN AVAILABLE": [
+[
+"FTL Courier",
+100,
+100,
+null
+]
+],
+"Need Some Ore Mined": [
+[
+"Recco Battaglia",
+220,
+220,
+0
+]
+],
+"Need a CFP taken down": [
+[
+"Headhunters",
+100,
+125,
+800
+]
+],
+"Need a Hauler": [
+[
+"Citizens For Prosperity",
+250,
+250,
+null
+]
+],
+"Need a death at ~mission(Location)": [
+[
+"Headhunters",
+300,
+300,
+2200
+]
+],
+"Need a hitter": [
+[
+"Headhunters",
+50,
+50,
+800
+]
+],
+"Need multiple CFP outposts retaken": [
+[
+"Citizens For Prosperity",
+350,
+350,
+15000
+]
+],
+"Need someone taken out": [
+[
+"Headhunters",
+50,
+75,
+0
+]
+],
+"Neutralize Dangerous Criminal Fleet": [
+[
+"Citizens For Prosperity",
+200,
+200,
+null
+]
+],
+"Neutralize UEE Threat: ~mission(TargetName)": [
+[
+"InterSec Defense Solutions",
+150,
+150,
+800
+]
+],
+"Neutralize Vanduul Target": [
+[
+"InterSec Defense Solutions",
+250,
+250,
+5800
+]
+],
+"Neutralize Vanduul and Shattered Blade Threat": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+15000
+]
+],
+"New Defense Contract: ~mission(TargetName) Elimination": [
+[
+"InterSec Defense Solutions",
+100,
+100,
+0
+]
+],
+"New Move Big Starlancer Ship": [
+[
+"Wikelo Emporium",
+250,
+250,
+null
+]
+],
+"New Opportunity - Ambush Strike": [
+[
+"Eckhart Security",
+100,
+100,
+0
+]
+],
+"No Fly Zone": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"No Honor Amongst Assassins": [
+[
+"Vaughn",
+300,
+300,
+null
+]
+],
+"Notfall: Blinding Hope in Schwierigkeiten": [
+[
+"Recco Battaglia",
+800,
+800,
+2400
+]
+],
+"Now make Polaris. Short Time Deal": [
+[
+"Wikelo Emporium",
+1000,
+1000,
+null
+]
+],
+"Noxy Mod": [
+[
+"Wikelo Emporium",
+20,
+20,
+null
+]
+],
+"Obtain Irradiated Valakkar Pearls": [
+[
+"Rayari Incorporated",
+150,
+150,
+null
+]
+],
+"Operative Extraction": [
+[
+"InterSec Defense Solutions",
+150,
+150,
+800
+]
+],
+"Opportunity for Independent Cargo Hauler": [
+[
+"Covalex",
+100,
+100,
+null
+]
+],
+"Orange Level Contract: Destroy Outlaw Infrastructure": [
+[
+"Foxwell Enforcement",
+200,
+200,
+5800
+]
+],
+"Orange Level Contract: Destroy Outlaw Threat": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Orange Level Contract: Potential Security Threat": [
+[
+"Foxwell Enforcement",
+200,
+200,
+5800
+]
+],
+"Orange Level Contract: Protect Our Client's Interests": [
+[
+"Foxwell Enforcement",
+200,
+200,
+2200
+]
+],
+"Orange Level Contract: Return the Favor": [
+[
+"Foxwell Enforcement",
+200,
+200,
+5800
+]
+],
+"Orange Level Contract: Security Patrol": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Orange Level Contract: Ship Protection Needed": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Orange Level Contract: Spring a Trap": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Orange Level Contract: Take Out Criminal Fleet": [
+[
+"Foxwell Enforcement",
+200,
+200,
+5800
+]
+],
+"Orange Level Contract: Take Out Fuel Supplies": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Orange Level Contract: ~mission(Ship) Needs Assistance": [
+[
+"Foxwell Enforcement",
+150,
+150,
+800
+]
+],
+"Orange Lvl. Contract: Defend ~mission(Objects)": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Orange Lvl. Contract: Defend ~mission(Objects) and Escort Employees": [
+[
+"Foxwell Enforcement",
+150,
+150,
+5800
+]
+],
+"Orange Lvl. Contract: Protect ~mission(Objects)": [
+[
+"Foxwell Enforcement",
+200,
+200,
+2200
+]
+],
+"Orange Lvl. Contract: Protect ~mission(Objects) and Escort Employees": [
+[
+"Foxwell Enforcement",
+200,
+200,
+5800
+]
+],
+"Ore Needs Gathering": [
+[
+"Recco Battaglia",
+380,
+380,
+2400
+]
+],
+"Our Version of The Truth": [
+[
+"Bit Zeros",
+250,
+250,
+15000
+]
+],
+"Outlaw attack at ~mission(Location)": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"PURGE ASD SERVERS": [
+[
+"Eckhart Security",
+50,
+50,
+null
+]
+],
+"Paid Target in CFP": [
+[
+"Headhunters",
+1200,
+1200,
+38000
+]
+],
+"Patrol Dangerous Outlaw Sector": [
+[
+"Citizens For Prosperity",
+250,
+250,
+null
+]
+],
+"Patrol Dangerous Sector": [
+[
+"InterSec Defense Solutions",
+200,
+200,
+0
+]
+],
+"Patrol Dangerous Travel Lanes": [
+[
+"Citizens For Prosperity",
+150,
+150,
+null
+]
+],
+"Patrol Extremely Dangerous Sector": [
+[
+"Citizens For Prosperity",
+300,
+300,
+null
+]
+],
+"Patrol Outlaw Hunting Grounds": [
+[
+"Citizens For Prosperity",
+200,
+200,
+null
+]
+],
+"Patrol Risky Travel Lanes": [
+[
+"Citizens For Prosperity",
+100,
+100,
+null
+]
+],
+"Patrol Travel Lanes": [
+[
+"Citizens For Prosperity",
+100,
+100,
+null
+]
+],
+"Patrol Vanduul Hunting Ground": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+2200
+]
+],
+"Patrol to Prevent Possible Attack": [
+[
+"InterSec Defense Solutions",
+250,
+250,
+800
+]
+],
+"Peregrine Wikelo Mod": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Pick Up and Drop Off": [
+[
+"Dead Saints",
+100,
+100,
+null
+]
+],
+"Pick Up, Put Down": [
+[
+"Bit Zeros",
+100,
+100,
+0
+]
+],
+"Pilot Seeking Combat Support": [
+[
+"Citizens For Prosperity",
+100,
+100,
+800
+]
+],
+"Pilot Under Fire From Vanduul": [
+[
+"InterSec Defense Solutions",
+250,
+250,
+5800
+]
+],
+"Pilot in Distress": [
+[
+"Citizens For Prosperity",
+100,
+100,
+0
+]
+],
+"Plug a traitor": [
+[
+"Headhunters",
+100,
+100,
+800
+]
+],
+"Potential Assassin Victim: ~mission(TargetName)": [
+[
+"Hockrow Agency",
+100,
+100,
+null
+]
+],
+"Precision Strike on ~mission(TargetName)": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Preemptive Strike On ~mission(TargetName)": [
+[
+"InterSec Defense Solutions",
+200,
+200,
+2200
+]
+],
+"Preliminary Bounty: ~mission(TargetName)": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Primo Target": [
+[
+"Headhunters",
+1200,
+1200,
+38000
+]
+],
+"Pro Tem Bounty Assignment: ~mission(TargetName)": [
+[
+"Northrock Service Group",
+150,
+150,
+null
+]
+],
+"Prospects Look Good": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Protect Location": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Protect Our Site": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Protect Vital Asset": [
+[
+"InterSec Defense Solutions",
+200,
+200,
+2200
+]
+],
+"Protect ~mission(Location) from XenoThreat Attack": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"Protect ~mission(Location) from XenoThreat Incursion": [
+[
+"Citizens For Prosperity",
+350,
+350,
+15000
+]
+],
+"Protect ~mission(Location) from XenoThreat Raid": [
+[
+"Citizens For Prosperity",
+250,
+250,
+5800
+]
+],
+"Protect ~mission(Objects) From Luggers": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Protecting outpost from XenoThreat": [
+[
+"Citizens For Prosperity",
+250,
+250,
+2200
+]
+],
+"Protection Detail Needed. High Risk.": [
+[
+"Eckhart Security",
+250,
+250,
+15000
+]
+],
+"Protection against ~mission(TargetName|Last)": [
+[
+"Citizens For Prosperity",
+125,
+125,
+null
+]
+],
+"Provide Combat Support": [
+[
+"Citizens For Prosperity",
+100,
+100,
+800
+]
+],
+"Provide Protection at ~mission(Location)": [
+[
+"Headhunters",
+100,
+100,
+2200
+]
+],
+"Prowler More Utility": [
+[
+"Wikelo Emporium",
+250,
+250,
+null
+]
+],
+"Pulse Plus": [
+[
+"Wikelo Emporium",
+20,
+20,
+null
+]
+],
+"Purge XenoThreat Servers": [
+[
+"Headhunters",
+3200,
+3200,
+null
+]
+],
+"Putting a Mind at Ease": [
+[
+"Vaughn",
+100,
+100,
+null
+]
+],
+"RED WIND - Challenging Package Recovery": [
+[
+"Red Wind Linehaul",
+200,
+200,
+null
+]
+],
+"RED WIND - Dangerous Package Recovery": [
+[
+"Red Wind Linehaul",
+250,
+250,
+null
+]
+],
+"RED WIND - Easy Package Recovery": [
+[
+"Red Wind Linehaul",
+100,
+100,
+null
+]
+],
+"RED WIND - Package Recovery": [
+[
+"Red Wind Linehaul",
+100,
+100,
+null
+]
+],
+"RED WIND - Seeking New Couriers": [
+[
+"Red Wind Linehaul",
+100,
+100,
+null
+]
+],
+"RED WIND - Seeking New Haulers": [
+[
+"Red Wind Linehaul",
+100,
+300,
+null
+]
+],
+"RED WIND - Straightforward Package Recovery": [
+[
+"Red Wind Linehaul",
+150,
+150,
+null
+]
+],
+"REFUEL REQUEST: ~mission(Ship)": [
+[
+"United Wayfarers Club",
+100,
+200,
+0
+]
+],
+"RSI Meteor Mod": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Rally to Help Clips Convoy": [
+[
+"Headhunters",
+250,
+250,
+null
+]
+],
+"Ready for RAFT?": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Reclaim Headhunter Outpost": [
+[
+"Citizens For Prosperity",
+150,
+150,
+800
+]
+],
+"Reclaim XenoThreat Outpost": [
+[
+"Citizens For Prosperity",
+250,
+250,
+2200
+]
+],
+"Reclaiming Clusters from Headhunters": [
+[
+"Citizens For Prosperity",
+350,
+350,
+15000
+]
+],
+"Reclaiming Outposts from XenoThreat": [
+[
+"Citizens For Prosperity",
+450,
+450,
+38000
+]
+],
+"Reclusive Bounty: ~mission(TargetName) | Extreme Risk": [
+[
+"Bounty Hunters Guild",
+300,
+300,
+null
+]
+],
+"Reclusive Bounty: ~mission(TargetName) | High Risk": [
+[
+"Bounty Hunters Guild",
+200,
+200,
+null
+]
+],
+"Reclusive Bounty: ~mission(TargetName) | Very-High Risk": [
+[
+"Bounty Hunters Guild",
+250,
+250,
+null
+]
+],
+"Red Fight Armor": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Red Fight Shotgun": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Red Level Contract: Ambush Attack Squad": [
+[
+"Foxwell Enforcement",
+250,
+250,
+15000
+]
+],
+"Red Level Contract: Destroy Outlaw Infrastructure": [
+[
+"Foxwell Enforcement",
+300,
+300,
+38000
+]
+],
+"Red Level Contract: Fuel Container Demolition": [
+[
+"Foxwell Enforcement",
+250,
+250,
+15000
+]
+],
+"Red Level Contract: High-Risk Security Patrol": [
+[
+"Foxwell Enforcement",
+250,
+250,
+15000
+]
+],
+"Red Level Contract: Save Ships at ~mission(DefendLocationWrapperLocation)": [
+[
+"Foxwell Enforcement",
+250,
+250,
+5800
+]
+],
+"Red Level Contract: Secure Threatened Space": [
+[
+"Foxwell Enforcement",
+300,
+300,
+38000
+]
+],
+"Red Level Contract: Ship Under Attack": [
+[
+"Foxwell Enforcement",
+200,
+200,
+800
+]
+],
+"Red Level Contract: Support VIP Clients": [
+[
+"Foxwell Enforcement",
+300,
+16000,
+5800
+]
+],
+"Red Level Contract: Surprise Attack": [
+[
+"Foxwell Enforcement",
+300,
+300,
+38000
+]
+],
+"Red Lvl. Contract: Defend ~mission(Objects)": [
+[
+"Foxwell Enforcement",
+250,
+250,
+5800
+]
+],
+"Red Lvl. Contract: Defend ~mission(Objects) and Escort Employees": [
+[
+"Foxwell Enforcement",
+250,
+250,
+15000
+]
+],
+"Red Lvl. Contract: Protect ~mission(Objects)": [
+[
+"Foxwell Enforcement",
+300,
+300,
+5800
+]
+],
+"Red Lvl. Contract: Protect ~mission(Objects) and Escort Employees": [
+[
+"Foxwell Enforcement",
+300,
+300,
+15000
+]
+],
+"Reduce Outlaw's Operational Readiness": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"Reduce Valakkar Breaker Station Population": [
+[
+"Highpoint Wilderness Specialists",
+100,
+100,
+0
+]
+],
+"Remove Upstart Gang From Sector": [
+[
+"Citizens For Prosperity",
+150,
+150,
+null
+]
+],
+"Repel Raiders": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Repel Shattered Blade Ships": [
+[
+"Eckhart Security",
+150,
+150,
+2200
+]
+],
+"Reprisal Attack": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Reputation Management": [
+[
+"Headhunters",
+75,
+300,
+0
+]
+],
+"Request for Ship Support": [
+[
+"Eckhart Security",
+100,
+100,
+800
+]
+],
+"Requesting Help": [
+[
+"Eckhart Security",
+2000,
+2000,
+null
+]
+],
+"Respond to Distress Beacon": [
+[
+"Citizens For Prosperity",
+250,
+250,
+15000
+]
+],
+"Restore Order at ~mission(DefendLocationWrapperLocation)": [
+[
+"Headhunters",
+300,
+300,
+null
+]
+],
+"Retake Boarded Vessel": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+null
+]
+],
+"Retaking Outposts from Headhunters": [
+[
+"Citizens For Prosperity",
+350,
+350,
+15000
+]
+],
+"SEEK AND DESTROY ASD DATA": [
+[
+"Eckhart Security",
+50,
+50,
+null
+]
+],
+"Salvage Job: Large": [
+[
+"Recco Battaglia",
+600,
+600,
+6000
+]
+],
+"Salvage Job: Mid": [
+[
+"Recco Battaglia",
+400,
+400,
+6000
+]
+],
+"Salvage Job: Small": [
+[
+"Recco Battaglia",
+200,
+200,
+6000
+]
+],
+"Salvager Needed (Lrg. Special Order of RMC / UCM / Components)": [
+[
+"Adagio Holdings",
+150,
+150,
+2200
+]
+],
+"Salvager Needed (Lrg. Supply of RMC / UCM / Components)": [
+[
+"Adagio Holdings",
+150,
+150,
+2200
+]
+],
+"Salvager Needed (Med. Special Order of RMC / UCM / Components)": [
+[
+"Adagio Holdings",
+100,
+100,
+800
+]
+],
+"Salvager Needed (Med. Supply of RMC / UCM / Components)": [
+[
+"Adagio Holdings",
+100,
+100,
+800
+]
+],
+"Salvager Needed (Med. Supply of RMC)": [
+[
+"Adagio Holdings",
+100,
+100,
+800
+]
+],
+"Salvager Needed (Small Special Order of RMC / Components)": [
+[
+"Adagio Holdings",
+100,
+100,
+null
+]
+],
+"Salvager Needed (Small Supply of RMC / Components)": [
+[
+"Adagio Holdings",
+100,
+100,
+null
+]
+],
+"Salvager Needed (Small Supply of RMC / UCM)": [
+[
+"Adagio Holdings",
+100,
+100,
+0
+]
+],
+"Salvager Needed (Small Supply of RMC)": [
+[
+"Adagio Holdings",
+100,
+100,
+0
+]
+],
+"Save Ship": [
+[
+"Eckhart Security",
+100,
+100,
+0
+]
+],
+"Scan And Mining Needed": [
+[
+"Recco Battaglia",
+260,
+260,
+2400
+]
+],
+"Scan with a Prospector Payout": [
+[
+"Recco Battaglia",
+800,
+800,
+null
+]
+],
+"Scout and Scan": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Secure Our Airspace": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Secure Site": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"Secure ~mission(Location) from Upstarts": [
+[
+"Headhunters",
+150,
+150,
+5800
+]
+],
+"Secure ~mission(Objects) From Rivals": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Security Contractor Evaluation": [
+[
+"Eckhart Security",
+50,
+50,
+null
+]
+],
+"Security Contractor Reevaluation": [
+[
+"Eckhart Security",
+500,
+500,
+null
+]
+],
+"See What's Out There": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Seek and Destroy Super Stingers": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+null
+]
+],
+"Seeking Experienced Combat Pilots": [
+[
+"Citizens For Prosperity",
+50,
+50,
+null
+]
+],
+"Serious Shattered Blade Attack": [
+[
+"Eckhart Security",
+200,
+200,
+5800
+]
+],
+"Setting a Rat Trap": [
+[
+"Headhunters",
+250,
+250,
+null
+]
+],
+"Setting a Trap": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Settle a Score": [
+[
+"Eckhart Security",
+100,
+100,
+0
+]
+],
+"Shattered Blade Strike": [
+[
+"Eckhart Security",
+300,
+300,
+38000
+]
+],
+"Ship In Distress": [
+[
+"Recco Battaglia",
+300,
+300,
+null
+]
+],
+"Ship Needs Emergency Assistance": [
+[
+"Citizens For Prosperity",
+150,
+150,
+2200
+]
+],
+"Shot in the chaos": [
+[
+"Headhunters",
+50,
+50,
+800
+]
+],
+"Shut Off Power at ~mission(Location)": [
+[
+"Headhunters",
+25,
+25,
+null
+]
+],
+"Shutdown CFP's Comms": [
+[
+"Headhunters",
+125,
+125,
+null
+]
+],
+"Shutdown Xenothreat Comm Towers": [
+[
+"Citizens For Prosperity",
+175,
+175,
+null
+]
+],
+"Silence the Xenothreat": [
+[
+"Headhunters",
+175,
+175,
+null
+]
+],
+"Silent Strike": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Simple Hit": [
+[
+"Headhunters",
+75,
+75,
+800
+]
+],
+"Small Mining Order: Sadaryx": [
+[
+"Shubin Interstellar",
+100,
+100,
+null
+]
+],
+"Small Purchase Order: Hand Mined Materials": [
+[
+"Shubin Interstellar",
+100,
+100,
+0
+]
+],
+"Small Purchase Order: Ship Mined Ore": [
+[
+"Shubin Interstellar",
+100,
+100,
+800
+]
+],
+"Small Purchase Order: Vehicle Mined Ore": [
+[
+"Shubin Interstellar",
+100,
+100,
+null
+],
+[
+"Shubin Interstellar",
+150,
+150,
+null
+]
+],
+"Sneaky Stabber": [
+[
+"Wikelo Emporium",
+250,
+250,
+null
+]
+],
+"Sneaky Starfighter Ion": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Snow Snipe": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Space Patrol": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Special Covalex Delivery Stanton System": [
+[
+"Covalex",
+200,
+200,
+null
+]
+],
+"Special Purchase Order: Mined Materials ?": [
+[
+"Shubin Interstellar",
+250,
+250,
+15000
+]
+],
+"Spirit Cargo mod": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Splintering the Alliance": [
+[
+"Vaughn",
+100,
+100,
+null
+]
+],
+"Stand Our Ground": [
+[
+"Headhunters",
+250,
+250,
+null
+]
+],
+"Starfighter Inferno Special": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Starlifter A2 War Mod": [
+[
+"Wikelo Emporium",
+500,
+500,
+null
+]
+],
+"Still Looking for Work?": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Stop Attack at ~mission(DefendLocationWrapperLocation)": [
+[
+"Headhunters",
+250,
+250,
+null
+]
+],
+"Stop Attack on High-Profile Client": [
+[
+"Eckhart Security",
+150,
+150,
+2200
+]
+],
+"Stop Attack on Ship": [
+[
+"Citizens For Prosperity",
+150,
+150,
+2200
+]
+],
+"Stop Deadly Ship Attack": [
+[
+"Eckhart Security",
+250,
+250,
+15000
+]
+],
+"Stop Gang From Destroying ~mission(Objects)": [
+[
+"Headhunters",
+200,
+200,
+null
+]
+],
+"Stop Rival Attack at ~mission(Location)": [
+[
+"Headhunters",
+200,
+200,
+5800
+]
+],
+"Stop Rivals from Launching Heist": [
+[
+"Headhunters",
+3200,
+3200,
+null
+]
+],
+"Stop Savage Shattered Blade Attack": [
+[
+"Citizens For Prosperity",
+300,
+300,
+38000
+]
+],
+"Stop Shattered Blade Attack": [
+[
+"Eckhart Security",
+100,
+100,
+0
+]
+],
+"Stop Vanduul and Shattered Blade Hostilities": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+15000
+]
+],
+"Strategic Bombing": [
+[
+"InterSec Defense Solutions",
+200,
+200,
+5800
+]
+],
+"Suit Up Take Off": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Supply Order: Sadaryx Focus Lenses": [
+[
+"Shubin Interstellar",
+100,
+100,
+null
+]
+],
+"Support Client Under Attack": [
+[
+"Eckhart Security",
+100,
+100,
+800
+]
+],
+"Support Ship Under Attack": [
+[
+"Citizens For Prosperity",
+100,
+100,
+0
+]
+],
+"Surprise Party": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Sweep and Clear Location": [
+[
+"Foxwell Enforcement",
+150,
+150,
+2200
+]
+],
+"Sweep and clear some CFP haunts": [
+[
+"Headhunters",
+300,
+300,
+15000
+]
+],
+"Tactical Strike": [
+[
+"Headhunters",
+250,
+250,
+null
+]
+],
+"Tactical Strike Group Needed": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+5800
+]
+],
+"Take Out Citizens for Prosperity Fuel Supply": [
+[
+"Headhunters",
+150,
+200,
+null
+]
+],
+"Take Outlaws at ~mission(Location) Offline": [
+[
+"Citizens For Prosperity",
+200,
+200,
+2200
+]
+],
+"Taking Out the Competition": [
+[
+"Headhunters",
+150,
+150,
+null
+]
+],
+"Taking XenoThreat Turf": [
+[
+"Headhunters",
+300,
+300,
+15000
+]
+],
+"Taking back from the Headhunters": [
+[
+"Citizens For Prosperity",
+350,
+350,
+5800
+]
+],
+"Taking down a XenoThreat Hideout": [
+[
+"Headhunters",
+400,
+400,
+38000
+]
+],
+"Taking out some XenoThreat trash": [
+[
+"Headhunters",
+150,
+150,
+5800
+]
+],
+"Target at ~mission(Location)": [
+[
+"Headhunters",
+50,
+50,
+800
+]
+],
+"Target takedown for a fast track in": [
+[
+"Headhunters",
+50,
+50,
+0
+]
+],
+"Teach Citizens for Prosperity A Lesson": [
+[
+"Headhunters",
+100,
+100,
+null
+]
+],
+"Terminate UEE Threat: ~mission(TargetName)": [
+[
+"InterSec Defense Solutions",
+250,
+250,
+null
+]
+],
+"Terrorist ~mission(TargetName) to be Neutralized": [
+[
+"InterSec Defense Solutions",
+100,
+100,
+0
+]
+],
+"Test Armor": [
+[
+"Wikelo Emporium",
+25,
+25,
+null
+]
+],
+"Time to Teach a Lesson": [
+[
+"Eckhart Security",
+100,
+100,
+800
+]
+],
+"Time to roll on CFP": [
+[
+"Headhunters",
+400,
+400,
+38000
+]
+],
+"Too Much Gun": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Too Smart For Our Own Good": [
+[
+"Bit Zeros",
+150,
+150,
+2200
+]
+],
+"Top Tier Operator Needed": [
+[
+"Eckhart Security",
+300,
+300,
+38000
+]
+],
+"Track Down ~mission(TargetName)": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Tracker Beginner's Permit Certification": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Tracker License Certification": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Tracker Training Permit Certification": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Treat yourself to a fight": [
+[
+"Headhunters",
+300,
+300,
+5800
+]
+],
+"Tricky Ambush": [
+[
+"Eckhart Security",
+200,
+200,
+5800
+]
+],
+"Turf War": [
+[
+"Headhunters",
+250,
+250,
+2200
+]
+],
+"URGENT CAPITAL FLEET REFUEL": [
+[
+"United Wayfarers Club",
+200,
+200,
+95250
+]
+],
+"URGENT CONVOY REFUEL": [
+[
+"United Wayfarers Club",
+100,
+200,
+0
+]
+],
+"UWC'S HIRING REFUELERS": [
+[
+"United Wayfarers Club",
+200,
+200,
+null
+]
+],
+"Upgrade Intrepid": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Urgent: Boarding Action In Progress": [
+[
+"Northrock Service Group",
+8000,
+8000,
+null
+]
+],
+"VIP Client Needs Protection": [
+[
+"Eckhart Security",
+200,
+200,
+5800
+]
+],
+"Vanduul Strike Group Detected": [
+[
+"InterSec Defense Solutions",
+300,
+300,
+null
+]
+],
+"Verified Bounty: ~mission(TargetName) at ~mission(Location)": [
+[
+"Bounty Hunters Guild",
+50,
+50,
+null
+]
+],
+"Verified Bounty: ~mission(TargetName) | XenoThreat | ~mission(Danger)": [
+[
+"Bounty Hunters Guild",
+16000,
+16000,
+null
+]
+],
+"Verify Deceased Criminal: ~mission(TargetName)": [
+[
+"Hockrow Agency",
+300,
+300,
+null
+]
+],
+"Very Long Distance Covalex Delivery Stanton": [
+[
+"Covalex",
+150,
+150,
+null
+]
+],
+"Wanna be a Headhunter?": [
+[
+"Headhunters",
+50,
+50,
+0
+]
+],
+"Want Taurus ship": [
+[
+"Wikelo Emporium",
+250,
+250,
+null
+]
+],
+"Wanted: ~mission(TargetName)": [
+[
+"Headhunters",
+600,
+600,
+15000
+]
+],
+"What is Terrapin?": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Where Wolf? Here Wolf": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Wikelo Arrive to System": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Wikelo Navy F7": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Willkommen im System": [
+[
+"Recco Battaglia",
+800,
+800,
+null
+]
+],
+"Wipe Citizens for Prosperity Data Farm": [
+[
+"Headhunters",
+125,
+200,
+null
+]
+],
+"Wipe Out XenoThreat Servers": [
+[
+"Headhunters",
+125,
+1500,
+null
+]
+],
+"Write Off": [
+[
+"Dead Saints",
+100,
+100,
+null
+]
+],
+"XL Purchase Order: Hand Mined Materials": [
+[
+"Shubin Interstellar",
+200,
+200,
+5800
+]
+],
+"XL Purchase Order: Ship Mined Ore ?": [
+[
+"Shubin Interstellar",
+250,
+250,
+5800
+],
+[
+"Shubin Interstellar",
+250,
+250,
+15000
+]
+],
+"XL Purchase Order: Vehicle Mined Ore": [
+[
+"Shubin Interstellar",
+250,
+250,
+null
+]
+],
+"XS Purchase Order: Ship Mined Ore": [
+[
+"Shubin Interstellar",
+100,
+100,
+0
+]
+],
+"XenoThreat Lieutenant needs some killing": [
+[
+"Headhunters",
+125,
+125,
+5800
+]
+],
+"Yellow Level Contract: Ambush An Amateur": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Clear Out PAF": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Clear Shipjacking Group": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Defend ~mission(DefendLocationWrapperLocation)": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Level Contract: Disrupt Operations": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Level Contract: Limiting Potential Threat": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Merc Work": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Neutralize Shipjacking Gang": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Level Contract: Routine Patrol": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Security Sweep": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Level Contract: Ship Under Attack": [
+[
+"Foxwell Enforcement",
+100,
+100,
+0
+]
+],
+"Yellow Level Contract: Stand Up to Aggressors": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Level Contract: Surprise Strike": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Lvl. Contract: Defend ~mission(Objects)": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Lvl. Contract: Defend ~mission(Objects) and Escort Employees": [
+[
+"Foxwell Enforcement",
+100,
+100,
+2200
+]
+],
+"Yellow Lvl. Contract: Protect ~mission(Objects)": [
+[
+"Foxwell Enforcement",
+100,
+100,
+800
+]
+],
+"Yellow Lvl. Contract: Protect ~mission(Objects) and Escort Employees": [
+[
+"Foxwell Enforcement",
+100,
+100,
+2200
+]
+],
+"Yormandi Gun": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Your Best Shot": [
+[
+"Wikelo Emporium",
+10,
+10,
+null
+]
+],
+"Zeus Cargo Special": [
+[
+"Wikelo Emporium",
+100,
+100,
+null
+]
+],
+"Zeus Special": [
+[
+"Wikelo Emporium",
+30,
+30,
+null
+]
+],
+"Ziel der Shattered Blade: ~mission(TargetName)": [
+[
+"InterSec Defense Solutions",
+150,
+150,
+800
+]
+],
+"~mission(Destination) Errand": [
+[
+"Headhunters",
+50,
+50,
+null
+]
+],
+"~mission(Location) has been greenlit": [
+[
+"Headhunters",
+150,
+150,
+800
+]
+],
+"~mission(Location) needs a bunch of repairs": [
+[
+"Headhunters, Citizens For Prosperity",
+150,
+150,
+null
+]
+],
+"~mission(Location) needs assistance": [
+[
+"Citizens For Prosperity",
+150,
+150,
+800
+]
+],
+"~mission(Location) needs massive repairs": [
+[
+"Headhunters, Citizens For Prosperity",
+450,
+450,
+null
+]
+],
+"~mission(Location) needs some repairs": [
+[
+"Headhunters, Citizens For Prosperity",
+75,
+100,
+null
+]
+],
+"~mission(Location|Address) needs help": [
+[
+"Citizens For Prosperity",
+850,
+850,
+15000
+]
+],
+"~mission(TargetName) needs stomping": [
+[
+"Headhunters",
+50,
+50,
+800
+]
+]
+},
+"ladders": {
+"Adagio Holdings": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Bit Zeros": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Citizens For Prosperity": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Dead Saints": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Eckhart Security": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"FTL Courier": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Foxwell Enforcement": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Headhunters": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Highpoint Wilderness Specialists": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"InterSec Defense Solutions": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Ling Family Hauling": [
+[
+0,
+"Anwärter"
+]
+],
+"Recco Battaglia": [
+[
+0,
+"Anwärter"
+],
+[
+2400,
+"Mitglied"
+],
+[
+6000,
+"Vertrauensmitglied"
+],
+[
+69600,
+"Prestige 3"
+]
+],
+"Shubin Interstellar": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+],
+"United Wayfarers Club": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
+]
+]
+}
+}

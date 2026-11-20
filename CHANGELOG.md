@@ -2,6 +2,19 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.10.0] – 2026-11-20
+
+### Hinzugefügt
+- **Reiter „Ruf“:** schätzt den Ruf je Organisation als Balken zum nächsten Rang. Das Spiel schreibt keine Ruf-Punkte ins Log; der Reiter rechnet deshalb: Stand aus dem mobiGlas (einmal abgleichen: erreichter Rang + wie weit der Balken der nächsten Stufe gefüllt ist) + Ruf der danach abgeschlossenen Missionen laut Missionsbeschreibung × Faktor.
+  - Missionen, Ergebnis (abgeschlossen, fehlgeschlagen, abgebrochen), Organisation und „geteilt“ kommen aus denselben Logs wie im Reiter „Sitzungen“.
+  - Angegebene Ruf-Punkte und Rangschwellen stammen aus einer Tabelle, die `ruf_daten.py` aus den Anmerkungen der deutschen Community-Übersetzung baut (nur Zahlen, Titel, Rangnamen; Stand 4.10.3: 510 Missionstitel, 14 Organisationen). Titel und Beschreibung werden exakt gepaart.
+  - Der Faktor wird je Organisation aus zwei Abgleichen gelernt; bis dahin gilt 0,55 (Messung an Foxwell, 19./20.11.: es kam etwa die Hälfte der angegebenen Punkte an).
+  - Geteilte Missionen zählen als Spanne (halb bis voll, schraffiert im Balken), Missionen ohne Wert und Fehlschläge mit 0, werden aber angezeigt. Favoriten mit Stern oben.
+  - Abgleiche und Favoriten bleiben im Browser.
+
+### Geändert
+- Sitzungen: Die Log-Auswertung liest zusätzlich die Missionen; der Zwischenspeicher wird deshalb einmal neu aufgebaut.
+
 ## [1.9.2] – 2026-11-19
 
 ### Behoben
