@@ -31,6 +31,10 @@
 #   geschätzten Stand. Missionstexte optional (Schalter, aus = Standard): Sie
 #   kommen zur Laufzeit aus der global.ini im geladenen Spielordner und werden
 #   in einem Fenster gezeigt; die Seite selbst enthält keine Missionstexte.
+#   Gilden (ab Alpha 5.0, Aufteilung laut Roberts Liste vom 20.11.2026, PTU):
+#   Die Organisationen werden nach Gilden gruppiert; wer nicht in der Liste steht,
+#   kommt unter „Keiner Gilde zugeordnet“. Alle bekannten Organisationen sind von
+#   Anfang an sichtbar, auch ohne Logs; ohne Abgleich lassen sie sich ausblenden.
 #   Konzept: Konzept_Ruf-Tracker.md, Entscheidungen R1–R8 vom 20.11.2026.
 #   Eigenständiges Modul für das spätere Spieler-Cockpit.
 # =============================================================================
@@ -46,6 +50,7 @@ RF_HTML = r"""
   <section class="panel hide" id="view-rep">
     <div class="rf-bar">
       <button type="button" class="btn" id="rf-load">📁 <span class="de">Log-Ordner laden …</span><span class="en">Load log folder …</span></button>
+      <label class="rf-toggle"><input type="checkbox" id="rf-hide"> <span class="de">Ohne Abgleich ausblenden</span><span class="en">Hide not aligned</span></label>
       <label class="rf-toggle"><input type="checkbox" id="rf-texts"> <span class="de">Missionstexte anzeigen</span><span class="en">Show mission texts</span></label>
       <span class="rf-stat" id="rf-stat" role="status"></span>
     </div>
@@ -100,6 +105,10 @@ RF_CSS = r"""
   #view-rep .rf-empty{color:var(--muted);padding:12px 2px}
   #view-rep .rf-toggle{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}
   #view-rep .rf-toggle input{width:20px;height:20px}
+  #view-rep .rf-guild{margin:0 0 18px}
+  #view-rep .rf-guild>h2{font-family:var(--disp);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:14px 0 4px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  #view-rep .rf-guild>h2 small{font-size:12px;letter-spacing:0;text-transform:none;color:var(--muted)}
+  #view-rep .rf-guild>p{color:var(--muted);font-size:12.5px;margin:0 0 8px}
   #view-rep .rf-toggle.off{opacity:.55;cursor:not-allowed}
   #view-rep .rf-lvl{margin:10px 0 0;border-left:4px solid var(--line);padding:2px 0 2px 10px}
   #view-rep .rf-lvl h4{margin:0 0 4px;font-family:var(--disp);font-size:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
@@ -158,9 +167,23 @@ function pats(){if(PATS) return PATS; PATS=[];
   return PATS;}
 // Title for display: placeholders as [Name].
 const prettyT=s=>String(s).replace(/~mission\(([^)|]*)(?:\|[^)]*)?\)/g,'[$1]');
-// Display name of an organisation id from the log ("FoxwellEnforcement", "BountyHunterGuild").
-function orgName(id){if(!TAB||!id) return id||''; const c=compact(id);
-  for(const o of Object.keys(TAB.ladders)){const k=compact(o); if(k===c||k.startsWith(c.slice(0,10))||c.startsWith(k.slice(0,10))) return o;}
+// Guilds from Alpha 5.0 (PTU list, 20.11.2026): name, focus, and the words that identify their mission givers.
+const GUILDS=[
+  {n:'Transport Guild', d:['Fracht und Kurier','Cargo and courier'], k:['covalex','ftl','ling']},
+  {n:'Resources Guild', d:['Rohstoffe und Bergung','Resources and salvage'], k:['shubin','adagio','cornerstone']},
+  {n:'Mercenary Guild', d:['Sicherheit, Kampf, Söldner','Security, combat, mercenary'], k:['northrock']},
+  {n:'Bounty Hunter Guild', d:['Kopfgeldjagd','Bounty hunting'], k:['bounty']},
+  {n:'Academy of Science', d:['Forschung, Sammeln, Erkundung','Research, collecting, exploration'], k:['rayari']},
+  {n:'Lokale / persönliche Boards', d:['Terminals außerhalb der Gildenhallen','Terminals outside the guild halls'], k:['wikelo','hockrow']}];
+// Mission givers named in the guild list that the reputation table does not know (shown from the start).
+const EXTRA=['Covalex Independent Haulers','Cornerstone Developments','Northrock Service Group','Bounty Hunters Guild','Rayari Inc.','Wikelo','Hockrow Agency'];
+// Generic giver ids of the log that are no organisation.
+const NOORG=new Set(['missiongiver','civilian']);
+const known=()=>[...Object.keys(TAB?TAB.ladders:{}),...EXTRA];
+const guildOf=o=>{const c=compact(o); return GUILDS.find(g=>g.k.some(k=>c.includes(k)))||null;};
+// Display name of an organisation id from the log ("FoxwellEnforcement", "NorthRock" → Northrock Service Group).
+function orgName(id){if(!id||NOORG.has(compact(id))) return ''; const c=compact(id);
+  for(const o of known()){const k=compact(o); if(k===c||k.startsWith(c.slice(0,10))||c.startsWith(k.slice(0,10))) return o;}
   return id.replace(/([a-z])([A-Z])/g,'$1 $2');}
 // Title of a mission without a table entry: the text of the accept notification without its prefix.
 function plainTitle(texts){const x=texts[0]||''; const i=x.indexOf(': '); return i>0?x.slice(i+2):x;}
@@ -184,7 +207,10 @@ function missions(){const S=(typeof SZ!=='undefined'&&SZ.sessions)?SZ.sessions()
   return out;}
 
 /* ---------- estimate ---------- */
-const ladder=o=>(TAB&&TAB.ladders[o])||[];
+// Rank ladder of an organisation; without own data the contractor ladder is assumed (flagged by ladderGuess).
+const CONTRACTOR=()=>Object.values(TAB?TAB.ladders:{}).find(l=>l.some(r=>r[1]==='Auftragnehmer Elite'))||[];
+const ladderGuess=o=>!(TAB&&TAB.ladders[o]&&TAB.ladders[o].length>1);
+const ladder=o=>ladderGuess(o)?CONTRACTOR():TAB.ladders[o];
 // Rank band for an XP value: [reached rank, next rank or null].
 function band(o,x){const l=ladder(o); let i=0; while(i+1<l.length&&x>=l[i+1][0]) i++; return [l[i]||[0,'–'],l[i+1]||null];}
 // Stated XP of a completed mission as [low, high] after the factor; shared missions count half to full.
@@ -316,7 +342,8 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
   const rows=est.after.slice().reverse().map(m=>`<tr><td>${fmtT(m.t)}</td><td>${esc(prettyT(m.title))}${m.shared?`<span class="rf-tag">${T('geteilt','shared')}</span>`:''}</td><td>${m.res==='Complete'?'✓':`<span class="rf-tag fail">${esc(m.res==='Fail'?T('fehlgeschlagen','failed'):m.res==='Abandon'?T('abgebrochen','abandoned'):m.res)}</span>`}</td><td class="num">${m.lo==null?'?':m.lo===m.hi?fmt(m.lo):fmt(m.lo)+'–'+fmt(m.hi)}</td></tr>`).join('');
   const det=est.after.length?`<details><summary>${T(est.cal?'Missionen seit dem Abgleich':'Missionen in den geladenen Logs',est.cal?'Missions since the alignment':'Missions in the loaded logs')} (${est.after.length})</summary><div class="tablewrap"><table><thead><tr><th>${T('Ende','End')}</th><th>${T('Mission','Mission')}</th><th>${T('Ergebnis','Result')}</th><th class="num">${T('XP laut Beschreibung','XP as stated')}</th></tr></thead><tbody>${rows}</tbody></table></div></details>`:'';
   const acts=`<div class="rf-acts"><button type="button" class="btn${est.cal?'':' pri'}" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
-  return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</article>`;}
+  const guess=ladderGuess(o)?`<p class="rf-meta"><span class="est">${T('Rangleiter nicht bekannt – Auftragnehmer-Stufen angenommen.','Rank ladder unknown – contractor ranks assumed.')}</span></p>`:'';
+  return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${guess}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</article>`;}
 // Alignment form: reached rank, fill of the next rank's bar, time of the look into the mobiGlas.
 function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0][1]:(l[0]||[0,''])[1];
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -333,11 +360,20 @@ function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions
   $r('src').textContent=TAB?T(`Ruf-Tabelle: ${Object.keys(TAB.missions).length} Missionstitel, Stand ${TAB.stand}. Quelle: ${TAB.quelle}.`,`Reputation table: ${Object.keys(TAB.missions).length} mission titles, as of ${TAB.stand}. Source: annotations of the German community translation (numbers, titles, rank names only).`):T('Ruf-Tabelle fehlt in diesem Bau.','Reputation table missing in this build.');
   $r('load').classList.toggle('pri',!S.length); textsBar(); if(textsOn()&&iniFile()) loadTexts().catch(()=>{});
   $r('stat').textContent=S.length?(SZ.status?SZ.status():''):'';
-  if(!S.length){list.innerHTML=`<p class="rf-empty">${T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU), dann erscheinen hier deine Organisationen.','Load the Star Citizen log folder (LIVE or PTU), then your organisations appear here.')}</p>`; return;}
-  const ms=missions(), st=load(), orgs=[...new Set([...ms.map(m=>m.org),...Object.keys(st.orgs||{})])];
+  // All known organisations from the start (table, guild list, logs, own alignments), grouped by guild
+  const ms=missions(), st=load(), hide=hideOn();
+  const orgs=[...new Set([...known(),...ms.map(m=>m.org),...Object.keys(st.orgs||{})])].filter(Boolean);
   const last=o=>ms.filter(m=>m.org===o).map(m=>m.t).sort().pop()||'';
-  orgs.sort((a,b)=>(orgState(st,b).fav-orgState(st,a).fav)||last(b).localeCompare(last(a)));
-  list.innerHTML=orgs.length?orgs.map(o=>card(o,ms,st)).join(''):`<p class="rf-empty">${T('In den geladenen Logs ist keine abgeschlossene Mission.','No completed mission in the loaded logs.')}</p>`;
+  const shown=orgs.filter(o=>!hide||orgState(st,o).cals.length||orgState(st,o).fav);
+  $r('hide').checked=hide;
+  const groups=[...GUILDS.map(g=>({g,list:shown.filter(o=>guildOf(o)===g)})),{g:null,list:shown.filter(o=>!guildOf(o))}].filter(x=>x.list.length);
+  for(const x of groups) x.list.sort((a,b)=>(orgState(st,b).fav-orgState(st,a).fav)||(orgState(st,b).cals.length>0)-(orgState(st,a).cals.length>0)||last(b).localeCompare(last(a))||a.localeCompare(b));
+  const hint=S.length?'':`<p class="rf-empty">${T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU), dann zählt der Reiter deine Missionen mit. Abgleichen geht auch ohne Logs.','Load the Star Citizen log folder (LIVE or PTU), then the tab counts your missions. Aligning works without logs too.')}</p>`;
+  const nHidden=orgs.length-shown.length;
+  list.innerHTML=hint+(groups.length?groups.map(x=>`<section class="rf-guild"><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))} <small>${x.list.length}</small></h2>
+      <p>${x.g?esc(T(x.g.d[0],x.g.d[1])):T('Im Testserver 5.0 noch keiner Gilde zugeordnet (geprüft 20.11.2026).','Not yet assigned to a guild on the 5.0 test server (checked 20 Nov 2026).')}</p>${x.list.map(o=>card(o,ms,st)).join('')}</section>`).join('')
+    :`<p class="rf-empty">${T('Noch keine Organisation abgeglichen. Schalte „Ohne Abgleich ausblenden“ aus, um alle zu sehen.','No organisation aligned yet. Switch off “Hide not aligned” to see all.')}</p>`)
+    +(hide&&nHidden?`<p class="rf-note">${T(`${nHidden} Organisationen ohne Abgleich ausgeblendet.`,`${nHidden} organisations without alignment hidden.`)}</p>`:'');
   if(OPEN){const f=document.querySelector(`#view-rep [data-form="${CSS.escape(OPEN)}"] select`); if(f) f.focus();}}
 
 /* ---------- events ---------- */
@@ -354,6 +390,9 @@ view.addEventListener('click',e=>{const st=load(); let b;
   if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt);}});
 // Remember which overviews are open across re-renders
 view.addEventListener('toggle',e=>{const d=e.target.closest&&e.target.closest('[data-ov]'); if(d){if(d.open) OVOPEN.add(d.dataset.ov); else OVOPEN.delete(d.dataset.ov);}},true);
+const HKEY='scha_rep_hide';
+function hideOn(){try{return localStorage.getItem(HKEY)==='1';}catch(e){return false;}}
+$r('hide').addEventListener('change',e=>{try{localStorage.setItem(HKEY,e.target.checked?'1':'0');}catch(x){} render();});
 $r('texts').addEventListener('change',e=>{try{localStorage.setItem(TKEY,e.target.checked?'1':'0');}catch(x){} render();});
 view.addEventListener('change',e=>{const i=e.target.closest('[data-shotin]'); if(i&&i.files[0]) readShot(i.files[0],i.closest('form'));});
 view.addEventListener('dragover',e=>{const z=e.target.closest('[data-drop]'); if(z){e.preventDefault(); z.classList.add('drag');}});
@@ -370,6 +409,6 @@ view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!
   $r('stat').textContent=T(`${o}: Abgleich gespeichert (${fmt(xp)} XP).`,`${o}: alignment saved (${fmt(xp)} XP).`);});
 
 let started=false;
-return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, _measure:measureShot, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
+return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, _measure:measureShot, _guildOf:o=>(guildOf(o)||{}).n||'', _orgName:orgName, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
 })();
 """
