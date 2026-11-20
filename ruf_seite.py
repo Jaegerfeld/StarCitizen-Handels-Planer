@@ -188,10 +188,12 @@ const GUILDS=[
   {n:'Academy of Science', d:['Forschung, Sammeln, Erkundung','Research, collecting, exploration'], k:['rayari']},
   {n:'Lokale / persönliche Boards', d:['Terminals außerhalb der Gildenhallen','Terminals outside the guild halls'], k:['wikelo','hockrow']}];
 // Mission givers named in the guild list that the reputation table does not know (shown from the start).
-const EXTRA=['Covalex Independent Haulers','Cornerstone Developments','Northrock Service Group','Bounty Hunters Guild','Rayari Inc.','Wikelo','Hockrow Agency'];
+// Names as in the table (Covalex, Rayari Incorporated, Wikelo Emporium …) so that nobody appears twice.
+const EXTRA=['Cornerstone Developments','Northrock Service Group','Bounty Hunters Guild','Hockrow Agency'];
 // Generic giver ids of the log that are no organisation.
 const NOORG=new Set(['missiongiver','civilian']);
-const known=()=>[...Object.keys(TAB?TAB.ladders:{}),...EXTRA];
+// All organisations: with a rank ladder, with missions in the table, and the extra ones of the guild list.
+const known=()=>{if(!TAB) return EXTRA.slice(); const s=new Set(Object.keys(TAB.ladders)); for(const es of Object.values(TAB.missions)) for(const e of es) s.add(e[0]); for(const x of EXTRA) s.add(x); return [...s];};
 const guildOf=o=>{const c=compact(o); return GUILDS.find(g=>g.k.some(k=>c.includes(k)))||null;};
 // Display name of an organisation id from the log ("FoxwellEnforcement", "NorthRock" → Northrock Service Group).
 function orgName(id){if(!id||NOORG.has(compact(id))) return ''; const c=compact(id);
@@ -210,12 +212,13 @@ function missions(){const S=(typeof SZ!=='undefined'&&SZ.sessions)?SZ.sessions()
   const seen=new Set(), out=[];
   for(const e of ends.sort((a,b)=>a.t.localeCompare(b.t))){if(seen.has(e.id)) continue; seen.add(e.id);
     const m=ids[e.id]||{t:'',x:[],org:''}, hit=lookup(m.x), title=hit?hit.title:normT(plainTitle(m.x));
-    const tab=hit?hit.e:null, org=tab?tab[0][0]:orgName(m.org);
-    if(!org) continue;
-    const lo=tab?Math.min(...tab.map(x=>x[1])):null, hi=tab?Math.max(...tab.map(x=>x[2])):null;
+    const tab=hit?hit.e:null;
     // "Shared" notification with the same title between accepting and ending (it carries no MissionId)
     const shared=shares.some(sh=>(!m.t||sh.t>=m.t)&&sh.t<=e.t&&normT(sh.x)===title);
-    out.push({t:e.t,id:e.id,title,org,res:e.r,lo,hi,shared});}
+    // A mission can pay reputation to two organisations at once; each gets its own entry
+    const orgs=tab?[...new Set(tab.map(x=>x[0]))]:[orgName(m.org)];
+    for(const org of orgs){if(!org) continue; const es=tab?tab.filter(x=>x[0]===org):null;
+      out.push({t:e.t,id:e.id,title,org,res:e.r,lo:es?Math.min(...es.map(x=>x[1])):null,hi:es?Math.max(...es.map(x=>x[2])):null,shared});}}
   return out;}
 
 /* ---------- estimate ---------- */

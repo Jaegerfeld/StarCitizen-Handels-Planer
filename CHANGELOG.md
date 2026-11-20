@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.15.1] – 2026-11-20
+
+### Behoben
+- **Ruf: keine doppelten Organisationen mehr.** Covalex, Rayari und Wikelo hießen in der Gildenliste anders als in der Ruf-Tabelle und konnten doppelt erscheinen; es gelten jetzt die Namen der Tabelle.
+- **Alle Organisationen der Ruf-Tabelle werden gezeigt**, auch ohne Rangleiter und ohne Mission im Log (neu sichtbar z. B. Vaughn, Red Wind Linehaul) – jetzt 23.
+- **Missionen mit zwei Auftraggebern** („Headhunters, Citizens For Prosperity“) werden in der Ruf-Tabelle getrennt und zählen für beide Organisationen.
+
 ## [1.15.0] – 2026-11-20
 
 ### Hinzugefügt

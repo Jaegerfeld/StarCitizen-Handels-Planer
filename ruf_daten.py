@@ -105,11 +105,12 @@ def build(path: pathlib.Path) -> dict:
         title = norm_title(val)
         ranks = [(kind, name.strip(), xp(x)) for kind, name, x in RE_RANK.findall(desc)]
         min_xp = next((x for kind, _, x in ranks if kind.startswith("Min")), None)
-        for lo, hi, org in RE_RUF.findall(desc):
-            org = org.strip()
-            missions.setdefault(title, set()).add((org, xp(lo), xp(hi or lo), min_xp, dkey))
-            for _, name, x in ranks:
-                ladders.setdefault(org, set()).add((x, name))
+        for lo, hi, orgs in RE_RUF.findall(desc):
+            # Some missions name two organisations at once ("Headhunters, Citizens For Prosperity")
+            for org in (o.strip() for o in orgs.split(",") if o.strip()):
+                missions.setdefault(title, set()).add((org, xp(lo), xp(hi or lo), min_xp, dkey))
+                for _, name, x in ranks:
+                    ladders.setdefault(org, set()).add((x, name))
     # Contractor ladder: all "Auftragnehmer …" ranks (and Neutral) seen anywhere; orgs using it get all of it.
     contractor = {(x, n) for v in ladders.values() for x, n in v if n == "Neutral" or n.startswith("Auftragnehmer")}
     for org, v in ladders.items():
