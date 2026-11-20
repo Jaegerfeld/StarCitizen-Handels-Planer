@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.13.0] – 2026-11-20
+
+### Geändert
+- **Ruf: nach Gilden sortiert, alle Organisationen von Anfang an.** Ab Alpha 5.0 sind die Auftraggeber in Gilden organisiert. Der Reiter gruppiert sie danach: Transport Guild, Resources Guild, Mercenary Guild, Bounty Hunter Guild, Academy of Science, lokale/persönliche Boards (Aufteilung laut Gildenliste, Stand 5.0 PTU). Wer nicht in der Liste steht (z. B. Foxwell Enforcement), erscheint unter „Keiner Gilde zugeordnet“.
+- Alle bekannten Organisationen sind sofort sichtbar, auch ohne geladene Logs; abgleichen geht auch ohne Logs. Neuer Schalter „Ohne Abgleich ausblenden“ (Favoriten bleiben sichtbar).
+- Organisationen ohne bekannte Rangleiter bekommen die Auftragnehmer-Stufen, deutlich als „angenommen“ markiert.
+
 ## [1.12.0] – 2026-11-20
 
 ### Hinzugefügt
