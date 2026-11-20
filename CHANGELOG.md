@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.11.0] – 2026-11-20
+
+### Hinzugefügt
+- **Ruf: Abgleich per Screenshot.** Im Abgleich-Formular „Screenshot auswerten …“ wählen oder einen Screenshot der mobiGlas-Seite „Ruf“ hineinziehen. Die Seite zählt die vollen Balken (= erreichte Ränge), findet die hervorgehobene Kachel (= nächster Rang) und misst deren Balken auf Teilpixel genau; den Zeitpunkt nimmt sie aus dem Dateinamen. Rang, Prozent und Zeitpunkt werden ausgefüllt, eine Vorschau zeigt den gemessenen Balken rot umrahmt – prüfen und übernehmen. An sechs Screenshots geprüft: höchstens 2 Prozentpunkte Abweichung zur Handmessung, die hervorgehobene Kachel passte jedes Mal. Das Bild wird nur im Browser gelesen.
+
 ## [1.10.0] – 2026-11-20
 
 ### Hinzugefügt
