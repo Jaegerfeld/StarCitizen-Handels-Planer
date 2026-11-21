@@ -2,6 +2,24 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.21.0] – 2026-11-21
+
+### Hinzugefügt
+- **Ruf: Gildenfarben.** Jede Gilde hat eine eigene Farbe (Transport Blau, Resources Bernstein, Mercenary Rot, Bounty Violett, Academy Grün, lokale Boards Magenta, ohne Gilde Grau): als Streifen links an Karten und Zeilen, leichte Tönung oben in der Karte, Linie und Überschrift der Gilde. Im hellen Modus dunklere Töne derselben Farben (Kontrast 5,3 bis 6,9 : 1). Türkis bleibt dem Fortschritt vorbehalten; die Gilde steht weiter auch als Text.
+- **Umschalter „Karten | Liste“.** Die Liste zeigt je Organisation eine Zeile mit Abzeichen, Name, Rang, Balken und „≈ XP · noch ≈ … bis …“ – etwa 44 statt 125 px. Ein Klick auf die Zeile klappt die volle Karte auf.
+- **Ordnung „nächster Aufstieg zuerst“** (neben „nach Gilde“): alle Organisationen nach dem Anteil am aktuellen Band, ohne Gildengruppen – oben steht, wo der nächste Aufstieg am nächsten ist.
+- **Favoriten oben:** Mit Stern markierte Organisationen stehen in einem eigenen Abschnitt vor allen Gilden.
+- Gildenfarbe auch in der Prüfliste von „Screenshots abgleichen …“ (Farbpunkt vor der Organisation).
+- Ansicht und Ordnung merkt sich der Browser.
+
+### Geändert
+- **Kleine Gilden teilen sich eine Zeile:** Jede Gilde ist so breit wie ihre Karten (bis vier), mehrere kleine stehen nebeneinander.
+- **Gildenkopf einzeilig:** Name und Anzahl; die Beschreibung steht im Tooltip.
+- **Organisationen ohne Abgleich** erscheinen je Gilde als eine Namenszeile statt als leere Karten; ein Klick auf den Namen öffnet die Karte zum Abgleichen.
+
+### Behoben
+- Kurznamen werden nie zur bloßen Zahl („Prestige 1“ blieb bisher als „1“ stehen).
+
 ## [1.20.1] – 2026-11-21
 
 ### Geändert
