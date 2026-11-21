@@ -472,8 +472,11 @@ async function showText(key,title){const dlg=$r('dlg'); $r('dlg-h').textContent=
   catch(e){$r('dlg-t').textContent=T('Die Sprachdatei konnte nicht gelesen werden – bitte den Log-Ordner neu laden.','The language file could not be read – please load the log folder again.');}}
 function textsBar(){const box=$r('texts'), lab=box.closest('label'), has=!!iniFile(), note=$r('texts-note');
   box.checked=textsOn(); box.disabled=!has; lab.classList.toggle('off',!has);
-  note.hidden=has||!textsOn();
-  note.textContent=has?'':T('Missionstexte brauchen die Sprachdatei des Spiels (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) im geladenen Ordner – die gibt es nur mit installierter Übersetzung. Lade dafür den ganzen Ordner LIVE.','Mission texts need the game’s language file (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) in the loaded folder – it exists only with a translation installed. Load the whole LIVE folder for it.');}
+  // The reason shows when the switch was on before or when someone clicks the greyed switch (no silent grey box)
+  note.hidden=has||!(textsOn()||WHYTEXTS);
+  lab.title=has?'':T('Braucht die Sprachdatei des Spiels – den ganzen Ordner LIVE laden.','Needs the game’s language file – load the whole LIVE folder.');
+  note.textContent=has?'':T('Missionstexte brauchen die Sprachdatei des Spiels (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) im geladenen Ordner – die gibt es nur mit installierter Übersetzung. Lade dafür über „Log-Ordner laden …“ den ganzen Ordner LIVE, nicht nur „logbackups“. Eine lokal geöffnete Kopie des Planers hat einen eigenen Speicher – dort den Ordner einmal neu wählen.','Mission texts need the game’s language file (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini) in the loaded folder – it exists only with a translation installed. Load the whole LIVE folder via “Load log folder …”, not just “logbackups”. A locally opened copy of the planner has its own storage – choose the folder there once again.');}
+let WHYTEXTS=false;
 
 /* ---------- to the phone ---------- */
 const PKEY='scha_rep_snap';
@@ -607,6 +610,7 @@ view.addEventListener('toggle',e=>{const g=e.target.closest&&e.target.closest('[
   if(g.open) s.delete(g.dataset.guild); else s.add(g.dataset.guild); try{localStorage.setItem(GKEY,JSON.stringify([...s]));}catch(x){}},true);
 function hideOn(){try{return localStorage.getItem(HKEY)==='1';}catch(e){return false;}}
 $r('hide').addEventListener('change',e=>{try{localStorage.setItem(HKEY,e.target.checked?'1':'0');}catch(x){} render();});
+$r('texts').closest('label').addEventListener('click',()=>{if($r('texts').disabled){WHYTEXTS=true; textsBar();}});
 $r('texts').addEventListener('change',e=>{try{localStorage.setItem(TKEY,e.target.checked?'1':'0');}catch(x){} render();});
 view.addEventListener('change',e=>{const i=e.target.closest('[data-shotin]'); if(i&&i.files[0]) readShot(i.files[0],i.closest('form'));});
 view.addEventListener('dragover',e=>{const z=e.target.closest('[data-drop]'); if(z){e.preventDefault(); z.classList.add('drag');}});

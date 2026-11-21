@@ -11,6 +11,7 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog]
 
 ### Behoben
 - **Ruf: Klick auf einen Missionstitel tat still nichts**, wenn die Missionstexte ausgeschaltet sind oder die Sprachdatei des Spiels fehlt (z. B. in einer lokal geöffneten Kopie des Planers, die einen eigenen Speicher hat). Jetzt sagt ein Fenster, was fehlt: Schalter „Missionstexte anzeigen“ einschalten bzw. den ganzen Ordner LIVE laden.
+- **Grauer Schalter „Missionstexte anzeigen“ ohne Begründung:** Ohne Sprachdatei ist er gesperrt; die Erklärung erschien bisher nur, wenn er vorher an war. Jetzt zeigt ein Klick auf den grauen Schalter den Grund (und ein Tooltip nennt ihn).
 
 ## [1.17.0] – 2026-11-21
 
