@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.20.0] – 2026-11-21
+
+### Geändert
+- **Ruf: kompakte Karten für den schnellen Überblick.** Jede Karte zeigt oben nur noch, was für den Überblick zählt: Abzeichen und Name, aktuellen Rang, die Leiter als kleine Abzeichen-Reihe, den Balken und eine Zahlenzeile („≈ 15.529 XP · noch ≈ 22.471 bis Leitend“). Ein Klick auf die obere Hälfte oder auf ▾ klappt den Rest auf: beschriftete Leiter, Abgleich-Infos und Faktor, die Knöpfe zum Abgleichen, Missionen seit dem Abgleich und Missionen nach Rufstufe. ▴ klappt wieder zu; beim Abgleichen klappt die Karte von selbst auf.
+- Die Karten sind schmaler (ab 300 px statt 440 px): auf breiten Bildschirmen drei oder mehr nebeneinander, auf dem Handy eine Spalte.
+- Ohne Abgleich zeigt die Karte „Noch kein Abgleich“, die Zahl der Missionen in den Logs und die graue Leiter.
+
 ## [1.19.1] – 2026-11-21
 
 ### Behoben
