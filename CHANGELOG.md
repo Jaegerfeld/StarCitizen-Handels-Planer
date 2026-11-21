@@ -2,6 +2,12 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.19.1] – 2026-11-21
+
+### Behoben
+- **Ruf: doppelte Karten aus alten Namen der Gildenliste.** 1.13.0–1.15.0 zeigten zusätzlich die Namen aus der fremden Gildenliste („Covalex Independent Haulers“, „Rayari Inc.“, „Wikelo“). Seit 1.15.1 gibt es sie nicht mehr, aber Abgleiche oder Sterne unter diesen Namen blieben im Browser gespeichert und erschienen als eigene Karte. Jetzt werden sie beim Laden der Organisation der Ruf-Tabelle zugeschlagen (Covalex, Rayari Incorporated, Wikelo Emporium); das Spiel kennt nur eine Covalex (Log: CovalexIndependentContractors, mobiGlas: COVALEX).
+- Die einmaligen Hinweise zum gespeicherten Stand (zusammengeführte Namen, umgerechnete Abgleiche) erscheinen jetzt gleich beim ersten Öffnen und zusammen in der Statuszeile.
+
 ## [1.19.0] – 2026-11-21
 
 ### Behoben

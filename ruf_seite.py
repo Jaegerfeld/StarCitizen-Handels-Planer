@@ -207,7 +207,11 @@ const T=(de,en)=>L()==='en'?en:de;
 const $r=id=>document.getElementById('rf-'+id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SKEY='scha_rep_v1', F0=1.0, MINLEARN=200;
-let MIGRATED=0;   // alignments converted to the corrected tile reading on this load
+let MIGRATED=0;
+// Names of the external guild list shown in 1.13.0–1.15.0; stored alignments and stars under them belong to the
+// organisation of the table (the game knows only one: log id CovalexIndependentContractors, mobiGlas "COVALEX").
+const OLDNAMES={'Covalex Independent Haulers':'Covalex','Rayari Inc.':'Rayari Incorporated','Wikelo':'Wikelo Emporium'};
+let MERGED=[];   // old names merged on this load (for the status line)   // alignments converted to the corrected tile reading on this load
 const fmt=n=>Math.round(n).toLocaleString(L()==='en'?'en-GB':'de-DE');
 const fmtT=s=>s?new Date(s).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'}):'–';
 // Title as in the table: markup of the translation removed, spaces collapsed (same rule as ruf_daten.norm_title).
@@ -217,6 +221,13 @@ let OPEN=null;   // organisation whose alignment form is open
 
 /* ---------- stored state ---------- */
 function load(){let st; try{st=JSON.parse(localStorage.getItem(SKEY)||'{}');}catch(e){st={};}
+  // Old names of the guild list: move alignments and the star to the table name, drop duplicates
+  let renamed=false;
+  for(const [old,now] of Object.entries(OLDNAMES)){const os=st.orgs&&st.orgs[old]; if(!os) continue;
+    const to=st.orgs[now]||(st.orgs[now]={cals:[],fav:false});
+    for(const c of os.cals||[]) if(!to.cals.some(x=>x.t===c.t)) to.cals.push(c);
+    to.cals.sort((a,b)=>a.t.localeCompare(b.t)); to.fav=!!(to.fav||os.fav); delete st.orgs[old]; MERGED.push(`${old} → ${now}`); renamed=true;}
+  if(renamed){try{localStorage.setItem(SKEY,JSON.stringify(st));}catch(e){}}
   // Until 1.18.0 the highlighted tile counted as the next rank, so stored alignments are one rank too low: move each
   // up one band, keeping its share of the band. A value at the first threshold is left (ambiguous, usually a start).
   if(!st.lesart){let n=0;
@@ -583,8 +594,14 @@ function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions
   const snapD=loadSnap(); document.getElementById('view-rep').classList.toggle('rf-snapmode',!!snapD); if(snapD){renderSnap(snapD); return;}
   $r('src').textContent=TAB?T(`Ruf-Tabelle: ${Object.keys(TAB.missions).length} Missionstitel, Stand ${TAB.stand}. Quelle: ${TAB.quelle}.`,`Reputation table: ${Object.keys(TAB.missions).length} mission titles, as of ${TAB.stand}. Source: annotations of the German community translation (numbers, titles, rank names only).`):T('Ruf-Tabelle fehlt in diesem Bau.','Reputation table missing in this build.');
   $r('load').classList.toggle('pri',!S.length); textsBar(); if(textsOn()&&iniFile()) loadTexts().catch(()=>{});
+  load();   // first, so that merges and conversions of the stored state can be reported below
   $r('stat').textContent=S.length?(SZ.status?SZ.status():''):'';
-  if(MIGRATED){$r('stat').textContent=T(`${MIGRATED} bisherige Abgleiche auf die korrigierte Lesart umgerechnet (eine Stufe höher). Genauer ist ein neuer Abgleich: „Screenshots abgleichen …“.`,`${MIGRATED} earlier alignments converted to the corrected reading (one rank up). A new alignment is more precise: “Align from screenshots …”.`); MIGRATED=0;}
+  // One-time notes about the stored state (merged old names, converted alignments), shown together
+  const notes=[];
+  if(MERGED.length) notes.push(T(`Zusammengeführt (alte Namen aus der Gildenliste): ${MERGED.join(', ')}.`,`Merged (old names from the guild list): ${MERGED.join(', ')}.`));
+  if(MIGRATED) notes.push(MIGRATED===1?T('1 bisheriger Abgleich auf die korrigierte Lesart umgerechnet (eine Stufe höher).','1 earlier alignment converted to the corrected reading (one rank up).')
+    :T(`${MIGRATED} bisherige Abgleiche auf die korrigierte Lesart umgerechnet (eine Stufe höher).`,`${MIGRATED} earlier alignments converted to the corrected reading (one rank up).`));
+  if(notes.length){$r('stat').textContent=notes.join(' ')+' '+T('Genauer ist ein neuer Abgleich: „Screenshots abgleichen …“.','A new alignment is more precise: “Align from screenshots …”.'); MERGED=[]; MIGRATED=0;}
   // All known organisations from the start (table, guild list, logs, own alignments), grouped by guild
   const ms=missions(), st=load(), hide=hideOn();
   const orgs=[...new Set([...known(),...ms.map(m=>m.org),...Object.keys(st.orgs||{})])].filter(Boolean);
