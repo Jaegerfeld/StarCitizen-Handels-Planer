@@ -50,6 +50,10 @@
 #   blass. Die Abzeichen sind für dieses Werkzeug gezeichnet (Schild, 1–3 Sterne,
 #   ab Stufe 4 Flügel, darüber Winkel bzw. Krone), keine Grafiken aus dem Spiel;
 #   sie zeigen die Position in der Leiter, gleich für alle Organisationen.
+#   Kompakte Karten (Roberts Wunsch 21.11.2026: möglichst viele Auftraggeber auf
+#   einer Seite): oben immer Abzeichen, Name, Rang, Mini-Leiter, Balken und eine
+#   Zahlenzeile; ein Klick auf die obere Hälfte (oder ▾) klappt den Rest auf –
+#   beschriftete Leiter, Abgleich-Infos, Knöpfe, Missionen.
 #   Übersicht „Missionen nach Rufstufe“ je Organisation: Missionen der Ruf-Tabelle
 #   nach ihrer Mindeststufe, freigeschaltet / als Nächstes / später nach dem
 #   geschätzten Stand. Missionstexte optional (Schalter, aus = Standard): Sie
@@ -114,7 +118,21 @@ RF_CSS = r"""
   #view-rep .rf-note{color:var(--muted);font-size:12.5px;margin:0 0 14px;max-width:80ch}
   #view-rep .rf-org{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0;background:var(--panel);min-width:0}
   /* Cards side by side: two or more per row on wide screens, one on narrow ones */
-  #view-rep .rf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:12px;align-items:start}
+  #view-rep .rf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px;align-items:start}
+  #view-rep .rf-org{padding:8px 10px 10px}
+  #view-rep .rf-top{cursor:pointer}
+  #view-rep .rf-top .rf-head{flex-wrap:nowrap;align-items:center;gap:8px}
+  #view-rep .rf-top .rf-head h3{font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #view-rep .rf-top .rf-star{min-width:40px;min-height:40px;font-size:16px}
+  #view-rep .rf-tog{font:inherit;font-size:15px;min-width:44px;min-height:40px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--accent);cursor:pointer;flex:0 0 auto}
+  #view-rep .rf-sub{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 0;font-size:13px}
+  #view-rep .rf-sub .rf-rank{font-size:13.5px}
+  #view-rep .rf-mini{display:inline-flex;gap:1px;flex-wrap:wrap}
+  #view-rep .rf-top .rf-track{margin:6px 0 3px;height:10px}
+  #view-rep .rf-top .rf-nums{font-size:12.5px}
+  #view-rep .rf-top .rf-nums b{font-size:13.5px}
+  #view-rep .rf-more{border-top:1px dashed var(--line);margin-top:8px;padding-top:4px}
+  #view-rep .rf-org.open{border-color:var(--accent)}
   #view-rep .rf-org.fav{border-color:var(--accent)}
   #view-rep .rf-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
   #view-rep .rf-head h3{font-family:var(--disp);font-size:17px;letter-spacing:.04em;margin:0;flex:1 1 auto}
@@ -544,15 +562,20 @@ function badge(i,st,sz){const fill=st==='done', col=st==='later'?'var(--muted)':
   if(i>=6) g+=`<path d="M10 5.5 L11.5 1.5 L14 4 L16 0.8 L18 4 L20.5 1.5 L22 5.5 Z" fill="${fill?col:'none'}" stroke="${col}" stroke-width="1.2" stroke-linejoin="round"/>`;
   return `<svg width="${sz}" height="${sz}" viewBox="0 0 32 32" aria-hidden="true" focusable="false">${g}</svg>`;}
 // Ladder as a row of badges like the mobiGlas tiles; x = XP now (null: not aligned, all grey).
+// Short rank name: the first word most ranks of the ladder share ("Auftragnehmer", "Sicherheitsagent") is left out.
+function shortRank(o,n){const l=ladder(o), fw={}; for(const r of l){const w=r[1].split(' ')[0]; fw[w]=(fw[w]||0)+1;}
+  const com=Object.keys(fw).find(w=>fw[w]>=3&&fw[w]>=l.length/2); return com&&n.startsWith(com+' ')?n.slice(com.length+1):n;}
 function ladderStrip(o,x){const l=ladder(o); if(!l.length) return '';
   let cur=-1; if(x!=null) l.forEach((r,i)=>{if(x>=r[0]) cur=i;});
-  // Short labels: the first word most ranks share ("Auftragnehmer", "Sicherheitsagent") is left out; full name in the tooltip
-  const fw={}; for(const r of l){const w=r[1].split(' ')[0]; fw[w]=(fw[w]||0)+1;}
-  const com=Object.keys(fw).find(w=>fw[w]>=3&&fw[w]>=l.length/2), short=n=>com&&n.startsWith(com+' ')?n.slice(com.length+1):n;
+  const short=n=>shortRank(o,n);   // full name in the tooltip
   const items=l.map(([xp,n],i)=>{const st=x==null?'later':i<=cur?'done':i===cur+1?'next':'later', cls=i===cur?'cur':st;
     return `<li class="${cls}" title="${esc(n)} · ${fmt(xp)} XP">${badge(i,st==='done'?'done':st,30)}<span>${esc(short(n))}</span></li>`;}).join('');
   const lab=x==null?T(`Rangleiter, ${l.length} Stufen`,`Rank ladder, ${l.length} ranks`):T(`Stufe ${cur+1} von ${l.length}`,`Rank ${cur+1} of ${l.length}`);
   return `<ul class="rf-ladder" role="img" aria-label="${esc(lab)}">${items}</ul>`;}
+// Mini ladder for the compact card: badges only, full name and threshold in the tooltip.
+function ladderMini(o,x){const l=ladder(o); if(!l.length) return ''; let cur=-1; if(x!=null) l.forEach((r,i)=>{if(x>=r[0]) cur=i;});
+  return `<span class="rf-mini" role="img" aria-label="${esc(x==null?T(`Rangleiter, ${l.length} Stufen`,`Rank ladder, ${l.length} ranks`):T(`Stufe ${cur+1} von ${l.length}`,`Rank ${cur+1} of ${l.length}`))}">`
+    +l.map(([xp,n],i)=>`<span title="${esc(n)} · ${fmt(xp)} XP">${badge(i,x==null?'later':i<=cur?'done':i===cur+1?'next':'later',18)}</span>`).join('')+'</span>';}
 const rankBadge=(o,x)=>{const l=ladder(o); let cur=0; l.forEach((r,i)=>{if(x>=r[0]) cur=i;}); return badge(cur,'done',26);};
 
 /* ---------- rendering ---------- */
@@ -560,15 +583,18 @@ function bar(o,est){const mid=(est.lo+est.hi)/2, [cur,next]=band(o,mid);
   if(!next) return {cur,next,html:`<div class="rf-track"><div class="rf-fill" style="width:100%"></div></div>`};
   const span=next[0]-cur[0], p=x=>Math.max(0,Math.min(100,(x-cur[0])/span*100));
   return {cur,next,html:`<div class="rf-track" role="img" aria-label="${T('Fortschritt','Progress')} ${Math.round(p(mid))} %"><div class="rf-fill" style="width:${p(est.lo)}%"></div><div class="rf-unc" style="left:${p(est.lo)}%;width:${Math.max(0,p(est.hi)-p(est.lo))}%"></div></div>`};}
-function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
+function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o), isOpen=EXP.has(o)||OPEN===o;
+  const tog=`<button type="button" class="rf-tog" data-tog="${esc(o)}" aria-expanded="${isOpen}" aria-label="${T(isOpen?'Details zuklappen':'Details aufklappen',isOpen?'Hide details':'Show details')}">${isOpen?'▴':'▾'}</button>`;
   const star=`<button type="button" class="rf-star" data-fav="${esc(o)}" aria-pressed="${os.fav}" aria-label="${T('Favorit','Favourite')}" title="${T('Oben anheften','Pin to top')}">${os.fav?'★':'☆'}</button>`;
-  let body;
-  if(!est.cal){body=`<p class="rf-meta">${T(`${est.mine.filter(m=>m.res==='Complete').length} abgeschlossene Missionen in den geladenen Logs. Noch kein Abgleich – trag einmal ein, was dein mobiGlas zeigt.`,`${est.mine.filter(m=>m.res==='Complete').length} completed missions in the loaded logs. Not aligned yet – enter once what your mobiGlas shows.`)}</p>`+ladderStrip(o,null);}
+  let top, body;
+  if(!est.cal){const n=est.mine.filter(m=>m.res==='Complete').length;
+    top=`<div class="rf-sub"><span class="rf-meta">${T('Noch kein Abgleich','Not aligned yet')}${n?` · ${n} ${T('Missionen in den Logs','missions in the logs')}`:''}</span>${ladderMini(o,null)}</div>`;
+    body=`<p class="rf-meta">${T(`${est.mine.filter(m=>m.res==='Complete').length} abgeschlossene Missionen in den geladenen Logs. Noch kein Abgleich – trag einmal ein, was dein mobiGlas zeigt.`,`${est.mine.filter(m=>m.res==='Complete').length} completed missions in the loaded logs. Not aligned yet – enter once what your mobiGlas shows.`)}</p>`+ladderStrip(o,null);}
   else{const b=bar(o,est), mid=(est.lo+est.hi)/2, range=est.hi-est.lo>=1?` <small>(${fmt(est.lo)}–${fmt(est.hi)})</small>`:'';
     const up=b.cur[1]!==band(o,est.cal.xp)[0][1]?` <span class="rf-tag">${T('rechnerisch aufgestiegen','computed rank-up')}</span>`:'';
-    body=`<div class="rf-head"><span class="rf-rank">${rankBadge(o,mid)}${esc(b.cur[1])}${up}</span></div>${ladderStrip(o,mid)}${b.html}
-      <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b>${range}</span><span>${b.next?T(`noch ≈ ${fmt(Math.max(0,b.next[0]-mid))} bis ${esc(b.next[1])} (${fmt(b.next[0])})`,`≈ ${fmt(Math.max(0,b.next[0]-mid))} to ${esc(b.next[1])} (${fmt(b.next[0])})`):T('höchster Rang','top rank')}</span></div>
-      <p class="rf-meta">${T('Abgleich','Aligned')} ${fmtT(est.cal.t)} (${fmt(est.cal.xp)} XP) · ${T(`seit dann ${est.after.filter(m=>m.res==='Complete').length} Missionen, +${fmt(est.stated)} XP laut Beschreibung`,`since then ${est.after.filter(m=>m.res==='Complete').length} missions, +${fmt(est.stated)} XP as stated`)}
+    top=`<div class="rf-sub"><span class="rf-rank">${esc(b.cur[1])}${up}</span>${ladderMini(o,mid)}</div>${b.html}
+      <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b>${range}</span><span>${b.next?T(`noch ≈ ${fmt(Math.max(0,b.next[0]-mid))} bis ${esc(shortRank(o,b.next[1]))}`,`≈ ${fmt(Math.max(0,b.next[0]-mid))} to ${esc(shortRank(o,b.next[1]))}`):T('höchster Rang','top rank')}</span></div>`;
+    body=`${ladderStrip(o,mid)}<p class="rf-meta">${T('Abgleich','Aligned')} ${fmtT(est.cal.t)} (${fmt(est.cal.xp)} XP) · ${T(`seit dann ${est.after.filter(m=>m.res==='Complete').length} Missionen, +${fmt(est.stated)} XP laut Beschreibung`,`since then ${est.after.filter(m=>m.res==='Complete').length} missions, +${fmt(est.stated)} XP as stated`)}
         · ${T('Faktor','factor')} ${est.fac.f.toFixed(2).replace('.',L()==='en'?'.':',')} ${est.fac.learned?T('(gelernt)','(learned)'):`<span class="est">${T('(geschätzt – zweiter Abgleich macht ihn genau)','(estimated – a second alignment makes it exact)')}</span>`}
         ${est.unknown?` · <span class="est">+? ${T(`aus ${est.unknown} Missionen ohne Wert`,`from ${est.unknown} missions without a value`)}</span>`:''}
         ${est.shared?` · ${T(`${est.shared} geteilt (halb bis voll gezählt)`,`${est.shared} shared (counted half to full)`)}`:''}
@@ -577,7 +603,10 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
   const det=est.after.length?`<details><summary>${T(est.cal?'Missionen seit dem Abgleich':'Missionen in den geladenen Logs',est.cal?'Missions since the alignment':'Missions in the loaded logs')} (${est.after.length})</summary><div class="tablewrap"><table><thead><tr><th>${T('Ende','End')}</th><th>${T('Mission','Mission')}</th><th>${T('Ergebnis','Result')}</th><th class="num">${T('XP laut Beschreibung','XP as stated')}</th></tr></thead><tbody>${rows}</tbody></table></div></details>`:'';
   const acts=`<div class="rf-acts"><button type="button" class="btn" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
   const guess=ladderGuess(o)?`<p class="rf-meta"><span class="est">${T('Rangleiter nicht bekannt – Auftragnehmer-Stufen angenommen.','Rank ladder unknown – contractor ranks assumed.')}</span></p>`:'';
-  return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${guess}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</article>`;}
+  const icon=est.cal?rankBadge(o,(est.lo+est.hi)/2):badge(0,'later',26);
+  return `<article class="rf-org${os.fav?' fav':''}${isOpen?' open':''}" data-org="${esc(o)}"><div class="rf-top" data-top="${esc(o)}"><div class="rf-head">${icon}<h3 title="${esc(o)}">${esc(o)}</h3>${star}${tog}</div>${top}</div>`
+    +`<div class="rf-more"${isOpen?'':' hidden'}>${body}${guess}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</div></article>`;}
+const EXP=new Set();   // organisations whose card is unfolded (kept while the page is open)
 // Alignment form: current rank (highlighted tile), fill of its bar, time of the look into the mobiGlas.
 function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0][1]:(l[0]||[0,''])[1];
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -626,14 +655,17 @@ $r('load').addEventListener('click',()=>{if(typeof SZ!=='undefined') SZ.pick();}
 document.addEventListener('sz:loaded',()=>{if(!document.getElementById('view-rep').classList.contains('hide')) render();});
 const view=document.getElementById('view-rep');
 view.addEventListener('click',e=>{const st=load(); let b;
+  if((b=e.target.closest('[data-tog]'))){const o=b.dataset.tog; if(EXP.has(o)||OPEN===o){EXP.delete(o); if(OPEN===o) OPEN=null;} else EXP.add(o); render(); return;}
   if((b=e.target.closest('[data-fav]'))){const os=orgState(st,b.dataset.fav); os.fav=!os.fav; save(st); render(); return;}
-  if((b=e.target.closest('[data-align]'))){OPEN=OPEN===b.dataset.align?null:b.dataset.align; render(); return;}
+  if((b=e.target.closest('[data-align]'))){OPEN=OPEN===b.dataset.align?null:b.dataset.align; if(OPEN) EXP.add(OPEN); render(); return;}
   if((b=e.target.closest('[data-undo]'))){const os=orgState(st,b.dataset.undo); const c=os.cals.pop(); save(st); render();
     $r('stat').textContent=c?T(`Abgleich vom ${fmtT(c.t)} entfernt.`,`Alignment of ${fmtT(c.t)} removed.`):''; return;}
   if(e.target.closest('[data-cancel]')){OPEN=null; render(); return;}
   if((b=e.target.closest('[data-shot]'))){b.parentElement.querySelector('[data-shotin]').click(); return;}
   if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt); return;}
   if((b=e.target.closest('[data-mtwhy]'))){showWhy(b.dataset.mtwhy); return;}
+  // A click anywhere on the upper half of a card (not on a control) folds it in or out
+  if((b=e.target.closest('[data-top]'))&&!e.target.closest('button,a,input,select,label')){const o=b.dataset.top; if(EXP.has(o)||OPEN===o){EXP.delete(o); if(OPEN===o) OPEN=null;} else EXP.add(o); render(); return;}
   if(e.target.closest('[data-snapend]')){try{localStorage.removeItem(PKEY);}catch(x){} render();}});
 $r('handy').addEventListener('click',()=>{const d=handyData();
   if(!d.o.length){$r('stat').textContent=T('Noch keine Organisation abgeglichen – erst abgleichen, dann aufs Handy.','No organisation aligned yet – align first, then send to the phone.'); return;}
