@@ -38,6 +38,11 @@
 #   das neueste Bild; alles steht vor dem Übernehmen in einer Prüfliste, die
 #   Organisation ist je Zeile änderbar. Ohne Internet bleibt die Auswahl von Hand.
 #   Der Einzel-Abgleich je Organisation bleibt für die Feinjustierung.
+#   Rang-Symbole: Jede Karte zeigt die Leiter als Reihe eigener Abzeichen wie die
+#   Kacheln im mobiGlas – erreicht gefüllt, die nächste Stufe umrandet, spätere
+#   blass. Die Abzeichen sind für dieses Werkzeug gezeichnet (Schild, 1–3 Sterne,
+#   ab Stufe 4 Flügel, darüber Winkel bzw. Krone), keine Grafiken aus dem Spiel;
+#   sie zeigen die Position in der Leiter, gleich für alle Organisationen.
 #   Übersicht „Missionen nach Rufstufe“ je Organisation: Missionen der Ruf-Tabelle
 #   nach ihrer Mindeststufe, freigeschaltet / als Nächstes / später nach dem
 #   geschätzten Stand. Missionstexte optional (Schalter, aus = Standard): Sie
@@ -106,7 +111,14 @@ RF_CSS = r"""
   #view-rep .rf-org.fav{border-color:var(--accent)}
   #view-rep .rf-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
   #view-rep .rf-head h3{font-family:var(--disp);font-size:17px;letter-spacing:.04em;margin:0;flex:1 1 auto}
-  #view-rep .rf-rank{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--accent)}
+  #view-rep .rf-rank{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--accent);display:inline-flex;align-items:center;gap:8px}
+  #view-rep .rf-ladder{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0 2px;padding:0;list-style:none}
+  #view-rep .rf-ladder li{display:flex;flex-direction:column;align-items:center;width:58px;font-size:10.5px;line-height:1.15;text-align:center;color:var(--muted);border:1px solid transparent;border-radius:8px;padding:3px 2px}
+  #view-rep .rf-ladder li.done{color:var(--ink)}
+  #view-rep .rf-ladder li.cur{border-color:var(--accent);color:var(--accent);font-weight:700}
+  #view-rep .rf-ladder li.next{border-style:dashed;border-color:var(--accent);color:var(--ink)}
+  #view-rep .rf-ladder li.later svg{opacity:.45}
+  #view-rep .rf-ladder li span{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;hyphens:auto;overflow-wrap:anywhere}
   #view-rep .rf-star{font:inherit;font-size:18px;min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--muted);cursor:pointer}
   #view-rep .rf-star[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
   #view-rep .rf-track{position:relative;height:14px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;margin:10px 0 4px}
@@ -469,7 +481,7 @@ function handyData(){const ms=missions(), st=load(), out=[];
 function fromHandy(d){if(!d||!Array.isArray(d.o)) throw new Error('format'); try{localStorage.setItem(PKEY,JSON.stringify(d));}catch(e){} render();}
 function renderSnap(d){const list=$r('list');
   const card=([o,rank,cx,next,nx,lo,hi])=>{const mid=(lo+hi)/2, span=nx!=null?nx-cx:0, p=x=>span?Math.max(0,Math.min(100,(x-cx)/span*100)):100;
-    return `<article class="rf-org"><div class="rf-head"><h3>${esc(o)}</h3></div><div class="rf-head"><span class="rf-rank">${esc(rank)}</span></div>
+    return `<article class="rf-org"><div class="rf-head"><h3>${esc(o)}</h3></div><div class="rf-head"><span class="rf-rank">${rankBadge(o,mid)}${esc(rank)}</span></div>${ladderStrip(o,mid)}
       <div class="rf-track" role="img" aria-label="${T('Fortschritt','Progress')} ${Math.round(p(mid))} %"><div class="rf-fill" style="width:${p(lo)}%"></div><div class="rf-unc" style="left:${p(lo)}%;width:${Math.max(0,p(hi)-p(lo))}%"></div></div>
       <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b>${hi-lo>=1?` <small>(${fmt(lo)}–${fmt(hi)})</small>`:''}</span><span>${next?T(`noch ≈ ${fmt(Math.max(0,nx-mid))} bis ${esc(next)}`,`≈ ${fmt(Math.max(0,nx-mid))} to ${esc(next)}`):T('höchster Rang','top rank')}</span></div></article>`;};
   const rows=d.o.slice().sort((a,b)=>b[7]-a[7]||a[0].localeCompare(b[0]));
@@ -477,6 +489,32 @@ function renderSnap(d){const list=$r('list');
   list.innerHTML=`<div class="rf-snap"><span>📱 ${T(`Stand vom PC · ${fmtT(d.t)} · nur ansehen`,`State from the PC · ${fmtT(d.t)} · view only`)}</span><button type="button" class="btn" data-snapend>${T('Ansicht beenden','End view')}</button></div>`
     +(groups.length?groups.map(x=>`<details class="rf-guild" open><summary><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length}</small></summary><div class="rf-cards">${x.list.map(card).join('')}</div></details>`).join('')
     :`<p class="rf-empty">${T('Im übertragenen Stand ist keine Organisation abgeglichen.','No organisation is aligned in the transferred state.')}</p>`);}
+
+/* ---------- rank badges ---------- */
+// Own badge for position i of a ladder (drawn for this tool): shield with 1–3 stars, from the fourth rank on with
+// wings, then one or two chevrons above, from the seventh a crown. st: 'done' filled, 'next' outlined in accent,
+// 'later' outlined grey.
+function starPath(cx,cy,r){let p=''; for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5, rr=k%2?r*.45:r; p+=(k?'L':'M')+(cx+rr*Math.cos(a)).toFixed(2)+' '+(cy+rr*Math.sin(a)).toFixed(2);} return p+'Z';}
+function badge(i,st,sz){const fill=st==='done', col=st==='later'?'var(--muted)':'var(--accent)';
+  const sf=fill?'var(--bg)':col, n=Math.min(3,i+1), ys=i<3?18:19;
+  const pos=n===1?[[16,ys]]:n===2?[[12.5,ys],[19.5,ys]]:[[16,ys-4.5],[12,ys+2.5],[20,ys+2.5]];
+  let g=`<path d="M16 7 L25 10.5 V17 C25 23 21 27.5 16 29.5 C11 27.5 7 23 7 17 V10.5 Z" fill="${fill?col:'none'}" stroke="${col}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  g+=pos.map(([x,y])=>`<path d="${starPath(x,y,n===3?3.2:3.6)}" fill="${sf}"/>`).join('');
+  if(i>=3) g+=`<path d="M7 13 L1.5 10.5 L2.5 15 L1.5 17.5 L7 19.5 Z M25 13 L30.5 10.5 L29.5 15 L30.5 17.5 L25 19.5 Z" fill="${fill?col:'none'}" stroke="${col}" stroke-width="1.2" stroke-linejoin="round"/>`;
+  if(i===4||i===5) for(let k=0;k<i-3;k++) g+=`<path d="M11.5 ${(6.3-k*2.7).toFixed(1)} L16 ${(3.6-k*2.7).toFixed(1)} L20.5 ${(6.3-k*2.7).toFixed(1)}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(i>=6) g+=`<path d="M10 5.5 L11.5 1.5 L14 4 L16 0.8 L18 4 L20.5 1.5 L22 5.5 Z" fill="${fill?col:'none'}" stroke="${col}" stroke-width="1.2" stroke-linejoin="round"/>`;
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 32 32" aria-hidden="true" focusable="false">${g}</svg>`;}
+// Ladder as a row of badges like the mobiGlas tiles; x = XP now (null: not aligned, all grey).
+function ladderStrip(o,x){const l=ladder(o); if(!l.length) return '';
+  let cur=-1; if(x!=null) l.forEach((r,i)=>{if(x>=r[0]) cur=i;});
+  // Short labels: the first word most ranks share ("Auftragnehmer", "Sicherheitsagent") is left out; full name in the tooltip
+  const fw={}; for(const r of l){const w=r[1].split(' ')[0]; fw[w]=(fw[w]||0)+1;}
+  const com=Object.keys(fw).find(w=>fw[w]>=3&&fw[w]>=l.length/2), short=n=>com&&n.startsWith(com+' ')?n.slice(com.length+1):n;
+  const items=l.map(([xp,n],i)=>{const st=x==null?'later':i<=cur?'done':i===cur+1?'next':'later', cls=i===cur?'cur':st;
+    return `<li class="${cls}" title="${esc(n)} · ${fmt(xp)} XP">${badge(i,st==='done'?'done':st,30)}<span>${esc(short(n))}</span></li>`;}).join('');
+  const lab=x==null?T(`Rangleiter, ${l.length} Stufen`,`Rank ladder, ${l.length} ranks`):T(`Stufe ${cur+1} von ${l.length}`,`Rank ${cur+1} of ${l.length}`);
+  return `<ul class="rf-ladder" role="img" aria-label="${esc(lab)}">${items}</ul>`;}
+const rankBadge=(o,x)=>{const l=ladder(o); let cur=0; l.forEach((r,i)=>{if(x>=r[0]) cur=i;}); return badge(cur,'done',26);};
 
 /* ---------- rendering ---------- */
 function bar(o,est){const mid=(est.lo+est.hi)/2, [cur,next]=band(o,mid);
@@ -486,10 +524,10 @@ function bar(o,est){const mid=(est.lo+est.hi)/2, [cur,next]=band(o,mid);
 function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
   const star=`<button type="button" class="rf-star" data-fav="${esc(o)}" aria-pressed="${os.fav}" aria-label="${T('Favorit','Favourite')}" title="${T('Oben anheften','Pin to top')}">${os.fav?'★':'☆'}</button>`;
   let body;
-  if(!est.cal){body=`<p class="rf-meta">${T(`${est.mine.filter(m=>m.res==='Complete').length} abgeschlossene Missionen in den geladenen Logs. Noch kein Abgleich – trag einmal ein, was dein mobiGlas zeigt.`,`${est.mine.filter(m=>m.res==='Complete').length} completed missions in the loaded logs. Not aligned yet – enter once what your mobiGlas shows.`)}</p>`;}
+  if(!est.cal){body=`<p class="rf-meta">${T(`${est.mine.filter(m=>m.res==='Complete').length} abgeschlossene Missionen in den geladenen Logs. Noch kein Abgleich – trag einmal ein, was dein mobiGlas zeigt.`,`${est.mine.filter(m=>m.res==='Complete').length} completed missions in the loaded logs. Not aligned yet – enter once what your mobiGlas shows.`)}</p>`+ladderStrip(o,null);}
   else{const b=bar(o,est), mid=(est.lo+est.hi)/2, range=est.hi-est.lo>=1?` <small>(${fmt(est.lo)}–${fmt(est.hi)})</small>`:'';
     const up=b.cur[1]!==band(o,est.cal.xp)[0][1]?` <span class="rf-tag">${T('rechnerisch aufgestiegen','computed rank-up')}</span>`:'';
-    body=`<div class="rf-head"><span class="rf-rank">${esc(b.cur[1])}${up}</span></div>${b.html}
+    body=`<div class="rf-head"><span class="rf-rank">${rankBadge(o,mid)}${esc(b.cur[1])}${up}</span></div>${ladderStrip(o,mid)}${b.html}
       <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b>${range}</span><span>${b.next?T(`noch ≈ ${fmt(Math.max(0,b.next[0]-mid))} bis ${esc(b.next[1])} (${fmt(b.next[0])})`,`≈ ${fmt(Math.max(0,b.next[0]-mid))} to ${esc(b.next[1])} (${fmt(b.next[0])})`):T('höchster Rang','top rank')}</span></div>
       <p class="rf-meta">${T('Abgleich','Aligned')} ${fmtT(est.cal.t)} (${fmt(est.cal.xp)} XP) · ${T(`seit dann ${est.after.filter(m=>m.res==='Complete').length} Missionen, +${fmt(est.stated)} XP laut Beschreibung`,`since then ${est.after.filter(m=>m.res==='Complete').length} missions, +${fmt(est.stated)} XP as stated`)}
         · ${T('Faktor','factor')} ${est.fac.f.toFixed(2).replace('.',L()==='en'?'.':',')} ${est.fac.learned?T('(gelernt)','(learned)'):`<span class="est">${T('(geschätzt – zweiter Abgleich macht ihn genau)','(estimated – a second alignment makes it exact)')}</span>`}
