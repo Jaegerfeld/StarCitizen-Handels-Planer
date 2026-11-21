@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       20.11.2026
-# Geändert:       20.11.2026
+# Geändert:       21.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -20,12 +20,24 @@
 #   werden aber angezeigt. Abgleiche und Favoriten liegen im Browser
 #   (localStorage); nichts verlässt den Rechner.
 #   Abgleich von Hand (Rang + Balken in %) oder per Screenshot der mobiGlas-
-#   Seite „Ruf“ (Schritt 2): Die Seite zählt die vollen Balken (= erreichte
-#   Ränge), findet die hervorgehobene Kachel (grüner Rahmen = nächster Rang)
-#   und misst deren Balken als grüne Lauflänge mit Teilpixeln an den Enden;
-#   den Zeitpunkt nimmt sie aus dem Dateinamen (ScreenShot-JJJJ-MM-TT_hh-mm-ss).
-#   Geprüft an sechs Screenshots (2000×837): ±2 Prozentpunkte zur Handmessung.
-#   Das Bild wird nur im Browser gelesen.
+#   Seite „Ruf“ (Schritt 2): Die Seite findet die hervorgehobene Kachel (grüner
+#   Rahmen = nächster Rang) an den festen Kachelplätzen – relativ, als die
+#   Kachel, deren Oberkante klar grüner ist als alle anderen, denn das mobiGlas
+#   ist durchscheinend und ein heller Hintergrund färbt alle Kacheln. Erreicht
+#   ist die Stufe davor (bei Leitern mit der Kachel „Nicht berechtigt“ eine
+#   Kachel weiter, Tabelle „tiles0“). Den Balken misst sie als grüne Lauflänge
+#   mit Teilpixeln an den Enden; den Zeitpunkt nimmt sie aus dem Dateinamen
+#   (ScreenShot-JJJJ-MM-TT_hh-mm-ss). Geprüft an Roberts 20 Screenshots vom
+#   21.11.2026 (2000×837, alle 20 Kacheln richtig). Das Bild wird nur im
+#   Browser gelesen.
+#   Mehrfach-Abgleich („Screenshots abgleichen …“): viele Screenshots oder ein
+#   ganzer Ordner auf einmal. Die Organisation liest die Seite per
+#   Texterkennung aus der Überschrift (tesseract.js 5.1.1, Apache-2.0, erst beim
+#   ersten Mehrfach-Abgleich von jsDelivr geladen, feste Version mit
+#   SRI-Prüfsumme; Sprachdaten lädt tesseract.js selbst). Je Organisation zählt
+#   das neueste Bild; alles steht vor dem Übernehmen in einer Prüfliste, die
+#   Organisation ist je Zeile änderbar. Ohne Internet bleibt die Auswahl von Hand.
+#   Der Einzel-Abgleich je Organisation bleibt für die Feinjustierung.
 #   Übersicht „Missionen nach Rufstufe“ je Organisation: Missionen der Ruf-Tabelle
 #   nach ihrer Mindeststufe, freigeschaltet / als Nächstes / später nach dem
 #   geschätzten Stand. Missionstexte optional (Schalter, aus = Standard): Sie
@@ -54,6 +66,7 @@ RF_HTML = r"""
       <button type="button" class="btn" id="rf-load">📁 <span class="de">Log-Ordner laden …</span><span class="en">Load log folder …</span></button>
       <label class="rf-toggle"><input type="checkbox" id="rf-hide"> <span class="de">Ohne Abgleich ausblenden</span><span class="en">Hide not aligned</span></label>
       <label class="rf-toggle"><input type="checkbox" id="rf-texts"> <span class="de">Missionstexte anzeigen</span><span class="en">Show mission texts</span></label>
+      <button type="button" class="btn" id="rf-batch">📷 <span class="de">Screenshots abgleichen …</span><span class="en">Align from screenshots …</span></button>
       <button type="button" class="btn" id="rf-handy">📱 <span class="de">Aufs Handy …</span><span class="en">To the phone …</span></button>
       <span class="rf-stat" id="rf-stat" role="status"></span>
     </div>
@@ -63,6 +76,19 @@ RF_HTML = r"""
     <p class="rf-note" id="rf-src"></p>
     <dialog id="rf-dlg" aria-labelledby="rf-dlg-h"><h3 id="rf-dlg-h"></h3><div id="rf-dlg-t"></div>
       <form method="dialog"><button class="btn" value="x">✕ <span class="de">Schließen</span><span class="en">Close</span></button></form></dialog>
+    <dialog id="rf-bdlg" aria-labelledby="rf-bdlg-h"><h3 id="rf-bdlg-h"><span class="de">Screenshots abgleichen</span><span class="en">Align from screenshots</span></h3>
+      <div class="rf-bpick" data-bdrop>
+        <p><span class="de">Mehrere Screenshots der mobiGlas-Seite „Ruf“ auf einmal (je Organisation einer, Taste <b>Druck</b> im Spiel). Die Seite erkennt je Bild die Organisation, den erreichten Rang und den Balken; je Organisation zählt das neueste Bild. Du prüfst die Liste, dann übernimmst du sie. Das mobiGlas ist durchscheinend – vor dunklem Hintergrund aufgenommen klappt es am besten.</span><span class="en">Several screenshots of the mobiGlas “Reputation” page at once (one per organisation, <b>Print</b> key in game). The page finds the organisation, the rank reached and the bar in each image; per organisation the newest image counts. You check the list, then apply it. The mobiGlas is translucent – it works best in front of a dark background.</span></p>
+        <button type="button" class="btn" id="rf-bfiles">🖼 <span class="de">Screenshots wählen …</span><span class="en">Choose screenshots …</span></button>
+        <button type="button" class="btn" id="rf-bdir">📁 <span class="de">Ordner wählen …</span><span class="en">Choose folder …</span></button>
+        <small class="de">oder Bilder hierher ziehen · Ordner: <code>StarCitizen\LIVE\screenshots</code></small><small class="en">or drop images here · folder: <code>StarCitizen\LIVE\screenshots</code></small>
+        <input type="file" id="rf-bin" accept="image/*" multiple hidden><input type="file" id="rf-bdirin" webkitdirectory multiple hidden>
+      </div>
+      <p id="rf-bstat" role="status"></p>
+      <div id="rf-bres"></div>
+      <div class="rf-bbtns"><button type="button" class="btn pri" id="rf-bok" disabled>✓ <span>Übernehmen</span></button>
+        <button type="button" class="btn" id="rf-bx">✕ <span class="de">Schließen</span><span class="en">Close</span></button></div>
+    </dialog>
   </section>
 """
 
@@ -137,6 +163,18 @@ RF_CSS = r"""
   #view-rep #rf-dlg-t{white-space:pre-wrap;font-size:14px;line-height:1.5;max-height:62vh;overflow:auto}
   #view-rep dialog form{margin-top:12px;text-align:right}
   #view-rep dialog .btn{min-height:44px}
+  #view-rep #rf-bdlg{max-width:min(980px,96vw);width:100%}
+  #view-rep .rf-bpick{display:flex;gap:10px;flex-wrap:wrap;align-items:center;border:2px dashed var(--line);border-radius:10px;padding:10px}
+  #view-rep .rf-bpick.drag{border-color:var(--accent);background:var(--panel2)}
+  #view-rep .rf-bpick p{flex-basis:100%;margin:0;font-size:13.5px}
+  #view-rep .rf-bpick small{color:var(--muted)}
+  #view-rep #rf-bstat{font-size:13.5px;margin:10px 0}
+  #view-rep #rf-bres{max-height:52vh;overflow:auto}
+  #view-rep #rf-bres td{font-size:13px;vertical-align:middle}
+  #view-rep #rf-bres tr.bad td:nth-child(3){color:var(--bad)}
+  #view-rep #rf-bres select{min-height:40px;font:inherit;font-size:13px;padding:0 6px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);max-width:260px}
+  #view-rep #rf-bres input[type=checkbox]{width:22px;height:22px}
+  #view-rep .rf-bbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px}
 """
 
 #: Behaviour. Runs after the sessions script (uses SZ.sessions, SZ.pick, SZ.start).
@@ -244,58 +282,141 @@ function estimate(o,list,st){const os=orgState(st,o), cal=os.cals[os.cals.length
     shared:after.filter(m=>m.res==='Complete'&&m.shared).length};}
 
 /* ---------- screenshot of the mobiGlas ---------- */
-// Measures the reputation tiles of a mobiGlas screenshot: number of full bars (= ranks reached), the highlighted
-// tile (green frame = next rank) and the fill of its bar. Sizes scale with the image height (tested at 837 px).
+// Measures the reputation tiles of a mobiGlas screenshot. The tiles sit at fixed places relative to image centre
+// and height (four per row; measured at 2000×837). The highlighted tile (green frame = next rank) is the one whose
+// top edge is clearly greener than all others – relative, because the mobiGlas is translucent and a bright
+// background tints every tile. Its bar is measured as green run length with fractional edge pixels, against the
+// length of the full bars of the tiles before it.
 function measureShot(cv){const W=cv.width, H=cv.height, d=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,W,H).data, s=H/837;
-  const P=(x,y)=>{const i=(y*W+x)*4; return [d[i],d[i+1],d[i+2]];};
-  const bright=(x,y)=>{const [r,g]=P(x,y); return g>150&&g-r>60;};
-  const frame=(x,y)=>{const [r,g]=P(x,y); return g>120&&g-r>35;};
-  const runs=test=>{const out=[]; for(let y=Math.floor(H*.2);y<Math.floor(H*.85);y++){let x=0; while(x<W){if(test(x,y)){const a=x; while(x<W&&test(x,y)) x++; out.push([y,a,x-a]);} x++;}} return out;};
-  // Bars: runs of 60..115 px, at least two rows thick (the 1-px tile frame is not)
-  let bars=[]; for(const [y,a,n] of runs(bright)){if(n<60*s||n>115*s) continue;
-    const b=bars.find(b=>Math.abs(b.a-a)<=30*s&&y-b.yl>0&&y-b.yl<=1);
-    if(b){b.rows++; b.yl=y; if(n>b.n){b.y=y; b.a=a; b.n=n;}} else bars.push({y,yl:y,a,n,rows:1});}
-  bars=bars.filter(b=>b.rows>=2);
-  if(!bars.length) return {err:T('Keine Ruf-Balken gefunden. Ist es die mobiGlas-Seite „Ruf“ mit den Rang-Kacheln einer Organisation?','No reputation bars found. Is it the mobiGlas “Reputation” page with the rank tiles of an organisation?')};
-  const L=Math.max(...bars.map(b=>b.n)), full=bars.filter(b=>b.n>=L-3*s).sort((a,b)=>(a.y-b.y>12*s?1:b.y-a.y>12*s?-1:a.a-b.a));
-  const y1=Math.min(...full.map(b=>b.y)), cols=full.filter(b=>b.y-y1<12*s).map(b=>b.a).sort((a,b)=>a-b);
-  const dx=cols.length>1?cols[1]-cols[0]:184*s;
-  const edge=(x,y)=>x<0||x>=W?0:Math.min(1,Math.max(0,(P(x,y)[1]-100)/150));
+  const inside=(x,y)=>x>=0&&y>=0&&x<W&&y<H, at=(x,y)=>(Math.round(y)*W+Math.round(x))*4;
+  const gr=(x,y)=>{if(!inside(x,y)) return 0; const i=at(x,y); return d[i+1]-d[i];};
+  const bright=(x,y)=>{if(!inside(x,y)) return false; const i=at(x,y); return d[i+1]>150&&d[i+1]-d[i]>60;};
+  const edge=(x,y)=>inside(x,y)?Math.min(1,Math.max(0,(d[at(x,y)+1]-100)/150)):0;
+  const X0=W/2-204*s, Y0=276*s, DX=184*s, DY=186*s, BL=98.5*s;
+  const slot=i=>[X0+(i%4)*DX, Y0+Math.floor(i/4)*DY];
+  const top=i=>{const [x,y]=slot(i); let best=-1e9;
+    for(let yy=Math.round(y-8*s);yy<=Math.round(y+8*s);yy++){let tt=0,n=0; for(let xx=Math.round(x+10*s);xx<x+150*s;xx++){tt+=gr(xx,yy); n++;} best=Math.max(best,tt/n);}
+    return best;};
+  const sc=[0,1,2,3,4,5,6,7].map(i=>({i,v:top(i)})).sort((p,q)=>q.v-p.v), conf=sc[0].v/Math.max(1,sc[1].v);
+  if(sc[0].v<25||conf<1.6) return {err:T('Keine hervorgehobene Rang-Kachel gefunden. Ist es die mobiGlas-Seite „Ruf“ einer Organisation? Ein heller Hintergrund scheint durch das mobiGlas – dann vor dunklerem Hintergrund neu aufnehmen.','No highlighted rank tile found. Is it the mobiGlas “Reputation” page of an organisation? A bright background shows through the mobiGlas – then take it again in front of a darker one.')};
+  // Bar of a tile: starts 32 px right of the frame; the row with the most green 93..109 px below its top edge
+  const barRow=i=>{const [x,y]=slot(i), bx=x+32*s; let yb=y+101*s, best=-1e9;
+    for(let yy=Math.round(y+93*s);yy<=Math.round(y+109*s);yy++){let tt=0; for(let xx=Math.round(bx);xx<bx+BL;xx++) tt+=gr(xx,yy); if(tt>best){best=tt; yb=yy;}}
+    return [bx,yb];};
   // Green run length from the bar start, with the partly green boundary pixels as fractions
-  const runAt=(x0,y)=>{let a=-1; for(let x=Math.floor(x0-4*s);x<x0+6*s;x++) if(x>=0&&x<W&&bright(x,y)){a=x; break;}
-    if(a<0) return edge(Math.round(x0),y)>.5?edge(Math.round(x0),y):0; let b=a; while(b+1<W&&bright(b+1,y)) b++; return b-a+1+edge(a-1,y)+edge(b+1,y);};
+  const runAt=(x0,y)=>{let a=-1; for(let x=Math.floor(x0-4*s);x<x0+6*s;x++) if(bright(x,y)){a=x; break;}
+    if(a<0) return edge(Math.round(x0),y)>.5?edge(Math.round(x0),y):0; let b=a; while(bright(b+1,y)) b++; return b-a+1+edge(a-1,y)+edge(b+1,y);};
   const cover=(x0,y)=>Math.max(runAt(x0,y-1),runAt(x0,y),runAt(x0,y+1));
-  const Lc=Math.max(...full.map(b=>cover(b.a,b.y)));
-  const fr=runs(frame).find(([,,n])=>n>=130*s&&n<=190*s);
-  let x0,yb,idx,guess=false;
-  if(fr){const [by,bx]=fr, col=Math.round((bx+30*s-cols[0])/dx); x0=cols[0]+col*dx;
-    const yp=Math.round(by+102*s), gr=yy=>{let t=0; for(let x=Math.round(x0);x<x0+L;x++) if(x<W){const p=P(x,yy); t+=p[1]-p[0];} return t;};
-    yb=yp; let best=-1e9; for(let yy=yp-Math.round(8*s);yy<=yp+Math.round(8*s);yy++){const v=gr(yy); if(v>best){best=v; yb=yy;}}
-    idx=(yb-y1>40*s?4:0)+col;}
-  else{idx=full.length; guess=true; x0=cols[0]+(idx%4)*dx; yb=y1+Math.floor(idx/4)*Math.round(190*s);}
-  const pct=Math.max(0,Math.min(100,cover(x0,yb)/Lc*100));
-  return {n:full.length, idx, pct:Math.round(pct*10)/10, guess, box:[x0,yb,L], full};}
+  const idx=sc[0].i, [bx,yb]=barRow(idx);
+  let Lc=0; for(let j=0;j<idx;j++){const [x,y]=barRow(j); Lc=Math.max(Lc,cover(x,y));}
+  if(Lc<0.85*BL||Lc>1.2*BL) Lc=BL;   // no full bar before it: nominal length
+  const pct=Math.max(0,Math.min(100,cover(bx,yb)/Lc*100));
+  return {idx, pct:Math.round(pct*10)/10, weak:conf<2.5, box:[bx,yb,Lc],
+    area:[Math.max(0,X0-40*s),Math.max(0,Y0-150*s),Math.min(W,800*s),Math.min(H,500*s)]};}
+// Tiles before the first rank in the mobiGlas ("Nicht berechtigt" for hauling, security, bounty, emergency).
+const offOf=o=>(TAB&&TAB.tiles0&&TAB.tiles0[o])||0;
+// Rank reached and bar for one measured screenshot of organisation o: the highlighted tile is the next rank.
+function interpret(o,m){const l=ladder(o), k=m.idx-offOf(o);
+  if(k<=0) return {reached:l[0],next:null,pct:0,below:true};   // first rank not full yet
+  if(k>=l.length) return {err:T(`Hervorgehoben ist Kachel ${m.idx+1}, die Rangleiter von ${o} hat aber nur ${l.length+offOf(o)} Kacheln. Ist es der Screenshot dieser Organisation?`,`Tile ${m.idx+1} is highlighted, but the rank ladder of ${o} has only ${l.length+offOf(o)} tiles. Is it the screenshot of this organisation?`)};
+  return {reached:l[k-1],next:l[k],pct:m.pct};}
+const xpOf=r=>r.reached[0]+(r.next?(r.next[0]-r.reached[0])*r.pct/100:0);
+const pctTxt=p=>String(p).replace('.',L()==='en'?'.':',');
 // Time of the screenshot from its file name ("ScreenShot-2026-11-20_11-59-18-B56.jpg"), else the file date.
 function shotTime(f){const m=/(\d{4})-(\d\d)-(\d\d)_(\d\d)-(\d\d)-(\d\d)/.exec(f.name||''); return m?new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6]):new Date(f.lastModified||Date.now());}
 const localISO=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+// Image file to canvas (Image element instead of createImageBitmap: works in more browsers and in headless tests).
+async function shotCanvas(f){const url=URL.createObjectURL(f), bm=new Image(); bm.src=url;
+  try{await new Promise((ok,no)=>{bm.onload=ok; bm.onerror=no;});} finally{URL.revokeObjectURL(url);}
+  const cv=document.createElement('canvas'); cv.width=bm.naturalWidth; cv.height=bm.naturalHeight; cv.getContext('2d').drawImage(bm,0,0); return cv;}
 // Read a screenshot file into the open form: measure, show a preview with the measured bar marked, fill the fields.
 async function readShot(f,form){const res=form.querySelector('.rf-res'), o=form.dataset.form, l=ladder(o);
   res.className='rf-res'; res.textContent=T('Lese Screenshot …','Reading screenshot …');
-  try{// Image element instead of createImageBitmap: works in more browsers (and in headless tests)
-    const url=URL.createObjectURL(f), bm=new Image(); bm.src=url; await new Promise((ok,no)=>{bm.onload=ok; bm.onerror=no;}); URL.revokeObjectURL(url);
-    const cv=document.createElement('canvas'); cv.width=bm.naturalWidth; cv.height=bm.naturalHeight; cv.getContext('2d').drawImage(bm,0,0);
-    const m=measureShot(cv);
+  try{const cv=await shotCanvas(f), m=measureShot(cv);
     if(m.err){res.className='rf-res bad'; res.textContent=m.err; return;}
-    const reached=l[m.n-1], next=l[m.n];
-    if(!reached){res.className='rf-res bad'; res.textContent=T(`${m.n} volle Balken erkannt, aber die Rangleiter von ${o} hat nur ${l.length} Stufen. Ist es der Screenshot dieser Organisation?`,`${m.n} full bars found, but the rank ladder of ${o} has only ${l.length} steps. Is it the screenshot of this organisation?`); return;}
-    form.rank.value=String(reached[0]); form.pct.type='text'; form.pct.value=next?String(m.pct).replace('.',L()==='en'?'.':','):'0'; form.t.value=localISO(shotTime(f));
+    const r=interpret(o,m);
+    if(r.err){res.className='rf-res bad'; res.textContent=r.err; return;}
+    form.rank.value=String(r.reached[0]); form.pct.type='text'; form.pct.value=r.next?pctTxt(r.pct):'0'; form.t.value=localISO(shotTime(f));
     // Preview: the tile area, the measured bar framed
-    const [bx,by,bl]=m.box, x0=Math.max(0,m.full[0].a-60*cv.height/837), y0=Math.max(0,Math.min(...m.full.map(b=>b.y))-140*cv.height/837), w=Math.min(cv.width-x0,800*cv.height/837), h=Math.min(cv.height-y0,420*cv.height/837);
-    const pv=form.querySelector('canvas'); pv.width=420; pv.height=Math.round(420*h/w); const c=pv.getContext('2d'); c.drawImage(cv,x0,y0,w,h,0,0,pv.width,pv.height);
+    const [bx,by,bl]=m.box, [x0,y0,w,h]=m.area, pv=form.querySelector('canvas'); pv.width=420; pv.height=Math.round(420*h/w);
+    const c=pv.getContext('2d'); c.drawImage(cv,x0,y0,w,h,0,0,pv.width,pv.height);
     const k=pv.width/w; c.strokeStyle='#ff5a5a'; c.lineWidth=2; c.strokeRect((bx-x0-4)*k,(by-y0-8)*k,(bl+8)*k,16*k); pv.hidden=false;
-    const warn=m.guess?T(' Hervorgehobene Kachel nicht gefunden – nächste Stufe nach der Reihenfolge angenommen.',' Highlighted tile not found – next rank assumed by order.'):m.idx!==m.n?T(` Achtung: hervorgehoben ist Kachel ${m.idx+1}, voll sind ${m.n} – bitte prüfen.`,` Note: tile ${m.idx+1} is highlighted, ${m.n} are full – please check.`):'';
-    res.className='rf-res'+(warn?' bad':''); res.textContent=T(`Erkannt: ${m.n} Ränge erreicht (bis ${reached[1]})${next?`, Balken ${next[1]} zu ${String(m.pct).replace('.',',')} % gefüllt`:''} · Zeitpunkt ${fmtT(shotTime(f).toISOString())}. Rot markiert ist der gemessene Balken – bitte kurz prüfen und übernehmen.`,`Found: ${m.n} ranks reached (up to ${reached[1]})${next?`, bar ${next[1]} ${m.pct} % filled`:''} · time ${fmtT(shotTime(f).toISOString())}. The measured bar is framed in red – please check and apply.`)+warn;}
+    const warn=m.weak?T(' Die Kachel war nur knapp zu erkennen (heller Hintergrund?) – bitte prüfen.',' The tile was barely visible (bright background?) – please check.'):'';
+    res.className='rf-res'+(warn?' bad':'');
+    res.textContent=(r.below?T(`Erkannt: Die erste Stufe (${l[0][1]}) ist noch nicht voll – gezählt als ${fmt(l[0][0])} XP.`,`Found: the first rank (${l[0][1]}) is not full yet – counted as ${fmt(l[0][0])} XP.`)
+      :T(`Erkannt: erreicht ${r.reached[1]}, Balken ${r.next[1]} zu ${pctTxt(r.pct)} % gefüllt`,`Found: reached ${r.reached[1]}, bar ${r.next[1]} ${r.pct} % filled`))
+      +T(` · Zeitpunkt ${fmtT(shotTime(f).toISOString())}. Rot markiert ist der gemessene Balken – bitte kurz prüfen und übernehmen.`,` · time ${fmtT(shotTime(f).toISOString())}. The measured bar is framed in red – please check and apply.`)+warn;}
   catch(e){res.className='rf-res bad'; res.textContent=T('Bild konnte nicht gelesen werden.','Could not read the image.');}}
+
+/* ---------- several screenshots at once ---------- */
+const OCRLIB={src:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',sri:'sha384-GJqSu7vueQ9qN0E9yLPb3Wtpd7OrgK8KmYzC8T1IysG1bcvxvIO4qtYR/D3A991F'};
+let OCRP=null, BATCH=[], BSTOP=false;
+// Text recognition (English model: the organisation names are written in Latin capitals), loaded once on demand.
+function ocrWorker(){if(OCRP) return OCRP;
+  OCRP=new Promise((ok,no)=>{if(window.Tesseract) return ok(); const sc=document.createElement('script'); sc.src=OCRLIB.src; sc.integrity=OCRLIB.sri; sc.crossOrigin='anonymous'; sc.onload=ok; sc.onerror=no; document.head.appendChild(sc);})
+    .then(()=>Tesseract.createWorker('eng')).catch(e=>{OCRP=null; throw e;});
+  return OCRP;}
+// Title line with the organisation name above the tiles, enlarged; white capitals become black on white.
+function titleCanvas(cv){const s=cv.height/837, x=Math.max(0,cv.width/2-200*s), y=140*s, w=Math.min(cv.width-x,840*s), h=56*s, k=2;
+  const c=document.createElement('canvas'); c.width=Math.round(w*k); c.height=Math.round(h*k); const g=c.getContext('2d',{willReadFrequently:true});
+  g.drawImage(cv,x,y,w,h,0,0,c.width,c.height); const im=g.getImageData(0,0,c.width,c.height), p=im.data;
+  for(let i=0;i<p.length;i+=4){const v=0.299*p[i]+0.587*p[i+1]+0.114*p[i+2]>185?0:255; p[i]=p[i+1]=p[i+2]=v;}
+  g.putImageData(im,0,0); return c;}
+// Edit distance of a name to its best matching part of the read text.
+function subDist(pn,tx){let prev=new Array(tx.length+1).fill(0);
+  for(let i=1;i<=pn.length;i++){const cur=[i]; for(let j=1;j<=tx.length;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(pn[i-1]===tx[j-1]?0:1)); prev=cur;}
+  return Math.min(...prev);}
+// Known organisation that best matches the read title (at least 75 % of its letters right), else null.
+function matchOrg(text){const tx=compact(text); if(tx.length<3) return null; let best=null;
+  for(const o of known()){const k=compact(o); const sc=1-subDist(k,tx)/k.length; if(!best||sc>best.sc) best={o,sc};}
+  return best&&best.sc>=0.75?best:null;}
+// Which rows are applied by default: newest image per organisation, readable, not applied before.
+function markBatch(){const st=load(), seen=new Set();
+  for(const b of BATCH){b.old=false; b.dup=false; if(!b.org){b.ok=false; continue;}
+    const cals=(st.orgs&&st.orgs[b.org]&&st.orgs[b.org].cals)||[];
+    b.dup=cals.some(c=>Math.abs(new Date(c.t)-b.t)<60000); b.old=seen.has(b.org); seen.add(b.org);
+    b.ok=!b.old&&!b.dup&&!interpret(b.org,b.m).err;}}
+async function batchRead(files){const st=$r('bstat');
+  files=[...files].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|bmp)$/i.test(f.name)).sort((p,q)=>shotTime(q)-shotTime(p));
+  BATCH=[]; BSTOP=false; $r('bres').innerHTML=''; $r('bok').disabled=true;
+  if(!files.length){st.textContent=T('Keine Bilder gefunden.','No images found.'); return;}
+  let worker=null, skipped=0;
+  for(let i=0;i<files.length&&!BSTOP;i++){const f=files[i]; st.textContent=T(`Lese Bild ${i+1} von ${files.length} …`,`Reading image ${i+1} of ${files.length} …`);
+    let cv; try{cv=await shotCanvas(f);}catch(e){skipped++; continue;}
+    const m=measureShot(cv); if(m.err){skipped++; continue;}
+    if(worker===null){st.textContent=T('Lade die Texterkennung (nur beim ersten Mal, einige MB) …','Loading text recognition (first time only, a few MB) …');
+      try{worker=await ocrWorker();}catch(e){worker=false;}}
+    let hit=null, raw='';
+    if(worker){try{const r=await worker.recognize(titleCanvas(cv)); raw=r.data.text.replace(/\s+/g,' ').trim(); hit=matchOrg(raw);}catch(e){}}
+    BATCH.push({f,t:shotTime(f),m,org:hit?hit.o:'',raw,ok:false});}
+  markBatch(); renderBatch(skipped,worker===false);}
+function batchRow(b,i){const orgs=known().sort((p,q)=>p.localeCompare(q));
+  const opts=[`<option value="">${T('– nicht erkannt, bitte wählen –','– not recognised, please choose –')}</option>`,...orgs.map(o=>`<option${o===b.org?' selected':''}>${esc(o)}</option>`)].join('');
+  let info, bad=false;
+  if(!b.org){bad=true; info=T('Organisation nicht erkannt','Organisation not recognised')+(b.raw?` (${T('gelesen','read')}: „${esc(b.raw.slice(0,40))}“)`:'');}
+  else{const r=interpret(b.org,b.m);
+    if(r.err){bad=true; info=esc(r.err);}
+    else info=(r.below?T(`${esc(r.reached[1])} noch nicht voll · ${fmt(r.reached[0])} XP`,`${esc(r.reached[1])} not full yet · ${fmt(r.reached[0])} XP`)
+      :`${esc(r.reached[1])} → ${esc(r.next[1])} ${pctTxt(r.pct)} % · ≈ ${fmt(xpOf(r))} XP`)
+      +(b.old?' · '+T('älteres Bild, nicht übernommen','older image, not applied'):'')+(b.dup?' · '+T('schon übernommen','applied before'):'')
+      +(b.m.weak?' · '+T('Kachel nur knapp erkannt (heller Hintergrund?)','tile barely visible (bright background?)'):'');}
+  return `<tr class="${bad?'bad':''}"><td><input type="checkbox" data-bi="${i}"${b.ok?' checked':''}${b.org?'':' disabled'} aria-label="${T('übernehmen','apply')}"></td>
+    <td><select data-bo="${i}" aria-label="${T('Organisation','Organisation')}">${opts}</select></td><td>${info}</td><td>${fmtT(b.t.toISOString())}</td></tr>`;}
+let BSKIP=0, BNOOCR=false;
+function renderBatch(skipped,noOcr){if(skipped!=null){BSKIP=skipped; BNOOCR=noOcr;} const n=BATCH.length;
+  $r('bres').innerHTML=n?`<div class="tablewrap"><table><thead><tr><th>✓</th><th>${T('Organisation','Organisation')}</th><th>${T('Erkannt','Found')}</th><th>${T('Zeitpunkt','Time')}</th></tr></thead><tbody>${BATCH.map(batchRow).join('')}</tbody></table></div>`:'';
+  bCount();}
+function bCount(){const n=BATCH.length, k=BATCH.filter(b=>b.ok).length;
+  $r('bstat').textContent=(n?T(`${n} Ruf-Screenshots gelesen`,`${n} reputation screenshots read`):T('Kein Ruf-Screenshot gefunden','No reputation screenshot found'))
+    +(BSKIP?T(`, ${BSKIP} andere Bilder übersprungen`,`, ${BSKIP} other images skipped`):'')+'. '
+    +(n?T(`${k} zum Übernehmen ausgewählt – bitte prüfen; die Organisation lässt sich je Zeile ändern.`,`${k} selected to apply – please check; the organisation can be changed per row.`):'')
+    +(BNOOCR?' '+T('Texterkennung nicht verfügbar (offline?) – bitte die Organisation je Zeile wählen.','Text recognition not available (offline?) – please choose the organisation per row.'):'');
+  const ok=$r('bok'); ok.disabled=!k; ok.lastChild.textContent=k?T(`${k} Abgleiche übernehmen`,`Apply ${k} alignments`):T('Übernehmen','Apply');}
+function applyBatch(){const st=load(); let k=0;
+  for(const b of BATCH){if(!b.ok||!b.org) continue; const r=interpret(b.org,b.m); if(r.err) continue;
+    const os=orgState(st,b.org); os.cals.push({t:b.t.toISOString(),xp:Math.round(xpOf(r))}); os.cals.sort((p,q)=>p.t.localeCompare(q.t)); k++;}
+  save(st); $r('bdlg').close(); render();
+  $r('stat').textContent=T(`${k} Abgleiche aus Screenshots gespeichert.`,`${k} alignments from screenshots saved.`);}
 
 /* ---------- missions by rank ---------- */
 const TKEY='scha_rep_texts';
@@ -447,6 +568,21 @@ view.addEventListener('dragover',e=>{const z=e.target.closest('[data-drop]'); if
 view.addEventListener('dragleave',e=>{const z=e.target.closest('[data-drop]'); if(z) z.classList.remove('drag');});
 view.addEventListener('drop',e=>{const z=e.target.closest('[data-drop]'); if(!z) return; e.preventDefault(); z.classList.remove('drag');
   const f=[...(e.dataTransfer?.files||[])].find(f=>f.type.startsWith('image/')); if(f) readShot(f,z.closest('form'));});
+// Several screenshots at once
+$r('batch').addEventListener('click',()=>{BATCH=[]; $r('bres').innerHTML=''; $r('bstat').textContent=''; $r('bok').disabled=true; $r('bok').lastChild.textContent=T('Übernehmen','Apply'); $r('bdlg').showModal();});
+$r('bfiles').addEventListener('click',()=>$r('bin').click());
+$r('bdir').addEventListener('click',()=>$r('bdirin').click());
+for(const id of ['bin','bdirin']) $r(id).addEventListener('change',e=>{const fs=[...e.target.files]; e.target.value=''; batchRead(fs);});
+$r('bx').addEventListener('click',()=>{BSTOP=true; $r('bdlg').close();});
+$r('bok').addEventListener('click',applyBatch);
+$r('bres').addEventListener('change',e=>{const c=e.target.closest('[data-bi]'), s=e.target.closest('[data-bo]');
+  if(c){BATCH[+c.dataset.bi].ok=c.checked; bCount();}
+  if(s){BATCH[+s.dataset.bo].org=s.value; markBatch(); renderBatch();}});
+const bz=document.querySelector('#rf-bdlg [data-bdrop]');
+bz.addEventListener('dragover',e=>{e.preventDefault(); bz.classList.add('drag');});
+bz.addEventListener('dragleave',()=>bz.classList.remove('drag'));
+$r('bdlg').addEventListener('dragover',e=>e.preventDefault());
+$r('bdlg').addEventListener('drop',e=>{e.preventDefault(); bz.classList.remove('drag'); batchRead(e.dataTransfer?.files||[]);});
 view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!f) return; e.preventDefault();
   const o=f.dataset.form, l=ladder(o), x0=+f.rank.value, i=l.findIndex(r=>r[0]===x0), next=l[i+1];
   const pct=parseFloat(String(f.pct.value).replace(',','.')), err=f.querySelector('.rf-err');
@@ -457,6 +593,6 @@ view.addEventListener('submit',e=>{const f=e.target.closest('[data-form]'); if(!
   $r('stat').textContent=T(`${o}: Abgleich gespeichert (${fmt(xp)} XP).`,`${o}: alignment saved (${fmt(xp)} XP).`);});
 
 let started=false;
-return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, handyData, fromHandy, _measure:measureShot, _guildOf:o=>(guildOf(o)||{}).n||'', _orgName:orgName, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
+return {render(){if(!started){started=true; if(typeof SZ!=='undefined') SZ.start();} render();}, _missions:missions, _estimate:(o)=>estimate(o,missions(),load()), _band:band, handyData, fromHandy, _measure:measureShot, _interpret:interpret, _matchOrg:matchOrg, _titleCanvas:titleCanvas, _ocr:ocrWorker, _batchRead:files=>batchRead(files), _batch:()=>BATCH, _guildOf:o=>(guildOf(o)||{}).n||'', _orgName:orgName, _byRank:byRank, _iniText:iniText, _loadTexts:loadTexts};
 })();
 """

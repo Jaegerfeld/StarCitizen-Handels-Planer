@@ -28,8 +28,12 @@
 #   Rangnamen aus den Anmerkungen zu einer ihrer Leitern (Ling Family Hauling:
 #   „Anwärter“ = Frachtleiter), gilt diese. Ohne klare Mehrheit (Northrock)
 #   bleibt die Leiter offen. Organisationen, die nur sc-market kennt, kommen
-#   nicht hinzu. Im mobiGlas
-#   zeigt jede Organisation eine Leiter (von Robert am 20.11.2026 geprüft).
+#   nicht hinzu. Im mobiGlas zeigt jede Organisation eine Leiter (von Robert am
+#   20.11.2026 geprüft). Wo Roberts mobiGlas-Screenshots vom 21.11.2026 die
+#   Leiter zeigen, gilt sie (MOBIGLAS) statt der Mehrheitsregel – dort lag die
+#   Regel bei Ling, Eckhart und Northrock falsch. „tiles0“ nennt die
+#   Organisationen, deren Leiter im mobiGlas mit der Kachel „Nicht berechtigt“
+#   beginnt; der Screenshot-Abgleich zählt die Kacheln damit richtig.
 #   Deutsche Rangnamen kommen aus den RepStanding_*-Schlüsseln der global.ini,
 #   sonst bleibt der englische Name. Namen aus den Anmerkungen der Übersetzung
 #   haben Vorrang; sc-market ergänzt fehlende Stufen und Leitern.
@@ -76,7 +80,27 @@ SCM_DE = {
         f"repstanding_bounty_{k}_name" for k in
         ("applicant", "probation", "junior", "midlevel", "senior", "masterbountyhunter", "legendarybountyhunter")],
     "reputationscope_wikelo": [f"repstanding_barter_rank{i}_name" for i in range(3)],
+    "reputationscope_security": [f"repstanding_security_rank{i}" for i in range(7)],
+    "reputationscope_emergency": [f"repstanding_emergency_rank{i}" for i in range(4)],
 }
+#: Ladder per organisation as Robert's mobiGlas shows it (screenshots of 21.11.2026, patch 4.10.3):
+#: scope and, where the mobiGlas ends earlier than the scope, the XP threshold of the top tile.
+MOBIGLAS = {
+    **{o: (SCM_CONTRACTOR, None) for o in (
+        "Citizens For Prosperity", "FTL Courier", "Foxwell Enforcement", "Headhunters",
+        "Highpoint Wilderness Specialists", "Hockrow Agency", "InterSec Defense Solutions",
+        "Ling Family Hauling", "Northrock Service Group", "Rayari Incorporated", "Vaughn")},
+    "Shubin Interstellar": (SCM_CONTRACTOR, 38000),   # last tile "Auftragnehmer Leitend", no Elite tile
+    "Covalex": ("reputationscope_hauling", None),
+    "Red Wind Linehaul": ("reputationscope_hauling", None),
+    "Eckhart Security": ("reputationscope_security", None),
+    "Civilian Defense Force": ("reputationscope_emergency", None),
+    "Bounty Hunters Guild": ("reputationscope_bounty_bountyhuntersguild", None),
+    "Wikelo Emporium": ("reputationscope_wikelo", None),
+    "Recco Battaglia": (SCM_BATTAGLIA, None),
+}
+#: Small words that stay lower case when an all-caps rank name is title-cased ("Ersthelfer in Ausbildung").
+SMALL = {"in", "im", "zum", "zur", "auf", "mit", "von", "der", "die", "das", "und"}
 
 
 def norm_title(title: str) -> str:
@@ -154,7 +178,11 @@ def fetch_scm() -> dict:
 def de_name(raw: str) -> str:
     """Rank name from global.ini as shown: escaped line break as space, all-caps names in title case."""
     name = re.sub(r"\\n", " ", raw).strip()
-    return name.title() if name.isupper() else name
+    if not name.isupper():
+        return name
+    words = name.lower().split()
+    cap = lambda w: "-".join(p[:1].upper() + p[1:] for p in w.split("-"))   # noqa: E731
+    return " ".join(w if i and w in SMALL else cap(w) for i, w in enumerate(words))
 
 
 def scm_ladders(scm: dict, kv: dict[str, str], seen: dict[str, set], orgs: set[str]) -> tuple[dict, dict]:
@@ -167,9 +195,11 @@ def scm_ladders(scm: dict, kv: dict[str, str], seen: dict[str, set], orgs: set[s
         orgs: Organisations of the table; others are left out.
 
     Returns:
-        ``(ladders, scopes)``: org → [(xp, name), …] and org → chosen scope.
+        ``(ladders, scopes, neg)``: org → [(xp, name), …], org → chosen scope, and the scopes
+        that have a "Not Eligible" rank (shown as the first tile in the mobiGlas).
     """
     by_scope = collections.defaultdict(list)
+    neg = {r["scope_code"] for r in scm["ranks"] if r["threshold"] < 0}
     for r in scm["ranks"]:
         if r["threshold"] >= 0:   # "Not Eligible" (negative) is no rank of the ladder
             by_scope[r["scope_code"]].append((r["threshold"], r["standing_display_name"]))
@@ -183,7 +213,13 @@ def scm_ladders(scm: dict, kv: dict[str, str], seen: dict[str, set], orgs: set[s
         if org in orgs and scope and scope not in SCM_SKIP and scope in by_scope:
             count[org][scope] += 1
     ladders, scopes = {}, {}
+    for org, (scope, top) in MOBIGLAS.items():
+        if scope in by_scope:
+            scopes[org] = scope
+            ladders[org] = [r for r in by_scope[scope] if top is None or r[0] <= top]
     for org, c in count.items():
+        if org in scopes:
+            continue
         names = {n.casefold() for _, n in seen.get(org, ())}
         # A scope whose rank names match the annotations wins; otherwise the scope of most missions
         scope = next((s for s, _ in c.most_common() if names & {n.casefold() for _, n in by_scope[s]}), None)
@@ -194,7 +230,7 @@ def scm_ladders(scm: dict, kv: dict[str, str], seen: dict[str, set], orgs: set[s
             scope = top
         scopes[org] = scope
         ladders[org] = by_scope[scope]
-    return ladders, scopes
+    return ladders, scopes, neg
 
 
 def build(path: pathlib.Path, scm: dict | None = None) -> dict:
@@ -235,15 +271,17 @@ def build(path: pathlib.Path, scm: dict | None = None) -> dict:
             # Only the contractor career; other careers of the same org (Eckhart: "Sicherheitsagent") would mix up the order
             ladders[org] = set(contractor)
     quelle = "Anmerkungen der deutschen Community-Übersetzung (global.ini): nur Zahlen, Titel, Rangnamen"
-    scopes = {}
+    scopes, tiles0 = {}, {}
     if scm:
         orgs = {e[0] for v in missions.values() for e in v} | set(ladders)
-        extra, scopes = scm_ladders(scm, kv, ladders, orgs)
+        extra, scopes, neg = scm_ladders(scm, kv, ladders, orgs)
+        tiles0 = {o: 1 for o, s in sorted(scopes.items()) if s in neg}
         for org, lad in extra.items():
             if scopes[org] == SCM_CONTRACTOR:
                 # Same thresholds; the German names come from the annotations
                 if contractor:
-                    ladders[org] = set(contractor)
+                    top = max(x for x, _ in lad)
+                    ladders[org] = {r for r in contractor if r[0] <= top}
             elif scopes[org] == SCM_BATTAGLIA:
                 have = {x: n for x, n in ladders.get(org, ())}
                 ladders[org] = {(x, have.get(x, n)) for x, n in lad}
@@ -256,6 +294,7 @@ def build(path: pathlib.Path, scm: dict | None = None) -> dict:
         "missions": {t: sorted(map(list, v), key=lambda e: (e[0], e[1], e[2], e[4])) for t, v in sorted(missions.items())},
         "ladders": {o: sorted(map(list, v)) for o, v in sorted(ladders.items())},
         "scopes": dict(sorted(scopes.items())),
+        "tiles0": tiles0,
     }
 
 
