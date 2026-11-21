@@ -9,6 +9,9 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog]
   - Eigene Zeichnung für dieses Werkzeug, keine Grafiken aus dem Spiel: Schild mit 1–3 Sternen, ab der vierten Stufe mit Flügeln, darüber ein oder zwei Winkel, ab der siebten eine Krone. Die Form zeigt die Position in der Leiter, gleich für alle Organisationen.
   - In der Reihe entfällt das Wort, das die meisten Stufen teilen („Senior“ statt „Auftragnehmer Senior“); der volle Name steht im Tooltip und beim aktuellen Rang.
 
+### Behoben
+- **Ruf: Klick auf einen Missionstitel tat still nichts**, wenn die Missionstexte ausgeschaltet sind oder die Sprachdatei des Spiels fehlt (z. B. in einer lokal geöffneten Kopie des Planers, die einen eigenen Speicher hat). Jetzt sagt ein Fenster, was fehlt: Schalter „Missionstexte anzeigen“ einschalten bzw. den ganzen Ordner LIVE laden.
+
 ## [1.17.0] – 2026-11-21
 
 ### Hinzugefügt

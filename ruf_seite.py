@@ -168,6 +168,7 @@ RF_CSS = r"""
   #view-rep .rf-lvl ul{list-style:none;margin:0;padding:0;columns:2 340px;column-gap:24px}
   #view-rep .rf-lvl li{break-inside:avoid;display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0;border-bottom:1px solid var(--line)}
   #view-rep .rf-lvl li small{color:var(--muted);white-space:nowrap}
+  #view-rep [data-mtwhy]{cursor:help}
   #view-rep .rf-mt{font:inherit;font-size:13px;color:var(--accent);background:none;border:0;padding:0;min-height:28px;text-align:left;cursor:pointer;text-decoration:underline}
   #view-rep dialog{max-width:min(720px,92vw);max-height:84vh;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:16px 18px}
   #view-rep dialog::backdrop{background:rgba(0,0,0,.55)}
@@ -448,7 +449,7 @@ function overview(o,est){const groups=byRank(o); if(!groups.length) return '';
   const html=groups.map(g=>{const rank=g.min==null?T('Stufe nicht angegeben','Rank not given'):((l.find(r=>r[0]===g.min)||[0,`${fmt(g.min)} XP`])[1]+` (${fmt(g.min)})`);
     const cls=g.min==null||mid==null?'':g.min<=mid?' done':g.min===nextMin?' next':' later';
     const tag=g.min==null||mid==null?'':g.min<=mid?`<span class="rf-tag">✓ ${T('freigeschaltet','unlocked')}</span>`:g.min===nextMin?`<span class="rf-tag">→ ${T(`als Nächstes, noch ≈ ${fmt(g.min-mid)} XP`,`next, ≈ ${fmt(g.min-mid)} XP to go`)}</span>`:`<span class="rf-tag">🔒 ${T('später','later')}</span>`;
-    const items=g.list.sort((a,b)=>a.title.localeCompare(b.title)).map(x=>`<li>${canText?`<button type="button" class="rf-mt" data-mt="${esc(x.key)}" data-mtt="${esc(prettyT(x.title))}">${esc(prettyT(x.title))}</button>`:esc(prettyT(x.title))}<small>${x.lo===x.hi?fmt(x.lo):fmt(x.lo)+'–'+fmt(x.hi)} XP</small></li>`).join('');
+    const items=g.list.sort((a,b)=>a.title.localeCompare(b.title)).map(x=>`<li>${canText?`<button type="button" class="rf-mt" data-mt="${esc(x.key)}" data-mtt="${esc(prettyT(x.title))}">${esc(prettyT(x.title))}</button>`:`<span data-mtwhy="${esc(prettyT(x.title))}">${esc(prettyT(x.title))}</span>`}<small>${x.lo===x.hi?fmt(x.lo):fmt(x.lo)+'–'+fmt(x.hi)} XP</small></li>`).join('');
     return `<div class="rf-lvl${cls}"><h4>${esc(rank)} <small>· ${g.list.length}</small>${tag}</h4><ul>${items}</ul></div>`;}).join('');
   const hint=mid==null?`<p class="rf-meta">${T('Nach dem ersten Abgleich siehst du hier, was freigeschaltet ist und was als Nächstes kommt.','After the first alignment you see here what is unlocked and what comes next.')}</p>`:'';
   return `<details data-ov="${esc(o)}"${OVOPEN.has(o)?' open':''}><summary>${T('Missionen nach Rufstufe','Missions by rank')} (${n})</summary>${hint}${html}</details>`;}
@@ -460,6 +461,11 @@ async function loadTexts(){const f=iniFile(); if(!f) return null; if(INIMAP&&INI
   INIMAP=map; INIFILE=f; return map;}
 // Ini value as plain text: "\n" to line breaks, markup removed, placeholders shortened.
 const iniText=v=>String(v||'').replace(/\\n/g,'\n').replace(/<\/?EM\d>/g,'').replace(/~mission\(([^)|]*)(?:\|[^)]*)?\)/g,'[$1]');
+// Click on a title while texts are off: say what is missing instead of doing nothing.
+function showWhy(title){const dlg=$r('dlg'); $r('dlg-h').textContent=title;
+  $r('dlg-t').textContent=!textsOn()?T('Missionstexte sind ausgeschaltet. Schalte oben „Missionstexte anzeigen“ ein, dann öffnet ein Klick auf den Titel den Text.','Mission texts are switched off. Switch on “Show mission texts” at the top, then a click on the title opens the text.')
+    :T('Die Sprachdatei des Spiels fehlt (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini). Lade über „Log-Ordner laden …“ den ganzen Ordner LIVE, nicht nur „logbackups“. Hinweis: Eine lokal geöffnete Datei des Planers hat einen eigenen Speicher – dort den Ordner einmal neu wählen.','The game’s language file is missing (StarCitizen\\LIVE\\data\\Localization\\…\\global.ini). Load the whole LIVE folder via “Load log folder …”, not just “logbackups”. Note: a locally opened copy of the planner has its own storage – choose the folder there once again.');
+  if(!dlg.open) dlg.showModal();}
 async function showText(key,title){const dlg=$r('dlg'); $r('dlg-h').textContent=title; $r('dlg-t').textContent=T('Lese Sprachdatei …','Reading language file …');
   if(!dlg.open) dlg.showModal();
   try{const map=await loadTexts(); $r('dlg-t').textContent=map&&map[key]?iniText(map[key]):T('Für diese Mission steht kein Text in der Sprachdatei.','No text for this mission in the language file.');}
@@ -587,6 +593,7 @@ view.addEventListener('click',e=>{const st=load(); let b;
   if(e.target.closest('[data-cancel]')){OPEN=null; render(); return;}
   if((b=e.target.closest('[data-shot]'))){b.parentElement.querySelector('[data-shotin]').click(); return;}
   if((b=e.target.closest('[data-mt]'))){showText(b.dataset.mt,b.dataset.mtt); return;}
+  if((b=e.target.closest('[data-mtwhy]'))){showWhy(b.dataset.mtwhy); return;}
   if(e.target.closest('[data-snapend]')){try{localStorage.removeItem(PKEY);}catch(x){} render();}});
 $r('handy').addEventListener('click',()=>{const d=handyData();
   if(!d.o.length){$r('stat').textContent=T('Noch keine Organisation abgeglichen – erst abgleichen, dann aufs Handy.','No organisation aligned yet – align first, then send to the phone.'); return;}
