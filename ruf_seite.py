@@ -66,6 +66,13 @@
 #   „Aufs Handy …“ (handy_seite.py) überträgt Rang und Balken der abgeglichenen
 #   Organisationen; das Handy zeigt diesen Stand nur an, bis man die Ansicht beendet –
 #   in denselben kompakten Karten wie die obere Hälfte am PC.
+#   Übersicht (21.11.2026, Roberts Wahl „alle 7“ aus Vorschlaege_Uebersicht):
+#   Gildenfarben (Streifen, Tönung, Überschrift; im hellen Modus dunklere Töne für
+#   ≥ 4,5 : 1), kleine Gilden teilen sich eine Zeile, Gildenkopf einzeilig
+#   (Beschreibung im Tooltip), Umschalter „Karten | Liste“, Ordnung „nach Gilde“
+#   oder „nächster Aufstieg zuerst“ (Anteil am aktuellen Band), Organisationen
+#   ohne Abgleich als eine Namenszeile, Favoriten oben über allen Gilden,
+#   Gildenfarbe auch in der Prüfliste des Mehrfach-Abgleichs.
 #   Konzept: Konzept_Ruf-Tracker.md, Entscheidungen R1–R8 vom 20.11.2026.
 #   Eigenständiges Modul für das spätere Spieler-Cockpit.
 # =============================================================================
@@ -86,6 +93,13 @@ RF_HTML = r"""
       <button type="button" class="btn" id="rf-batch">📷 <span class="de">Screenshots abgleichen …</span><span class="en">Align from screenshots …</span></button>
       <button type="button" class="btn" id="rf-handy">📱 <span class="de">Aufs Handy …</span><span class="en">To the phone …</span></button>
       <span class="rf-stat" id="rf-stat" role="status"></span>
+    </div>
+    <div class="rf-viewbar">
+      <span class="rf-seg" role="radiogroup" aria-label="Ansicht / View">
+        <label><input type="radio" name="rf-view" value="cards"> <span class="de">Karten</span><span class="en">Cards</span></label>
+        <label><input type="radio" name="rf-view" value="list"> <span class="de">Liste</span><span class="en">List</span></label>
+      </span>
+      <label class="rf-sel"><span class="de">Ordnen:</span><span class="en">Order:</span> <select id="rf-sort"><option value="guild"></option><option value="next"></option></select></label>
     </div>
     <p class="rf-note" id="rf-texts-note" hidden></p>
     <p class="rf-note"><span class="de">Das Spiel schreibt keine Ruf-Punkte ins Log. Der Reiter rechnet: <b>Stand aus deinem mobiGlas</b> + Ruf der danach abgeschlossenen Missionen (laut Missionsbeschreibung × Faktor). Gleiche einmal je Organisation ab, dann läuft der Balken mit. Gleicher Log-Ordner wie unter „Sitzungen“.</span><span class="en">The game writes no reputation points to the log. This tab computes: <b>the state from your mobiGlas</b> + reputation of the missions completed afterwards (as stated in the mission description × factor). Align once per organisation, then the bar keeps up. Same log folder as under “Sessions”.</span></p>
@@ -135,6 +149,48 @@ RF_CSS = r"""
   #view-rep .rf-top .rf-nums b{font-size:13.5px}
   #view-rep .rf-more{border-top:1px dashed var(--line);margin-top:8px;padding-top:4px}
   #view-rep .rf-org.open{border-color:var(--accent)}
+  /* Guild colours: darker tones on the light theme (text contrast >= 4.5:1), the test tones on the dark one */
+  #view-rep{--g-tr:#1d64ad;--g-re:#7f5300;--g-me:#ad2f2b;--g-bo:#6c3fb8;--g-ac:#1c7038;--g-lo:#9a3672;--g-no:#5a6472}
+  :root[data-theme="dark"] #view-rep{--g-tr:#3b8fe8;--g-re:#d9962b;--g-me:#d9534f;--g-bo:#9b6be0;--g-ac:#3baa5c;--g-lo:#c9609e;--g-no:#7a8696}
+  /* Guild colour: stripe on the left, light tint at the top of the card, coloured guild heading */
+  #view-rep .rf-org[style*="--gc"]{border-left:5px solid var(--gc);background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 14%,var(--panel)) 0,var(--panel) 70px)}
+  #view-rep .rf-guild[style*="--gc"]{border-top:3px solid var(--gc)}
+  #view-rep .rf-guild[style*="--gc"]>summary h2{color:var(--gc)}
+  #view-rep .rf-guild[style*="--gc"]>summary::before{color:var(--gc)}
+  /* View bar: cards / list, order */
+  #view-rep .rf-viewbar{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+  #view-rep .rf-seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  #view-rep .rf-seg label{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;cursor:pointer;font-size:14px}
+  #view-rep .rf-seg label+label{border-left:1px solid var(--line)}
+  #view-rep .rf-seg label:has(input:checked){background:var(--panel2);color:var(--accent);font-weight:700}
+  #view-rep .rf-seg input{accent-color:var(--accent)}
+  #view-rep .rf-sel{display:inline-flex;align-items:center;gap:8px;font-size:14px}
+  #view-rep .rf-sel select{min-height:40px;font:inherit;font-size:14px;padding:0 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--ink)}
+  /* Small guilds share a row: each guild is as wide as its cards (up to four) */
+  #view-rep .rf-guilds{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:flex-start}
+  #view-rep .rf-guilds>.rf-guild{flex:1 1 calc(var(--n,1) * 310px);min-width:min(100%,300px);max-width:100%;margin:0 0 8px}
+  #view-rep .rf-guilds.list>.rf-guild{flex-basis:100%}
+  #view-rep .rf-guild>summary{min-height:40px;padding:6px 0}
+  #view-rep .rf-favs{margin:0 0 12px;border-top:3px solid var(--accent)}
+  #view-rep .rf-favs>h2{font-family:var(--disp);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:8px 0}
+  #view-rep .rf-favs>h2 small,#view-rep .rf-flat>h2 small{font-size:12.5px;color:var(--muted);letter-spacing:0;text-transform:none;font-family:var(--body)}
+  /* Organisations without alignment: one line of names */
+  #view-rep .rf-quiet{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:12.5px;color:var(--muted);margin:6px 0 2px}
+  #view-rep .rf-qn{font:inherit;font-size:12.5px;min-height:32px;padding:0 10px;border:1px solid var(--line);border-left:4px solid var(--gc);border-radius:8px;background:var(--panel2);color:var(--ink);cursor:pointer}
+  /* List view: one row per organisation */
+  #view-rep .rf-rows{display:flex;flex-direction:column;gap:4px}
+  #view-rep .rf-row{display:grid;grid-template-columns:26px minmax(140px,230px) minmax(100px,160px) minmax(100px,1fr) minmax(190px,300px) 44px;grid-template-areas:"b n r x m t";gap:4px 10px;align-items:center;min-height:44px;padding:2px 6px 2px 8px;border:1px solid var(--line);border-left:5px solid var(--gc);border-radius:8px;background:var(--panel);cursor:pointer}
+  #view-rep .rf-row.fav{border-color:var(--accent);border-left-color:var(--gc)}
+  #view-rep .rf-row>svg{grid-area:b}
+  #view-rep .rf-rn{grid-area:n;font-family:var(--disp);font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #view-rep .rf-row .rf-rank{grid-area:r;font-size:13px}
+  #view-rep .rf-row .rf-track{grid-area:x;margin:0;height:9px}
+  #view-rep .rf-rm{grid-area:m;font-size:12.5px;color:var(--muted);text-align:right;white-space:nowrap}
+  #view-rep .rf-row .rf-tog{grid-area:t;min-height:36px}
+  @media (max-width:720px){#view-rep .rf-row{grid-template-columns:26px 1fr auto 44px;grid-template-areas:"b n r t" "x x x x" "m m m m";padding:4px 6px 6px 8px}
+    #view-rep .rf-rm{text-align:left}}
+  /* Guild colour dot in the check list of the batch alignment */
+  #view-rep .rf-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--gc);margin-right:6px;vertical-align:middle}
   #view-rep .rf-org.fav{border-color:var(--accent)}
   #view-rep .rf-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
   #view-rep .rf-head h3{font-family:var(--disp);font-size:17px;letter-spacing:.04em;margin:0;flex:1 1 auto}
@@ -280,12 +336,13 @@ function pats(){if(PATS) return PATS; PATS=[];
 const prettyT=s=>String(s).replace(/~mission\(([^)|]*)(?:\|[^)]*)?\)/g,'[$1]');
 // Guilds from Alpha 5.0 (PTU list, 20.11.2026): name, focus, and the words that identify their mission givers.
 const GUILDS=[
-  {n:'Transport Guild', d:['Fracht und Kurier','Cargo and courier'], k:['covalex','ftl','ling']},
-  {n:'Resources Guild', d:['Rohstoffe und Bergung','Resources and salvage'], k:['shubin','adagio','cornerstone']},
-  {n:'Mercenary Guild', d:['Sicherheit, Kampf, Söldner','Security, combat, mercenary'], k:['northrock']},
-  {n:'Bounty Hunter Guild', d:['Kopfgeldjagd','Bounty hunting'], k:['bounty']},
-  {n:'Academy of Science', d:['Forschung, Sammeln, Erkundung','Research, collecting, exploration'], k:['rayari']},
-  {n:'Lokale / persönliche Boards', d:['Terminals außerhalb der Gildenhallen','Terminals outside the guild halls'], k:['wikelo','hockrow']}];
+  {n:'Transport Guild', d:['Fracht und Kurier','Cargo and courier'], k:['covalex','ftl','ling'], c:'var(--g-tr)'},
+  {n:'Resources Guild', d:['Rohstoffe und Bergung','Resources and salvage'], k:['shubin','adagio','cornerstone'], c:'var(--g-re)'},
+  {n:'Mercenary Guild', d:['Sicherheit, Kampf, Söldner','Security, combat, mercenary'], k:['northrock'], c:'var(--g-me)'},
+  {n:'Bounty Hunter Guild', d:['Kopfgeldjagd','Bounty hunting'], k:['bounty'], c:'var(--g-bo)'},
+  {n:'Academy of Science', d:['Forschung, Sammeln, Erkundung','Research, collecting, exploration'], k:['rayari'], c:'var(--g-ac)'},
+  {n:'Lokale / persönliche Boards', d:['Terminals außerhalb der Gildenhallen','Terminals outside the guild halls'], k:['wikelo','hockrow'], c:'var(--g-lo)'}];
+const gCol=o=>(guildOf(o)||{c:'var(--g-no)'}).c;   // colour of an organisation's guild; grey without guild
 // Mission givers named in the guild list that the reputation table does not know (shown from the start).
 // Names as in the table (Covalex, Rayari Incorporated, Wikelo Emporium …) so that nobody appears twice.
 const EXTRA=['Cornerstone Developments','Northrock Service Group','Bounty Hunters Guild','Hockrow Agency'];
@@ -464,7 +521,7 @@ function batchRow(b,i){const orgs=known().sort((p,q)=>p.localeCompare(q));
       +(b.old?' · '+T('älteres Bild, nicht übernommen','older image, not applied'):'')+(b.dup?' · '+T('schon übernommen','applied before'):'')
       +(b.m.weak?' · '+T('Kachel nur knapp erkannt (heller Hintergrund?)','tile barely visible (bright background?)'):'');}
   return `<tr class="${bad?'bad':''}"><td><input type="checkbox" data-bi="${i}"${b.ok?' checked':''}${b.org?'':' disabled'} aria-label="${T('übernehmen','apply')}"></td>
-    <td><select data-bo="${i}" aria-label="${T('Organisation','Organisation')}">${opts}</select></td><td>${info}</td><td>${fmtT(b.t.toISOString())}</td></tr>`;}
+    <td><span class="rf-dot" style="--gc:${b.org?gCol(b.org):'transparent'}" aria-hidden="true"></span><select data-bo="${i}" aria-label="${T('Organisation','Organisation')}">${opts}</select></td><td>${info}</td><td>${fmtT(b.t.toISOString())}</td></tr>`;}
 let BSKIP=0, BNOOCR=false;
 function renderBatch(skipped,noOcr){if(skipped!=null){BSKIP=skipped; BNOOCR=noOcr;} const n=BATCH.length;
   $r('bres').innerHTML=n?`<div class="tablewrap"><table><thead><tr><th>✓</th><th>${T('Organisation','Organisation')}</th><th>${T('Erkannt','Found')}</th><th>${T('Zeitpunkt','Time')}</th></tr></thead><tbody>${BATCH.map(batchRow).join('')}</tbody></table></div>`:'';
@@ -541,14 +598,14 @@ function fromHandy(d){if(!d||!Array.isArray(d.o)) throw new Error('format'); try
 function renderSnap(d){const list=$r('list');
   const card=([o,rank,cx,next,nx,lo,hi])=>{const mid=(lo+hi)/2, span=nx!=null?nx-cx:0, p=x=>span?Math.max(0,Math.min(100,(x-cx)/span*100)):100;
     // Same compact layout as the upper half of the cards on the PC (view only, nothing to unfold)
-    return `<article class="rf-org"><div class="rf-top"><div class="rf-head">${rankBadge(o,mid)}<h3 title="${esc(o)}">${esc(o)}</h3></div>
+    return `<article class="rf-org" style="--gc:${gCol(o)}"><div class="rf-top"><div class="rf-head">${rankBadge(o,mid)}<h3 title="${esc(o)}">${esc(o)}</h3></div>
       <div class="rf-sub"><span class="rf-rank">${esc(rank)}</span>${ladderMini(o,mid)}</div>
       <div class="rf-track" role="img" aria-label="${T('Fortschritt','Progress')} ${Math.round(p(mid))} %"><div class="rf-fill" style="width:${p(lo)}%"></div><div class="rf-unc" style="left:${p(lo)}%;width:${Math.max(0,p(hi)-p(lo))}%"></div></div>
       <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b></span><span>${next?T(`noch ≈ ${fmt(Math.max(0,nx-mid))} bis ${esc(shortRank(o,next))}`,`≈ ${fmt(Math.max(0,nx-mid))} to ${esc(shortRank(o,next))}`):T('höchster Rang','top rank')}</span></div></div></article>`;};
   const rows=d.o.slice().sort((a,b)=>b[7]-a[7]||a[0].localeCompare(b[0]));
   const groups=[...GUILDS.map(g=>({g,list:rows.filter(r=>guildOf(r[0])===g)})),{g:null,list:rows.filter(r=>!guildOf(r[0]))}].filter(x=>x.list.length);
   list.innerHTML=`<div class="rf-snap"><span>📱 ${T(`Stand vom PC · ${fmtT(d.t)} · nur ansehen`,`State from the PC · ${fmtT(d.t)} · view only`)}</span><button type="button" class="btn" data-snapend>${T('Ansicht beenden','End view')}</button></div>`
-    +(groups.length?groups.map(x=>`<details class="rf-guild" open><summary><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length}</small></summary><div class="rf-cards">${x.list.map(card).join('')}</div></details>`).join('')
+    +(groups.length?groups.map(x=>`<details class="rf-guild" open style="--gc:${x.g?x.g.c:'var(--g-no)'}"><summary><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length}</small></summary><div class="rf-cards">${x.list.map(card).join('')}</div></details>`).join('')
     :`<p class="rf-empty">${T('Im übertragenen Stand ist keine Organisation abgeglichen.','No organisation is aligned in the transferred state.')}</p>`);}
 
 /* ---------- rank badges ---------- */
@@ -568,7 +625,7 @@ function badge(i,st,sz){const fill=st==='done', col=st==='later'?'var(--muted)':
 // Ladder as a row of badges like the mobiGlas tiles; x = XP now (null: not aligned, all grey).
 // Short rank name: the first word most ranks of the ladder share ("Auftragnehmer", "Sicherheitsagent") is left out.
 function shortRank(o,n){const l=ladder(o), fw={}; for(const r of l){const w=r[1].split(' ')[0]; fw[w]=(fw[w]||0)+1;}
-  const com=Object.keys(fw).find(w=>fw[w]>=3&&fw[w]>=l.length/2); return com&&n.startsWith(com+' ')?n.slice(com.length+1):n;}
+  const com=Object.keys(fw).find(w=>fw[w]>=3&&fw[w]>=l.length/2); const s=com&&n.startsWith(com+' ')?n.slice(com.length+1):n; return /^[0-9IVX]+$/.test(s)?n:s;}   // never a bare number ("Prestige 1")
 function ladderStrip(o,x){const l=ladder(o); if(!l.length) return '';
   let cur=-1; if(x!=null) l.forEach((r,i)=>{if(x>=r[0]) cur=i;});
   const short=n=>shortRank(o,n);   // full name in the tooltip
@@ -608,9 +665,18 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o), isOpe
   const acts=`<div class="rf-acts"><button type="button" class="btn" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
   const guess=ladderGuess(o)?`<p class="rf-meta"><span class="est">${T('Rangleiter nicht bekannt – Auftragnehmer-Stufen angenommen.','Rank ladder unknown – contractor ranks assumed.')}</span></p>`:'';
   const icon=est.cal?rankBadge(o,(est.lo+est.hi)/2):badge(0,'later',26);
-  return `<article class="rf-org${os.fav?' fav':''}${isOpen?' open':''}" data-org="${esc(o)}"><div class="rf-top" data-top="${esc(o)}"><div class="rf-head">${icon}<h3 title="${esc(o)}">${esc(o)}</h3>${star}${tog}</div>${top}</div>`
+  return `<article class="rf-org${os.fav?' fav':''}${isOpen?' open':''}" data-org="${esc(o)}" style="--gc:${gCol(o)}"><div class="rf-top" data-top="${esc(o)}"><div class="rf-head">${icon}<h3 title="${esc(o)}">${esc(o)}</h3>${star}${tog}</div>${top}</div>`
     +`<div class="rf-more"${isOpen?'':' hidden'}>${body}${guess}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</div></article>`;}
 const EXP=new Set();   // organisations whose card is unfolded (kept while the page is open)
+// One row of the list view (aligned organisations); a click unfolds it into the full card.
+function row(o,list,st){const est=estimate(o,list,st), os=orgState(st,o), mid=(est.lo+est.hi)/2, b=bar(o,est);
+  return `<div class="rf-row${os.fav?' fav':''}" data-top="${esc(o)}" data-org="${esc(o)}" style="--gc:${gCol(o)}">${rankBadge(o,mid)}`
+    +`<span class="rf-rn" title="${esc(o)}">${esc(o)}</span><span class="rf-rank">${esc(shortRank(o,b.cur[1]))}</span>${b.html}`
+    +`<span class="rf-rm">≈ ${fmt(mid)} XP · ${b.next?T(`noch ≈ ${fmt(Math.max(0,b.next[0]-mid))} bis ${esc(shortRank(o,b.next[1]))}`,`≈ ${fmt(Math.max(0,b.next[0]-mid))} to ${esc(shortRank(o,b.next[1]))}`):T('höchster Rang','top rank')}</span>`
+    +`<button type="button" class="rf-tog" data-tog="${esc(o)}" aria-expanded="false" aria-label="${T('Details aufklappen','Show details')}">▾</button></div>`;}
+const VKEY='scha_rep_view', OKEY='scha_rep_sort';
+const viewMode=()=>{try{return localStorage.getItem(VKEY)==='list'?'list':'cards';}catch(e){return 'cards';}};
+const sortMode=()=>{try{return localStorage.getItem(OKEY)==='next'?'next':'guild';}catch(e){return 'guild';}};
 // Alignment form: current rank (highlighted tile), fill of its bar, time of the look into the mobiGlas.
 function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0][1]:(l[0]||[0,''])[1];
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -635,22 +701,34 @@ function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions
   if(MIGRATED) notes.push(MIGRATED===1?T('1 bisheriger Abgleich auf die korrigierte Lesart umgerechnet (eine Stufe höher).','1 earlier alignment converted to the corrected reading (one rank up).')
     :T(`${MIGRATED} bisherige Abgleiche auf die korrigierte Lesart umgerechnet (eine Stufe höher).`,`${MIGRATED} earlier alignments converted to the corrected reading (one rank up).`));
   if(notes.length){$r('stat').textContent=notes.join(' ')+' '+T('Genauer ist ein neuer Abgleich: „Screenshots abgleichen …“.','A new alignment is more precise: “Align from screenshots …”.'); MERGED=[]; MIGRATED=0;}
-  // All known organisations from the start (table, guild list, logs, own alignments), grouped by guild
-  const ms=missions(), st=load(), hide=hideOn();
+  // All known organisations from the start (table, guild list, logs, own alignments)
+  const ms=missions(), st=load(), hide=hideOn(), mode=viewMode(), order=sortMode();
   const orgs=[...new Set([...known(),...ms.map(m=>m.org),...Object.keys(st.orgs||{})])].filter(Boolean);
   const last=o=>ms.filter(m=>m.org===o).map(m=>m.t).sort().pop()||'';
-  const shown=orgs.filter(o=>!hide||orgState(st,o).cals.length||orgState(st,o).fav);
+  const has=o=>orgState(st,o).cals.length>0, fav=o=>orgState(st,o).fav, unf=o=>EXP.has(o)||OPEN===o;
+  const shown=orgs.filter(o=>!hide||has(o)||fav(o));
   $r('hide').checked=hide;
-  const groups=[...GUILDS.map(g=>({g,list:shown.filter(o=>guildOf(o)===g)})),{g:null,list:shown.filter(o=>!guildOf(o))}].filter(x=>x.list.length);
-  for(const x of groups) x.list.sort((a,b)=>(orgState(st,b).fav-orgState(st,a).fav)||(orgState(st,b).cals.length>0)-(orgState(st,a).cals.length>0)||last(b).localeCompare(last(a))||a.localeCompare(b));
+  for(const r of document.querySelectorAll('#view-rep input[name="rf-view"]')) r.checked=r.value===mode;
+  const so=$r('sort'); so.value=order; so.options[0].textContent=T('nach Gilde','by guild'); so.options[1].textContent=T('nächster Aufstieg zuerst','next rank-up first');
+  // Share of the current band reached (for "next rank-up first"); top rank and not aligned at the end
+  const SH={}; for(const o of shown){const e=estimate(o,ms,st); if(!e.cal){SH[o]=-2; continue;} const mid=(e.lo+e.hi)/2, [c,n]=band(o,mid); SH[o]=n?(mid-c[0])/(n[0]-c[0]):-1;}
+  const byGuild=(p,q)=>has(q)-has(p)||last(q).localeCompare(last(p))||p.localeCompare(q), byNext=(p,q)=>SH[q]-SH[p]||p.localeCompare(q);
+  const item=o=>mode==='list'&&has(o)&&!unf(o)?row(o,ms,st):card(o,ms,st);
+  const wrap=xs=>xs.length?(mode==='list'?`<div class="rf-rows">${xs.map(item).join('')}</div>`:`<div class="rf-cards">${xs.map(item).join('')}</div>`):'';
+  // Without alignment: one line of names; a click unfolds the card to align it
+  const quiet=xs=>xs.length?`<p class="rf-quiet"><span>${T('Ohne Abgleich','Not aligned')} (${xs.length}):</span>${xs.map(o=>`<button type="button" class="rf-qn" data-tog="${esc(o)}" style="--gc:${gCol(o)}" title="${T('Aufklappen und abgleichen','Unfold and align')}">${esc(o)}</button>`).join('')}</p>`:'';
+  const split=xs=>[xs.filter(o=>has(o)||unf(o)),xs.filter(o=>!(has(o)||unf(o))).sort((p,q)=>p.localeCompare(q))];
+  const favs=shown.filter(fav).sort(order==='next'?byNext:byGuild), rest=shown.filter(o=>!fav(o));
   const hint=S.length?'':`<p class="rf-empty">${T('Lade den Log-Ordner von Star Citizen (LIVE oder PTU), dann zählt der Reiter deine Missionen mit. Abgleichen geht auch ohne Logs.','Load the Star Citizen log folder (LIVE or PTU), then the tab counts your missions. Aligning works without logs too.')}</p>`;
   const nHidden=orgs.length-shown.length;
-  const closed=gClosed();
-  list.innerHTML=hint+(groups.length?groups.map(x=>{const gn=x.g?x.g.n:'-', aligned=x.list.filter(o=>orgState(st,o).cals.length).length;
-      return `<details class="rf-guild" data-guild="${esc(gn)}"${closed.has(gn)?'':' open'}><summary><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length} ${x.list.length===1?T('Organisation','organisation'):T('Organisationen','organisations')}${aligned?` · ${aligned} ${T('abgeglichen','aligned')}`:''}</small>
-      <small class="rf-gd">${x.g?esc(T(x.g.d[0],x.g.d[1])):T('Im Testserver 5.0 noch keiner Gilde zugeordnet (geprüft 20.11.2026).','Not yet assigned to a guild on the 5.0 test server (checked 20 Nov 2026).')}</small></summary>
-      <div class="rf-cards">${x.list.map(o=>card(o,ms,st)).join('')}</div></details>`;}).join('')
-    :`<p class="rf-empty">${T('Noch keine Organisation abgeglichen. Schalte „Ohne Abgleich ausblenden“ aus, um alle zu sehen.','No organisation aligned yet. Switch off “Hide not aligned” to see all.')}</p>`)
+  let html=favs.length?`<section class="rf-favs"><h2>★ ${T('Favoriten','Favourites')} <small>${favs.length}</small></h2>${wrap(favs)}</section>`:'';
+  if(order==='next'){const [a,q]=split(rest); a.sort(byNext); html+=`<section class="rf-flat">${wrap(a)}${quiet(q)}</section>`;}
+  else{const closed=gClosed();
+    const groups=[...GUILDS.map(g=>({g,list:rest.filter(o=>guildOf(o)===g)})),{g:null,list:rest.filter(o=>!guildOf(o))}].filter(x=>x.list.length);
+    html+=`<div class="rf-guilds${mode==='list'?' list':''}">`+groups.map(x=>{const gn=x.g?x.g.n:'-', [a,q]=split(x.list); a.sort(byGuild);
+      const desc=x.g?T(x.g.d[0],x.g.d[1]):T('Im Testserver 5.0 noch keiner Gilde zugeordnet (geprüft 20.11.2026).','Not yet assigned to a guild on the 5.0 test server (checked 20 Nov 2026).');
+      return `<details class="rf-guild" style="--gc:${x.g?x.g.c:'var(--g-no)'};--n:${Math.min(Math.max(a.length,1),4)}" data-guild="${esc(gn)}"${closed.has(gn)?'':' open'}><summary title="${esc(desc)}"><h2>${esc(x.g?x.g.n:T('Keiner Gilde zugeordnet','No guild assigned'))}</h2><small>${x.list.length}${a.length<x.list.length?` · ${a.length} ${T('abgeglichen','aligned')}`:''}</small></summary>${wrap(a)}${quiet(q)}</details>`;}).join('')+'</div>';}
+  list.innerHTML=hint+(shown.length?html:`<p class="rf-empty">${T('Noch keine Organisation abgeglichen. Schalte „Ohne Abgleich ausblenden“ aus, um alle zu sehen.','No organisation aligned yet. Switch off “Hide not aligned” to see all.')}</p>`)
     +(hide&&nHidden?`<p class="rf-note">${T(`${nHidden} Organisationen ohne Abgleich ausgeblendet.`,`${nHidden} organisations without alignment hidden.`)}</p>`:'');
   if(OPEN){const f=document.querySelector(`#view-rep [data-form="${CSS.escape(OPEN)}"] select`); if(f) f.focus();}}
 
@@ -682,6 +760,8 @@ function gClosed(){try{return new Set(JSON.parse(localStorage.getItem(GKEY)||'[]
 view.addEventListener('toggle',e=>{const g=e.target.closest&&e.target.closest('[data-guild]'); if(!g||e.target!==g) return; const s=gClosed();
   if(g.open) s.delete(g.dataset.guild); else s.add(g.dataset.guild); try{localStorage.setItem(GKEY,JSON.stringify([...s]));}catch(x){}},true);
 function hideOn(){try{return localStorage.getItem(HKEY)==='1';}catch(e){return false;}}
+for(const r of document.querySelectorAll('#view-rep input[name="rf-view"]')) r.addEventListener('change',e=>{try{localStorage.setItem(VKEY,e.target.value);}catch(x){} render();});
+$r('sort').addEventListener('change',e=>{try{localStorage.setItem(OKEY,e.target.value);}catch(x){} render();});
 $r('hide').addEventListener('change',e=>{try{localStorage.setItem(HKEY,e.target.checked?'1':'0');}catch(x){} render();});
 $r('texts').closest('label').addEventListener('click',()=>{if($r('texts').disabled){WHYTEXTS=true; textsBar();}});
 $r('texts').addEventListener('change',e=>{try{localStorage.setItem(TKEY,e.target.checked?'1':'0');}catch(x){} render();});
