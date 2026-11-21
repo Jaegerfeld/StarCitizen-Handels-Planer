@@ -64,7 +64,8 @@
 #   kommt unter „Keiner Gilde zugeordnet“. Alle bekannten Organisationen sind von
 #   Anfang an sichtbar, auch ohne Logs; ohne Abgleich lassen sie sich ausblenden.
 #   „Aufs Handy …“ (handy_seite.py) überträgt Rang und Balken der abgeglichenen
-#   Organisationen; das Handy zeigt diesen Stand nur an, bis man die Ansicht beendet.
+#   Organisationen; das Handy zeigt diesen Stand nur an, bis man die Ansicht beendet –
+#   in denselben kompakten Karten wie die obere Hälfte am PC.
 #   Konzept: Konzept_Ruf-Tracker.md, Entscheidungen R1–R8 vom 20.11.2026.
 #   Eigenständiges Modul für das spätere Spieler-Cockpit.
 # =============================================================================
@@ -121,6 +122,7 @@ RF_CSS = r"""
   #view-rep .rf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px;align-items:start}
   #view-rep .rf-org{padding:8px 10px 10px}
   #view-rep .rf-top{cursor:pointer}
+  #view-rep.rf-snapmode .rf-top{cursor:default}
   #view-rep .rf-top .rf-head{flex-wrap:nowrap;align-items:center;gap:8px}
   #view-rep .rf-top .rf-head h3{font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #view-rep .rf-top .rf-star{min-width:40px;min-height:40px;font-size:16px}
@@ -538,9 +540,11 @@ function handyData(){const ms=missions(), st=load(), out=[];
 function fromHandy(d){if(!d||!Array.isArray(d.o)) throw new Error('format'); try{localStorage.setItem(PKEY,JSON.stringify(d));}catch(e){} render();}
 function renderSnap(d){const list=$r('list');
   const card=([o,rank,cx,next,nx,lo,hi])=>{const mid=(lo+hi)/2, span=nx!=null?nx-cx:0, p=x=>span?Math.max(0,Math.min(100,(x-cx)/span*100)):100;
-    return `<article class="rf-org"><div class="rf-head"><h3>${esc(o)}</h3></div><div class="rf-head"><span class="rf-rank">${rankBadge(o,mid)}${esc(rank)}</span></div>${ladderStrip(o,mid)}
+    // Same compact layout as the upper half of the cards on the PC (view only, nothing to unfold)
+    return `<article class="rf-org"><div class="rf-top"><div class="rf-head">${rankBadge(o,mid)}<h3 title="${esc(o)}">${esc(o)}</h3></div>
+      <div class="rf-sub"><span class="rf-rank">${esc(rank)}</span>${ladderMini(o,mid)}</div>
       <div class="rf-track" role="img" aria-label="${T('Fortschritt','Progress')} ${Math.round(p(mid))} %"><div class="rf-fill" style="width:${p(lo)}%"></div><div class="rf-unc" style="left:${p(lo)}%;width:${Math.max(0,p(hi)-p(lo))}%"></div></div>
-      <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b>${hi-lo>=1?` <small>(${fmt(lo)}–${fmt(hi)})</small>`:''}</span><span>${next?T(`noch ≈ ${fmt(Math.max(0,nx-mid))} bis ${esc(next)}`,`≈ ${fmt(Math.max(0,nx-mid))} to ${esc(next)}`):T('höchster Rang','top rank')}</span></div></article>`;};
+      <div class="rf-nums"><span><b>≈ ${fmt(mid)} XP</b></span><span>${next?T(`noch ≈ ${fmt(Math.max(0,nx-mid))} bis ${esc(shortRank(o,next))}`,`≈ ${fmt(Math.max(0,nx-mid))} to ${esc(shortRank(o,next))}`):T('höchster Rang','top rank')}</span></div></div></article>`;};
   const rows=d.o.slice().sort((a,b)=>b[7]-a[7]||a[0].localeCompare(b[0]));
   const groups=[...GUILDS.map(g=>({g,list:rows.filter(r=>guildOf(r[0])===g)})),{g:null,list:rows.filter(r=>!guildOf(r[0]))}].filter(x=>x.list.length);
   list.innerHTML=`<div class="rf-snap"><span>📱 ${T(`Stand vom PC · ${fmtT(d.t)} · nur ansehen`,`State from the PC · ${fmtT(d.t)} · view only`)}</span><button type="button" class="btn" data-snapend>${T('Ansicht beenden','End view')}</button></div>`
