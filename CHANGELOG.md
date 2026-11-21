@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.20.1] – 2026-11-21
+
+### Geändert
+- **Ruf, „Aufs Handy“: kompakte Karten auch auf dem Handy.** Die übertragene Ansicht zeigt je Organisation dieselbe kompakte Karte wie die obere Hälfte am PC: Abzeichen und Name, Rang, kleine Abzeichen-Leiter, Balken und „≈ XP · noch ≈ … bis …“.
+
 ## [1.20.0] – 2026-11-21
 
 ### Geändert
