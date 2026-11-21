@@ -2,6 +2,24 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.17.0] – 2026-11-21
+
+### Hinzugefügt
+- **Ruf: „Screenshots abgleichen …“ – viele Screenshots auf einmal.** Statt jede Organisation einzeln anzuklicken: Screenshots wählen (Mehrfachauswahl), einen ganzen Ordner wählen oder Bilder in das Fenster ziehen. Die Seite erkennt je Bild die Organisation aus der Überschrift, den erreichten Rang und den Balken. Je Organisation zählt das neueste Bild; ältere und schon übernommene Bilder werden nicht übernommen, andere Bilder übersprungen.
+  - Vor dem Übernehmen steht alles in einer Prüfliste: je Zeile ein Haken, die erkannte Organisation (änderbar), Rang → nächste Stufe mit Prozent und XP, Zeitpunkt. Der Knopf nennt, wie viele Abgleiche übernommen werden.
+  - Texterkennung: tesseract.js 5.1.1 (Apache-2.0), wird erst beim ersten Mehrfach-Abgleich von jsDelivr geladen (feste Version mit Prüfsumme). Ohne Internet wählt man die Organisation je Zeile von Hand. Die Bilder verlassen den Rechner nicht.
+  - Der Einzel-Abgleich je Organisation bleibt für die Feinjustierung.
+  - Geprüft an 20 Screenshots aus Roberts mobiGlas: alle Organisationen und Ränge richtig erkannt.
+
+### Geändert
+- **Screenshot-Messung robuster.** Die hervorgehobene Kachel wird an den festen Kachelplätzen gesucht, als die Kachel, die klar grüner ist als alle anderen. Das mobiGlas ist durchscheinend; ein heller Hintergrund färbt alle Kacheln, ein fester Schwellwert fand die Kachel deshalb bisher nur in 9 von 20 Testbildern. Ist die Kachel nur knapp zu erkennen, weist die Seite darauf hin.
+- Leitern, die im mobiGlas mit der Kachel „Nicht berechtigt“ beginnen (Fracht, Sicherheit, Kopfgeld, Notfall), werden beim Zählen der Kacheln berücksichtigt.
+- Ist im mobiGlas noch die erste Stufe hervorgehoben (z. B. „Neutral“ mit Teilbalken), zählt der Abgleich den Startwert der Leiter und sagt das.
+
+### Behoben
+- **Rangleitern nach Roberts mobiGlas (21.11.2026):** Ling Family Hauling und Northrock Service Group haben die Auftragnehmer-Leiter, Eckhart Security die Sicherheitsleiter (Sicherheitsagent …), Shubin Interstellar endet bei „Auftragnehmer Leitend“. Neu: Civilian Defense Force mit der Ersthelfer-Leiter. Die Mehrheitsregel aus 1.16.0 gilt nur noch für Organisationen ohne Screenshot.
+- Rangnamen mit Bindestrich und kleinen Wörtern richtig geschrieben („Senior-Gildenmitglied“, „Ersthelfer in Ausbildung“).
+
 ## [1.16.0] – 2026-11-20
 
 ### Hinzugefügt

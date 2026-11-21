@@ -1,5 +1,5 @@
 {
-"stand": "2026-11-20",
+"stand": "2026-11-21",
 "quelle": "Anmerkungen der deutschen Community-Übersetzung (global.ini): nur Zahlen, Titel, Rangnamen; Rangleitern ergänzt aus sc-market.space (4.10-LIVE (Data.p4k 2026-11-14))",
 "missions": {
 "A Chance to Impress": [
@@ -5001,6 +5001,24 @@ null,
 "Auftragnehmer Elite"
 ]
 ],
+"Civilian Defense Force": [
+[
+0,
+"Bewerber zum Ersthelfer"
+],
+[
+5000,
+"Ersthelfer in Ausbildung"
+],
+[
+20000,
+"Ersthelfer"
+],
+[
+80000,
+"Erfahrener Ersthelfer"
+]
+],
 "Covalex": [
 [
 0,
@@ -5064,31 +5082,31 @@ null,
 "Eckhart Security": [
 [
 0,
-"Neutral"
+"Bewerber"
 ],
 [
-800,
-"Auftragnehmer Junior"
+1,
+"Sicherheitsagent Anwärter"
 ],
 [
-2200,
-"Auftragnehmer"
+5000,
+"Sicherheitsagent Junior"
 ],
 [
-5800,
-"Auftragnehmer Senior"
+30000,
+"Sicherheitsagent"
 ],
 [
-15000,
-"Auftragnehmer Erfahren"
+120000,
+"Sicherheitsagent Senior"
 ],
 [
-38000,
-"Auftragnehmer Leitend"
+480000,
+"Sicherheitsagent Leitend"
 ],
 [
-95250,
-"Auftragnehmer Elite"
+1600000,
+"Sicherheitsagent"
 ]
 ],
 "FTL Courier": [
@@ -5274,31 +5292,61 @@ null,
 "Ling Family Hauling": [
 [
 0,
-"Anwärter"
+"Neutral"
 ],
 [
-50,
-"Neuling"
+800,
+"Auftragnehmer Junior"
 ],
 [
-250,
-"Junior"
+2200,
+"Auftragnehmer"
 ],
 [
-5250,
-"Mitglied"
+5800,
+"Auftragnehmer Senior"
 ],
 [
-27750,
-"Erfahren"
+15000,
+"Auftragnehmer Erfahren"
 ],
 [
-77750,
-"Senior"
+38000,
+"Auftragnehmer Leitend"
 ],
 [
-237750,
-"Meister"
+95250,
+"Auftragnehmer Elite"
+]
+],
+"Northrock Service Group": [
+[
+0,
+"Neutral"
+],
+[
+800,
+"Auftragnehmer Junior"
+],
+[
+2200,
+"Auftragnehmer"
+],
+[
+5800,
+"Auftragnehmer Senior"
+],
+[
+15000,
+"Auftragnehmer Erfahren"
+],
+[
+38000,
+"Auftragnehmer Leitend"
+],
+[
+95250,
+"Auftragnehmer Elite"
 ]
 ],
 "Rayari Incorporated": [
@@ -5411,10 +5459,6 @@ null,
 [
 38000,
 "Auftragnehmer Leitend"
-],
-[
-95250,
-"Auftragnehmer Elite"
 ]
 ],
 "United Wayfarers Club": [
@@ -5497,16 +5541,18 @@ null,
 "Bit Zeros": "factionreputationscope",
 "Bounty Hunters Guild": "reputationscope_bounty_bountyhuntersguild",
 "Citizens For Prosperity": "factionreputationscope",
+"Civilian Defense Force": "reputationscope_emergency",
 "Covalex": "reputationscope_hauling",
 "Dead Saints": "factionreputationscope",
-"Eckhart Security": "factionreputationscope",
+"Eckhart Security": "reputationscope_security",
 "FTL Courier": "factionreputationscope",
 "Foxwell Enforcement": "factionreputationscope",
 "Headhunters": "factionreputationscope",
 "Highpoint Wilderness Specialists": "factionreputationscope",
 "Hockrow Agency": "factionreputationscope",
 "InterSec Defense Solutions": "factionreputationscope",
-"Ling Family Hauling": "reputationscope_hauling",
+"Ling Family Hauling": "factionreputationscope",
+"Northrock Service Group": "factionreputationscope",
 "Rayari Incorporated": "factionreputationscope",
 "Recco Battaglia": "missionproviderreputationscope_battaglia",
 "Red Wind Linehaul": "reputationscope_hauling",
@@ -5514,5 +5560,12 @@ null,
 "United Wayfarers Club": "factionreputationscope",
 "Vaughn": "factionreputationscope",
 "Wikelo Emporium": "reputationscope_wikelo"
+},
+"tiles0": {
+"Bounty Hunters Guild": 1,
+"Civilian Defense Force": 1,
+"Covalex": 1,
+"Eckhart Security": 1,
+"Red Wind Linehaul": 1
 }
 }
