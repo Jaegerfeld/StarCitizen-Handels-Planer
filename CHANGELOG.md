@@ -2,6 +2,17 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.18.0] – 2026-11-21
+
+### Hinzugefügt
+- **Ruf: Rang-Abzeichen.** Jede Karte zeigt die Rangleiter als Reihe von Abzeichen wie die Kacheln im mobiGlas: erreichte Stufen gefüllt, die aktuelle umrandet, die nächste gestrichelt, spätere blass. Neben dem Rangnamen steht das Abzeichen der aktuellen Stufe. Ohne Abgleich ist die Reihe grau und zeigt die Leiter. Auch die Handy-Ansicht zeigt die Abzeichen.
+  - Eigene Zeichnung für dieses Werkzeug, keine Grafiken aus dem Spiel: Schild mit 1–3 Sternen, ab der vierten Stufe mit Flügeln, darüber ein oder zwei Winkel, ab der siebten eine Krone. Die Form zeigt die Position in der Leiter, gleich für alle Organisationen.
+  - In der Reihe entfällt das Wort, das die meisten Stufen teilen („Senior“ statt „Auftragnehmer Senior“); der volle Name steht im Tooltip und beim aktuellen Rang.
+
+### Behoben
+- **Ruf: Klick auf einen Missionstitel tat still nichts**, wenn die Missionstexte ausgeschaltet sind oder die Sprachdatei des Spiels fehlt (z. B. in einer lokal geöffneten Kopie des Planers, die einen eigenen Speicher hat). Jetzt sagt ein Fenster, was fehlt: Schalter „Missionstexte anzeigen“ einschalten bzw. den ganzen Ordner LIVE laden.
+- **Grauer Schalter „Missionstexte anzeigen“ ohne Begründung:** Ohne Sprachdatei ist er gesperrt; die Erklärung erschien bisher nur, wenn er vorher an war. Jetzt zeigt ein Klick auf den grauen Schalter den Grund (und ein Tooltip nennt ihn).
+
 ## [1.17.0] – 2026-11-21
 
 ### Hinzugefügt
