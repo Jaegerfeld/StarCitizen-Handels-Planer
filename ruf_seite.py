@@ -15,17 +15,24 @@
 #   einliest (gleicher Ordner); angegebene XP und Rangschwellen aus der
 #   Ruf-Tabelle (ruf_daten.py). Der Faktor wird je Organisation aus zwei
 #   Abgleichen gelernt (gemessener Zuwachs ÷ angegebene XP); bis dahin gilt
-#   0,55 (Messung an Foxwell, 19./20.11.2026). Geteilte Missionen zählen als
+#   1,0 = wie angegeben (Foxwell 19./20.11.2026 nach richtiger Lesart: 1,2 und
+#   1,7, auf 1–2 Pixel gemessen; die frühere 0,55 beruhte auf der falschen
+#   Lesart). Geteilte Missionen zählen als
 #   Spanne (halber bis voller Betrag), Missionen ohne Wert und Fehlschläge mit 0,
 #   werden aber angezeigt. Abgleiche und Favoriten liegen im Browser
 #   (localStorage); nichts verlässt den Rechner.
 #   Abgleich von Hand (Rang + Balken in %) oder per Screenshot der mobiGlas-
 #   Seite „Ruf“ (Schritt 2): Die Seite findet die hervorgehobene Kachel (grüner
-#   Rahmen = nächster Rang) an den festen Kachelplätzen – relativ, als die
-#   Kachel, deren Oberkante klar grüner ist als alle anderen, denn das mobiGlas
-#   ist durchscheinend und ein heller Hintergrund färbt alle Kacheln. Erreicht
-#   ist die Stufe davor (bei Leitern mit der Kachel „Nicht berechtigt“ eine
-#   Kachel weiter, Tabelle „tiles0“). Den Balken misst sie als grüne Lauflänge
+#   Rahmen = aktueller Rang, ihr Balken = Weg zum nächsten Rang; volle Balken =
+#   durchlaufene Ränge) an den festen Kachelplätzen – relativ, als die Kachel,
+#   deren Oberkante klar grüner ist als alle anderen, denn das mobiGlas ist
+#   durchscheinend und ein heller Hintergrund färbt alle Kacheln. Lesart am
+#   21.11.2026 im Spiel bestätigt: Bei Foxwell ist „Erfahren“ hervorgehoben,
+#   und Robert sieht den Auftrag „Fuel Container Demolition“ (Mindeststufe
+#   Erfahren). Bis 1.18.0 galt die hervorgehobene Kachel als nächster Rang –
+#   alte Abgleiche werden einmal um eine Stufe hochgerechnet (load). Bei Leitern
+#   mit der Kachel „Nicht berechtigt“ zählt sie eine Kachel weiter (Tabelle
+#   „tiles0“). Den Balken misst sie als grüne Lauflänge
 #   mit Teilpixeln an den Enden; den Zeitpunkt nimmt sie aus dem Dateinamen
 #   (ScreenShot-JJJJ-MM-TT_hh-mm-ss). Geprüft an Roberts 20 Screenshots vom
 #   21.11.2026 (2000×837, alle 20 Kacheln richtig). Das Bild wird nur im
@@ -199,7 +206,8 @@ const L=()=>(document.documentElement.getAttribute('lang')||'de').slice(0,2);
 const T=(de,en)=>L()==='en'?en:de;
 const $r=id=>document.getElementById('rf-'+id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const SKEY='scha_rep_v1', F0=0.55, MINLEARN=200;
+const SKEY='scha_rep_v1', F0=1.0, MINLEARN=200;
+let MIGRATED=0;   // alignments converted to the corrected tile reading on this load
 const fmt=n=>Math.round(n).toLocaleString(L()==='en'?'en-GB':'de-DE');
 const fmtT=s=>s?new Date(s).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'}):'–';
 // Title as in the table: markup of the translation removed, spaces collapsed (same rule as ruf_daten.norm_title).
@@ -208,7 +216,16 @@ const compact=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 let OPEN=null;   // organisation whose alignment form is open
 
 /* ---------- stored state ---------- */
-function load(){try{return JSON.parse(localStorage.getItem(SKEY)||'{}');}catch(e){return {};}}
+function load(){let st; try{st=JSON.parse(localStorage.getItem(SKEY)||'{}');}catch(e){st={};}
+  // Until 1.18.0 the highlighted tile counted as the next rank, so stored alignments are one rank too low: move each
+  // up one band, keeping its share of the band. A value at the first threshold is left (ambiguous, usually a start).
+  if(!st.lesart){let n=0;
+    for(const [o,os] of Object.entries(st.orgs||{})){const l=ladder(o); if(l.length<2) continue;
+      for(const c of os.cals||[]){const x=c.xp; if(x<=l[0][0]) continue; let j=0; while(j+1<l.length&&x>=l[j+1][0]) j++;
+        if(j+1>=l.length) continue; const fr=(x-l[j][0])/(l[j+1][0]-l[j][0]), a=l[j+1][0], b=l[j+2]?l[j+2][0]:a;
+        c.xp=Math.round(a+fr*(b-a)); n++;}}
+    st.lesart=2; MIGRATED+=n; try{localStorage.setItem(SKEY,JSON.stringify(st));}catch(e){}}
+  return st;}
 function save(s){try{localStorage.setItem(SKEY,JSON.stringify(s));}catch(e){}}
 function orgState(st,o){st.orgs=st.orgs||{}; return st.orgs[o]||(st.orgs[o]={cals:[],fav:false});}
 
@@ -296,7 +313,7 @@ function estimate(o,list,st){const os=orgState(st,o), cal=os.cals[os.cals.length
 
 /* ---------- screenshot of the mobiGlas ---------- */
 // Measures the reputation tiles of a mobiGlas screenshot. The tiles sit at fixed places relative to image centre
-// and height (four per row; measured at 2000×837). The highlighted tile (green frame = next rank) is the one whose
+// and height (four per row; measured at 2000×837). The highlighted tile (green frame = current rank) is the one whose
 // top edge is clearly greener than all others – relative, because the mobiGlas is translucent and a bright
 // background tints every tile. Its bar is measured as green run length with fractional edge pixels, against the
 // length of the full bars of the tiles before it.
@@ -328,11 +345,12 @@ function measureShot(cv){const W=cv.width, H=cv.height, d=cv.getContext('2d',{wi
     area:[Math.max(0,X0-40*s),Math.max(0,Y0-150*s),Math.min(W,800*s),Math.min(H,500*s)]};}
 // Tiles before the first rank in the mobiGlas ("Nicht berechtigt" for hauling, security, bounty, emergency).
 const offOf=o=>(TAB&&TAB.tiles0&&TAB.tiles0[o])||0;
-// Rank reached and bar for one measured screenshot of organisation o: the highlighted tile is the next rank.
+// Rank reached and bar for one measured screenshot of organisation o: the highlighted tile is the current rank,
+// its bar the way to the next one. Highlighted "Nicht berechtigt" (negative standing) counts as the first threshold.
 function interpret(o,m){const l=ladder(o), k=m.idx-offOf(o);
-  if(k<=0) return {reached:l[0],next:null,pct:0,below:true};   // first rank not full yet
+  if(k<0) return {reached:l[0],next:null,pct:0,below:true};
   if(k>=l.length) return {err:T(`Hervorgehoben ist Kachel ${m.idx+1}, die Rangleiter von ${o} hat aber nur ${l.length+offOf(o)} Kacheln. Ist es der Screenshot dieser Organisation?`,`Tile ${m.idx+1} is highlighted, but the rank ladder of ${o} has only ${l.length+offOf(o)} tiles. Is it the screenshot of this organisation?`)};
-  return {reached:l[k-1],next:l[k],pct:m.pct};}
+  return {reached:l[k],next:l[k+1]||null,pct:l[k+1]?m.pct:0};}
 const xpOf=r=>r.reached[0]+(r.next?(r.next[0]-r.reached[0])*r.pct/100:0);
 const pctTxt=p=>String(p).replace('.',L()==='en'?'.':',');
 // Time of the screenshot from its file name ("ScreenShot-2026-11-20_11-59-18-B56.jpg"), else the file date.
@@ -356,8 +374,9 @@ async function readShot(f,form){const res=form.querySelector('.rf-res'), o=form.
     const k=pv.width/w; c.strokeStyle='#ff5a5a'; c.lineWidth=2; c.strokeRect((bx-x0-4)*k,(by-y0-8)*k,(bl+8)*k,16*k); pv.hidden=false;
     const warn=m.weak?T(' Die Kachel war nur knapp zu erkennen (heller Hintergrund?) – bitte prüfen.',' The tile was barely visible (bright background?) – please check.'):'';
     res.className='rf-res'+(warn?' bad':'');
-    res.textContent=(r.below?T(`Erkannt: Die erste Stufe (${l[0][1]}) ist noch nicht voll – gezählt als ${fmt(l[0][0])} XP.`,`Found: the first rank (${l[0][1]}) is not full yet – counted as ${fmt(l[0][0])} XP.`)
-      :T(`Erkannt: erreicht ${r.reached[1]}, Balken ${r.next[1]} zu ${pctTxt(r.pct)} % gefüllt`,`Found: reached ${r.reached[1]}, bar ${r.next[1]} ${r.pct} % filled`))
+    res.textContent=(r.below?T(`Erkannt: „Nicht berechtigt“ ist hervorgehoben – gezählt als ${fmt(l[0][0])} XP.`,`Found: “Not eligible” is highlighted – counted as ${fmt(l[0][0])} XP.`)
+      :r.next?T(`Erkannt: Rang ${r.reached[1]}, Weg zu ${r.next[1]} zu ${pctTxt(r.pct)} % gefüllt`,`Found: rank ${r.reached[1]}, way to ${r.next[1]} ${r.pct} % filled`)
+      :T(`Erkannt: höchster Rang ${r.reached[1]}`,`Found: top rank ${r.reached[1]}`))
       +T(` · Zeitpunkt ${fmtT(shotTime(f).toISOString())}. Rot markiert ist der gemessene Balken – bitte kurz prüfen und übernehmen.`,` · time ${fmtT(shotTime(f).toISOString())}. The measured bar is framed in red – please check and apply.`)+warn;}
   catch(e){res.className='rf-res bad'; res.textContent=T('Bild konnte nicht gelesen werden.','Could not read the image.');}}
 
@@ -409,8 +428,8 @@ function batchRow(b,i){const orgs=known().sort((p,q)=>p.localeCompare(q));
   if(!b.org){bad=true; info=T('Organisation nicht erkannt','Organisation not recognised')+(b.raw?` (${T('gelesen','read')}: „${esc(b.raw.slice(0,40))}“)`:'');}
   else{const r=interpret(b.org,b.m);
     if(r.err){bad=true; info=esc(r.err);}
-    else info=(r.below?T(`${esc(r.reached[1])} noch nicht voll · ${fmt(r.reached[0])} XP`,`${esc(r.reached[1])} not full yet · ${fmt(r.reached[0])} XP`)
-      :`${esc(r.reached[1])} → ${esc(r.next[1])} ${pctTxt(r.pct)} % · ≈ ${fmt(xpOf(r))} XP`)
+    else info=(r.below?T(`„Nicht berechtigt“ · ${fmt(r.reached[0])} XP`,`“Not eligible” · ${fmt(r.reached[0])} XP`)
+      :r.next?`${esc(r.reached[1])} → ${esc(r.next[1])} ${pctTxt(r.pct)} % · ≈ ${fmt(xpOf(r))} XP`:`${esc(r.reached[1])} · ${T('höchster Rang','top rank')}`)
       +(b.old?' · '+T('älteres Bild, nicht übernommen','older image, not applied'):'')+(b.dup?' · '+T('schon übernommen','applied before'):'')
       +(b.m.weak?' · '+T('Kachel nur knapp erkannt (heller Hintergrund?)','tile barely visible (bright background?)'):'');}
   return `<tr class="${bad?'bad':''}"><td><input type="checkbox" data-bi="${i}"${b.ok?' checked':''}${b.org?'':' disabled'} aria-label="${T('übernehmen','apply')}"></td>
@@ -548,15 +567,15 @@ function card(o,list,st){const est=estimate(o,list,st), os=orgState(st,o);
   const acts=`<div class="rf-acts"><button type="button" class="btn" data-align="${esc(o)}">⇄ ${T('Stand aus dem mobiGlas abgleichen …','Align with the mobiGlas …')}</button>${os.cals.length?`<button type="button" class="btn" data-undo="${esc(o)}">↶ ${T('Letzten Abgleich entfernen','Remove last alignment')}</button>`:''}</div>`;
   const guess=ladderGuess(o)?`<p class="rf-meta"><span class="est">${T('Rangleiter nicht bekannt – Auftragnehmer-Stufen angenommen.','Rank ladder unknown – contractor ranks assumed.')}</span></p>`:'';
   return `<article class="rf-org${os.fav?' fav':''}" data-org="${esc(o)}"><div class="rf-head"><h3>${esc(o)}</h3>${star}</div>${body}${guess}${acts}${OPEN===o?form(o,est):''}${det}${overview(o,est)}</article>`;}
-// Alignment form: reached rank, fill of the next rank's bar, time of the look into the mobiGlas.
+// Alignment form: current rank (highlighted tile), fill of its bar, time of the look into the mobiGlas.
 function form(o,est){const l=ladder(o), cur=est.cal?band(o,(est.lo+est.hi)/2)[0][1]:(l[0]||[0,''])[1];
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
   return `<form class="rf-form" data-form="${esc(o)}" novalidate>
-    <p class="rf-help">${T('mobiGlas → Ruf → Organisation: Die <b>hervorgehobene Kachel</b> ist der nächste Rang. Der höchste volle Rang ist „erreicht“. Am genauesten: Screenshot auswerten lassen; sonst schätzen, wie weit der Balken der hervorgehobenen Kachel gefüllt ist.','mobiGlas → Reputation → organisation: the <b>highlighted tile</b> is the next rank. The highest full rank is “reached”. Most precise: let the page read a screenshot; otherwise estimate how far the bar of the highlighted tile is filled.')}</p>
+    <p class="rf-help">${T('mobiGlas → Ruf → Organisation: Die <b>hervorgehobene Kachel</b> ist dein aktueller Rang, ihr Balken der Weg zum nächsten. Am genauesten: Screenshot auswerten lassen; sonst den hervorgehobenen Rang wählen und schätzen, wie weit sein Balken gefüllt ist.','mobiGlas → Reputation → organisation: the <b>highlighted tile</b> is your current rank, its bar the way to the next one. Most precise: let the page read a screenshot; otherwise choose the highlighted rank and estimate how far its bar is filled.')}</p>
     <div class="rf-shot" data-drop><button type="button" class="btn" data-shot>📷 ${T('Screenshot auswerten …','Read screenshot …')}</button><input type="file" accept="image/*" hidden data-shotin>
       <p class="rf-res" role="status">${T('Screenshot der Ruf-Seite dieser Organisation wählen oder hierher ziehen (Ordner <code>StarCitizen\\LIVE\\screenshots</code>). Die Felder werden ausgefüllt.','Choose or drop a screenshot of this organisation’s reputation page (folder <code>StarCitizen\\LIVE\\screenshots</code>). The fields get filled in.')}</p><canvas hidden></canvas></div>
-    <label>${T('Erreichter Rang','Rank reached')}<select name="rank">${l.map(([x,n])=>`<option value="${x}"${n===cur?' selected':''}>${esc(n)} (${fmt(x)})</option>`).join('')}</select></label>
-    <label>${T('Balken der nächsten Stufe in %','Bar of the next rank in %')}<input name="pct" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="0"></label>
+    <label>${T('Rang (hervorgehobene Kachel)','Rank (highlighted tile)')}<select name="rank">${l.map(([x,n])=>`<option value="${x}"${n===cur?' selected':''}>${esc(n)} (${fmt(x)})</option>`).join('')}</select></label>
+    <label>${T('Balken dieser Kachel in %','Bar of this tile in %')}<input name="pct" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="0"></label>
     <label>${T('Zeitpunkt des Blicks','Time of the look')}<input name="t" type="datetime-local" value="${now}"></label>
     <div class="rf-btns"><button type="submit" class="btn pri">✓ ${T('Übernehmen','Apply')}</button><button type="button" class="btn" data-cancel>${T('Abbrechen','Cancel')}</button></div>
     <p class="rf-err" role="alert"></p></form>`;}
@@ -565,6 +584,7 @@ function render(){const list=$r('list'), S=(typeof SZ!=='undefined'&&SZ.sessions
   $r('src').textContent=TAB?T(`Ruf-Tabelle: ${Object.keys(TAB.missions).length} Missionstitel, Stand ${TAB.stand}. Quelle: ${TAB.quelle}.`,`Reputation table: ${Object.keys(TAB.missions).length} mission titles, as of ${TAB.stand}. Source: annotations of the German community translation (numbers, titles, rank names only).`):T('Ruf-Tabelle fehlt in diesem Bau.','Reputation table missing in this build.');
   $r('load').classList.toggle('pri',!S.length); textsBar(); if(textsOn()&&iniFile()) loadTexts().catch(()=>{});
   $r('stat').textContent=S.length?(SZ.status?SZ.status():''):'';
+  if(MIGRATED){$r('stat').textContent=T(`${MIGRATED} bisherige Abgleiche auf die korrigierte Lesart umgerechnet (eine Stufe höher). Genauer ist ein neuer Abgleich: „Screenshots abgleichen …“.`,`${MIGRATED} earlier alignments converted to the corrected reading (one rank up). A new alignment is more precise: “Align from screenshots …”.`); MIGRATED=0;}
   // All known organisations from the start (table, guild list, logs, own alignments), grouped by guild
   const ms=missions(), st=load(), hide=hideOn();
   const orgs=[...new Set([...known(),...ms.map(m=>m.org),...Object.keys(st.orgs||{})])].filter(Boolean);

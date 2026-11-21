@@ -2,6 +2,14 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.19.0] – 2026-11-21
+
+### Behoben
+- **Ruf: Lesart der mobiGlas-Kacheln korrigiert – die hervorgehobene Kachel ist der aktuelle Rang**, ihr Balken der Weg zum nächsten; volle Balken sind durchlaufene Ränge. Bisher galt sie als nächster Rang, alle Stände lagen damit eine Stufe zu niedrig. Im Spiel bestätigt (21.11.2026): Bei Foxwell ist „Erfahren“ hervorgehoben, und der Auftrag „Fuel Container Demolition“ (Mindeststufe Erfahren) wird angeboten. Die neue Lesart erklärt auch, warum bei Organisationen mit erledigten Missionen „Neutral“ mit Teilbalken hervorgehoben ist, und den halb vollen Balken bei Eckhart.
+- **Bisherige Abgleiche werden einmal automatisch umgerechnet**: eine Stufe höher, mit demselben Anteil im Band. Ein Wert genau auf der ersten Schwelle bleibt (nicht eindeutig). Genauer ist ein neuer Abgleich über „Screenshots abgleichen …“.
+- **Startfaktor 1,0 statt 0,55** (Ruf wie in der Missionsbeschreibung angegeben). Die 0,55 kamen aus der falschen Lesart; nach der richtigen ergeben die beiden Foxwell-Messungen 1,2 und 1,7 (auf 1–2 Pixel genau). Der je Organisation gelernte Faktor löst den Startwert ab.
+- Abgleich-Formular: „Rang (hervorgehobene Kachel)“ und „Balken dieser Kachel in %“ statt „Erreichter Rang“ / „Balken der nächsten Stufe“.
+
 ## [1.18.0] – 2026-11-21
 
 ### Hinzugefügt
