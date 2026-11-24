@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       18.11.2026
-# Geändert:       19.11.2026
+# Geändert:       24.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -26,6 +26,12 @@
 #   Gespeichert wird nur im Browser; Export als JSON (auch wieder einlesbar)
 #   und XLSX (ohne fremde Bibliothek, eigener ZIP-Schreiber). Kein Server.
 #   Alles ist mit lb- bzw. #view-ledger abgegrenzt.
+#   Gemeinsame Flotte (seit 1.23.0): Die eigenen Schiffe sind die gemeinsame
+#   Flotte der SC-Tools (flotte.py, auch im Komponenten-Reiter des Schiffskauf-
+#   Planers). Das Logbuch übernimmt beim Start und bei Änderungen in einem anderen
+#   Tab neue, umbenannte und entfernte Schiffe (nur Typen mit Laderaum) und
+#   schreibt seine eigenen zurück; Ladung, Überladen und Journal bleiben hier.
+#   Ein Schiff mit Fracht an Bord wird nie von außen entfernt.
 # =============================================================================
 """HTML, CSS and JS fragments of the "Fracht-Logbuch" tab, inserted by the page builder."""
 
@@ -187,7 +193,24 @@ const SH={}; for(const s of M.ships) SH[s.id]=s;
 let S={v:1,ships:[],stock:[],log:[],sel:null};
 const UNDO=[];
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){}}
-function save(){S.saved=new Date().toISOString(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} if(FH&&FPERM) scheduleWrite();}
+function save(){S.saved=new Date().toISOString(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} pushFleet(); if(FH&&FPERM) scheduleWrite();}
+
+/* ---------- shared fleet (flotte.py) ---------- */
+// Own ships are the shared fleet of the SC tools (id, UEX model id, own name); type, overload and cargo stay here.
+const defName=s=>SH[s.t]?.n||'';
+// Write all own ships to the shared fleet (the name counts as "own" only when it differs from the type name).
+function pushFleet(){if(!window.SCFleet) return;
+  SCFleet.upsertMany(S.ships.map(s=>({id:s.id,uex:s.t,model:defName(s),name:s.n===defName(s)?'':s.n})));}
+// Take over ships added, renamed or removed in another tool. Only types with cargo space come into the ledger;
+// a ship with cargo aboard is never removed from outside. Returns true if the ledger changed.
+function pullFleet(){if(!window.SCFleet) return false; const o=SCFleet.read(); let ch=false;
+  for(const f of o.ships){const s=shipById(f.id);
+    if(!s){if(SH[f.uex]){S.ships.push({id:f.id,t:f.uex,n:f.name||SH[f.uex].n,ov:false,op:33}); ch=true;} continue;}
+    if(SH[f.uex]&&s.t!==f.uex){s.t=f.uex; ch=true;}
+    const n=f.name||SH[s.t]?.n||s.n; if(s.n!==n){s.n=n; ch=true;}}
+  for(const s of [...S.ships]) if(o.del.includes(s.id)&&!used('s:'+s.id)){
+    S.ships=S.ships.filter(x=>x!==s); if(S.sel==='s:'+s.id) S.sel=null; ch=true;}
+  return ch;}
 
 /* ---------- storage file (File System Access API: Chrome and Edge) ---------- */
 // The ledger can live in a JSON file of the player's choice (USB stick, shared folder). The file
@@ -440,7 +463,8 @@ function openShip(edit){const s=edit?shipById(S.sel.slice(2)):null;
     if(edit&&s){const u=used('s:'+s.id); if(u) out.push(T(`Entfernen bucht ${nf(u)} SCU an Bord mit aus.`,`Removing also books out ${nf(u)} SCU on board.`));}
     return out;});
   dlgAct=b=>{if(b==='cx'){closeDlg();return;} const t=type();
-    if(b==='del'){snap(); const loc='s:'+s.id; S.stock=S.stock.filter(q=>q.l!==loc); S.ships=S.ships.filter(x=>x!==s); S.sel=null; closeDlg(); commit(T(`Schiff entfernt: ${s.n}`,`Ship removed: ${s.n}`)); return;}
+    if(b==='del'){snap(); const loc='s:'+s.id; S.stock=S.stock.filter(q=>q.l!==loc); S.ships=S.ships.filter(x=>x!==s); S.sel=null;
+      if(window.SCFleet) SCFleet.remove(s.id); closeDlg(); commit(T(`Schiff entfernt: ${s.n}`,`Ship removed: ${s.n}`)); return;}
     if(!t){$l('st').focus();return;}
     const name=($l('sn').value||'').trim()||t.n, ov=$l('so').checked, op=Math.max(1,Math.min(100,Math.round(+$l('sp').value||33)));
     snap(); if(edit){Object.assign(s,{t:t.id,n:name,ov,op}); closeDlg(); commit(T(`Schiff geändert: ${name}`,`Ship changed: ${name}`)); return;}
@@ -535,7 +559,9 @@ view.addEventListener('drop',e=>{const t=e.target.closest('.lb-ship,.lb-place');
 document.addEventListener('keydown',e=>{if(view.classList.contains('hide')||$l('dlg').open) return;
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault(); undo();}});
 
-load(); fsInit();
+load(); if(pullFleet()) save(); else pushFleet(); fsInit();
+// Another tab (e.g. the component planner) changed the fleet: take it over and redraw.
+if(window.SCFleet) SCFleet.onChange(()=>{if(pullFleet()){save(); render();}});
 // Open a place in the ledger (used by the sessions tab).
 function openLoc(loc){S.sel=loc; save(); showView('ledger'); window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'});}
 return {render, openLoc, places:M.places, handyData, fromHandy, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};

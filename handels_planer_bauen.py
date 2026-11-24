@@ -45,6 +45,7 @@ import handel_core as hc
 import kopfzeile as kz
 import logbuch_daten as lb
 import sc_design as sd
+from flotte import FLOTTE_JS
 from handy_seite import HY_CSS, HY_HTML, HY_JS
 from logbuch_seite import LB_CSS, LB_HTML, LB_JS, LB_TAB
 from ruf_seite import RF_CSS, RF_HTML, RF_JS, RF_TAB
@@ -227,7 +228,7 @@ def main(argv):
     ruf_json = ruf_path.read_text(encoding="utf-8").replace("</", "<\\/") if ruf_path.exists() else "null"
     html = (html.replace("/*LB_CSS*/", LB_CSS).replace("<!--LB_TAB-->\n", LB_TAB)
                 .replace("<!--LB_HTML-->", LB_HTML + SZ_HTML + RF_HTML + HY_HTML)
-                .replace("/*LB_JS*/", LB_JS.replace("/*__LB__*/null", lb_json) + SZ_JS
+                .replace("/*LB_JS*/", FLOTTE_JS + LB_JS.replace("/*__LB__*/null", lb_json) + SZ_JS
                          + RF_JS.replace("/*__RUF__*/null", ruf_json)
                          + HY_JS.replace("__ONLINE__", DATA_URL.rsplit("/", 1)[0] + "/")))
     html = html.replace("/*SZ_CSS*/", SZ_CSS + RF_CSS + HY_CSS).replace("<!--SZ_TAB-->\n", SZ_TAB + RF_TAB)
