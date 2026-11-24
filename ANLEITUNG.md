@@ -62,7 +62,7 @@ Ziel: Du trägst dein Frachtschiff ein, buchst gekaufte Ware ein und verschiebst
 
 1. Öffne den Reiter **Fracht-Logbuch**.
 2. Klick links unter **Meine Schiffe** auf **+ Schiff hinzufügen**.
-3. Tipp bei **Schiffstyp** den Namen und wähle ihn aus der Liste. Die Liste enthält nur Schiffe mit Laderaum. Einen Namen kannst du unter **Eigener Name (optional)** vergeben.
+3. Tipp bei **Schiffstyp** den Namen und wähle ihn aus der Liste. Die Liste enthält nur Schiffe mit Laderaum. Einen Namen kannst du unter **Eigener Name (optional)** vergeben. Das Schiff gehört zu deiner gemeinsamen Flotte: Online steht es mit demselben Namen auch im Reiter **Komponenten** des Schiffskauf-Planers, und Schiffe von dort (mit Laderaum) erscheinen hier.
 4. Willst du Fracht außerhalb des Frachtgitters erfassen, setz den Haken bei **Überladen erlauben (Fracht außerhalb des Frachtgitters)**. Das Feld **Überladen bis (% über Laderaum)** steht auf 33. Klick dann **Hinzufügen**.
 5. Das neue Schiff ist ausgewählt. Klick in der Mitte auf **+ Fracht einbuchen**.
 6. Wähle die **Ware** aus der Liste, die **Containergröße** und die **Anzahl**. Den **Einkaufspreis je SCU** kannst du eintragen, dann schätzt das Logbuch deinen Gewinn. Klick **Einbuchen**.

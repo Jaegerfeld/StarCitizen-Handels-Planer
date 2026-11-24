@@ -2,6 +2,12 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.23.0] – 2026-11-24
+
+### Hinzugefügt
+- **Gemeinsame Flotte mit dem Komponenten-Planer** (Reiter „Komponenten“ im Schiffskauf-Planer; neu `flotte.py`, byte-gleich in beiden Repos): Die Schiffe im Fracht-Logbuch sind jetzt dieselben wie dort. Legst du ein Schiff in einem Tool an, benennst es um oder entfernst es, ist es im anderen genauso – online, weil beide Seiten auf jaegerfeld.github.io liegen; per Doppelklick geöffnete Offline-Kopien haben je einen eigenen Speicher.
+- Ins Logbuch kommen nur Typen mit Laderaum; ein Schiff mit Fracht an Bord wird nie von außen entfernt. Deine bisherigen Logbuch-Schiffe werden beim ersten Start in die gemeinsame Flotte übernommen, Ladung und Journal bleiben unverändert.
+
 ## [1.22.0] – 2026-11-21
 
 ### Hinzugefügt

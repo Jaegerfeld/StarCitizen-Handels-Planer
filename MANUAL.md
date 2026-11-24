@@ -62,7 +62,7 @@ Goal: you add your cargo ship, book in the commodity you bought and move it to a
 
 1. Open the **Cargo ledger** tab.
 2. On the left under **My ships**, click **+ Add ship**.
-3. Type the name in **Ship type** and pick it from the list. The list only contains ships with cargo space. You can give it a name under **Own name (optional)**.
+3. Type the name in **Ship type** and pick it from the list. The list only contains ships with cargo space. You can give it a name under **Own name (optional)**. The ship belongs to your shared fleet: online it also appears with the same name in the **Components** tab of the Ship Purchase Planner, and ships from there (with cargo space) appear here.
 4. To track cargo outside the cargo grid, tick **Allow overload (cargo outside the cargo grid)**. The field **Overload up to (% above cargo space)** is set to 33. Then click **Add**.
 5. The new ship is selected. In the middle, click **+ Book cargo in**.
 6. Choose the **Commodity** from the list, the **Container size** and the **Count**. You can enter the **Buy price per SCU**; the ledger then estimates your profit. Click **Book in**.
