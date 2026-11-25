@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.24.0] – 2026-11-25
+
+### Hinzugefügt
+- **Sitzungen: Shard-Namen.** Neben der Shard-ID steht jetzt der Name, den das Spiel beim Beitritt zeigt (z. B. `focused_launch` für `pub_euw1b_13165946_180`) – in „Zuletzt“, „Letzter Absturz“ und der Sitzungsliste. Der Name steht nicht im Log und folgt nicht aus der ID; die Zuordnung ist eine Tabelle aus 23 Screenshots (19.–25.11.2026, 18 Shards, ohne Widerspruch). Sie gilt für den Spielstand 4.10.3 (Build 13165946); nach einem Patch zeigen unbekannte Shards wie bisher nur die ID.
+
 ## [1.23.0] – 2026-11-24
 
 ### Hinzugefügt

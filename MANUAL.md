@@ -111,8 +111,8 @@ Goal: you see per organisation how far you are from the next rank.
 
 1. Open the **Sessions** tab and click **Load log folder …**.
 2. Choose the folder `…\StarCitizen\LIVE` (or `PTU`). Chrome asks "Upload files?"; the files still stay on your computer.
-3. At the top you see the card **Last time**, and after a crash also **Last crash**. It shows shard, region, server, **Last place** and **Last ship**.
-4. If the last place is an underlined name, a click opens that place in the cargo ledger. **copy** copies the shard name.
+3. At the top you see the card **Last time**, and after a crash also **Last crash**. It shows the shard – with the name the game shows when joining, if known, and the id below –, region, server, **Last place** and **Last ship**.
+4. If the last place is an underlined name, a click opens that place in the cargo ledger. **copy** copies the shard id.
 
 ### Why do I have to load the log folder every time?
 
