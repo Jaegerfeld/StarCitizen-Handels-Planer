@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       19.11.2026
-# Geändert:       20.11.2026
+# Geändert:       25.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -26,6 +26,11 @@
 #   MissionId (Titel), <EndMission> … CompletionType[…], die Organisation aus
 #   SendCommsNotification … Missions.Organization.<Org> und „Auftrag geteilt“.
 #   Nach jedem Einlesen meldet das Modul „sz:loaded“; der Reiter „Ruf“ hört darauf.
+#   Shard-Namen: Das Spiel zeigt beim Beitritt einen Namen (adjektiv_substantiv),
+#   der im Log nicht steht und sich nicht aus der ID ableiten lässt (gleiche
+#   Nummer, andere Region → anderer Name). SHARD_NAMES ist deshalb eine Tabelle
+#   aus Screenshots (Uhrzeit ↔ nächster <Join PU>); die ID enthält den Build,
+#   nach einem Patch passen die Einträge also nicht mehr und neue sind nötig.
 #   Liegt im Ordner eine Sprachdatei (data\Localization\<Sprache>\global.ini),
 #   merkt sich das Modul nur den Verweis darauf; gelesen wird sie erst, wenn der
 #   Reiter „Ruf“ einen Missionstext anzeigen soll.
@@ -81,6 +86,8 @@ SZ_CSS = r"""
   #view-sessions table td{vertical-align:top}
   #view-sessions details summary{cursor:pointer;color:var(--accent);min-height:28px}
   #view-sessions details ol{margin:4px 0;padding-left:18px;font-size:12.5px}
+  #view-sessions .sz-shard .sz-id{display:block;font-size:12.5px;font-weight:400;color:var(--muted);margin-top:2px}
+  #view-sessions .sz-sn{font-family:ui-monospace,Consolas,monospace;font-size:13.5px}
   #view-sessions .sz-mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;word-break:break-all}
   #view-sessions .sz-empty{color:var(--muted);padding:12px 2px}
 """
@@ -131,6 +138,14 @@ function missions(text){const ids={}, Z='00000000-0000-0000-0000-000000000000';
 /* ---------- names ---------- */
 // Region from the shard name, e.g. pub_euw1b_13165946_260 -> euw1.
 const REG={euw1:['EU-West','EU West'],euc1:['EU-Mitte','EU Central'],use1:['US-Ost','US East'],usw2:['US-West','US West'],usw1:['US-West','US West'],ape1:['Asien-Ost','Asia East'],apse2:['Asien-Pazifik Südost','Asia Pacific Southeast'],apne1:['Asien-Pazifik Nordost','Asia Pacific Northeast']};
+// Display names of shards as the game shows them when joining. They are not in the log and do not follow
+// from the id, so this is a table from screenshots (Robert, 19.–25.11.2026, build 13165946: 23 screenshots,
+// 18 shards, no conflicts). The id contains the build: after a patch these entries simply stop matching.
+const SHARD_NAMES={pub_apse2a_13165946_010:'confident_antimatter',pub_apse2a_13165946_050:'unruffled_variety',pub_apse2a_13165946_060:'heuristic_spherical',pub_euw1b_13165946_010:'flamboyant_terra',pub_euw1b_13165946_030:'knowledgeable_solar_system',pub_euw1b_13165946_040:'insightful_propulsion',pub_euw1b_13165946_050:'artistic_geostationary',pub_euw1b_13165946_090:'analytical_oxygen',pub_euw1b_13165946_140:'meticulous_absorption',pub_euw1b_13165946_150:'analytical_absorption',pub_euw1b_13165946_170:'balanced_reflector',pub_euw1b_13165946_180:'focused_launch',pub_euw1b_13165946_190:'reverent_alien',pub_euw1b_13165946_210:'dynamic_perihelion',pub_euw1b_13165946_280:'confident_relativity',pub_euw1b_13165946_340:'meticulous_planetarium',pub_use1b_13165946_090:'honorable_zeal',pub_use1b_13165946_240:'spirited_hypothesis'};
+// Shard for display: the known name in front, the id below; unknown shards show the id only.
+function shardHtml(id,big){const n=SHARD_NAMES[id];
+  if(!n) return big?esc(id):`<span class="sz-mono">${esc(id)}</span>`;
+  return big?`${esc(n)}<small class="sz-id">${esc(id)}</small>`:`<b class="sz-sn">${esc(n)}</b><br><span class="sz-mono">${esc(id)}</span>`;}
 function region(shard){const m=/^pub_([a-z]+\d)/.exec(shard||''); if(!m) return ''; const r=REG[m[1]]; return r?`${T(r[0],r[1])} (${m[1]})`:m[1];}
 const MAKERS={AEGS:'Aegis',ANVL:'Anvil',ARGO:'Argo',BANU:'Banu',CNOU:'C.O.',CRUS:'Crusader',DRAK:'Drake',ESPR:'Esperia',GAMA:'Gatac',GLSN:'Gallant',GRIN:'Greycat',KRIG:'Kruger',MISC:'MISC',MRAI:'Mirai',ORIG:'Origin',RSI:'RSI',TMBL:'Tumbril',VNCL:'Vanduul',XIAN:'Aopoa'};
 function shipName(raw){const p=raw.split('_'); const mk=MAKERS[p[0]]||p[0]; return mk+' '+p.slice(1).join(' ');}
@@ -225,12 +240,12 @@ function render(){const last=$z('last'), list=$z('list'), has=!!SESS.length;
   // The newest crash, if it is not the session shown as "last": after a crash one usually starts again.
   const c=SESS.find(x=>x.ended==='crash'&&x.joins.length), cj=c&&c.joins[c.joins.length-1];
   const crashCard=c&&c!==s?`<div class="sz-last crash"><h3>⚠ ${T('Letzter Absturz','Last crash')} · ${fmtT(c.end)}</h3>
-    <div class="sz-shard">${esc(cj.shard)}<button type="button" class="sz-copy" data-copy="${esc(cj.shard)}">${T('kopieren','copy')}</button></div>
+    <div class="sz-shard">${shardHtml(cj.shard,true)}<button type="button" class="sz-copy" data-copy="${esc(cj.shard)}">${T('kopieren','copy')}</button></div>
     <div class="sz-grid"><div><small>Region</small><b>${esc(region(cj.shard))}</b></div><div><small>Server</small><b class="sz-mono">${esc(cj.addr+':'+cj.port)}</b></div>
       <div><small>${T('Letzter Ort','Last place')}</small>${locHtml(c.loc)}${c.loc?`<small>${tOnly(c.loc.t)}</small>`:''}</div>
       <div><small>${T('Letztes Schiff','Last ship')}</small><b>${c.ship?esc(shipName(c.ship.raw)):'–'}</b></div></div></div>`:'';
   last.innerHTML=crashCard+`<div class="sz-last${s.ended==='crash'?' crash':''}"><h3>${T('Zuletzt','Last time')} · ${fmtT(s.start)}</h3>
-    ${j?`<div class="sz-shard">${esc(j.shard)}<button type="button" class="sz-copy" data-copy="${esc(j.shard)}">${T('kopieren','copy')}</button></div>`:`<div>${T('Kein Server-Beitritt in dieser Sitzung.','No server join in this session.')}</div>`}
+    ${j?`<div class="sz-shard">${shardHtml(j.shard,true)}<button type="button" class="sz-copy" data-copy="${esc(j.shard)}">${T('kopieren','copy')}</button></div>`:`<div>${T('Kein Server-Beitritt in dieser Sitzung.','No server join in this session.')}</div>`}
     <div class="sz-grid">
       <div><small>Region</small><b>${j?esc(region(j.shard)):'–'}</b></div>
       <div><small>Server</small><b class="sz-mono">${j?esc(j.addr+':'+j.port):'–'}</b>${j?`<small>${T('beigetreten','joined')} ${tOnly(j.t)}</small>`:''}</div>
@@ -240,9 +255,9 @@ function render(){const last=$z('last'), list=$z('list'), has=!!SESS.length;
       <div><small>${T('Ende','End')}</small>${endTag(s)}</div>
     </div></div>`;
   list.innerHTML=`<h2>${T('Letzte Sitzungen','Recent sessions')}</h2><div class="tablewrap"><table><thead><tr><th>${T('Beginn','Start')}</th><th>${T('Dauer','Duration')}</th><th>${T('Ende','End')}</th><th>${T('Letzter Shard','Last shard')}</th><th>${T('Letzter Ort','Last place')}</th><th>${T('Letztes Schiff','Last ship')}</th><th>${T('Server-Beitritte','Server joins')}</th></tr></thead><tbody>${SESS.map(x=>{const lj=x.joins[x.joins.length-1];
-    return `<tr><td>${fmtT(x.start)}</td><td>${dur(x.start,x.end)}</td><td>${endTag(x)}</td><td>${lj?`<span class="sz-mono">${esc(lj.shard)}</span><br><small>${esc(region(lj.shard))}</small>`:'–'}</td><td>${locHtml(x.loc)}</td><td>${x.ship?esc(shipName(x.ship.raw)):'–'}</td>
-      <td>${x.joins.length?`<details><summary>${x.joins.length}</summary><ol>${x.joins.map(k=>`<li>${tOnly(k.t)} · <span class="sz-mono">${esc(k.shard)}</span></li>`).join('')}</ol></details>`:'0'}</td></tr>`}).join('')}</tbody></table></div>
-    <p class="sz-note">${T('Mehrere Beitritte in einer Sitzung entstehen meist über das Hauptmenü. Maßgeblich ist der letzte. Ob das Spiel dich gezielt auf denselben Shard zurücklässt, steht nicht im Log.','Several joins in one session usually come from the main menu; the last one counts. Whether the game lets you back onto the same shard is not in the log.')}</p>`;}
+    return `<tr><td>${fmtT(x.start)}</td><td>${dur(x.start,x.end)}</td><td>${endTag(x)}</td><td>${lj?`${shardHtml(lj.shard)}<br><small>${esc(region(lj.shard))}</small>`:'–'}</td><td>${locHtml(x.loc)}</td><td>${x.ship?esc(shipName(x.ship.raw)):'–'}</td>
+      <td>${x.joins.length?`<details><summary>${x.joins.length}</summary><ol>${x.joins.map(k=>`<li>${tOnly(k.t)} · ${shardHtml(k.shard)}</li>`).join('')}</ol></details>`:'0'}</td></tr>`}).join('')}</tbody></table></div>
+    <p class="sz-note">${T('Mehrere Beitritte in einer Sitzung entstehen meist über das Hauptmenü. Maßgeblich ist der letzte. Ob das Spiel dich gezielt auf denselben Shard zurücklässt, steht nicht im Log. Shard-Namen (wie im Spiel beim Beitritt) stammen aus einer Tabelle eigener Screenshots und gelten nur für den Spielstand, zu dem sie erfasst wurden; unbekannte Shards zeigen nur die ID.','Several joins in one session usually come from the main menu; the last one counts. Whether the game lets you back onto the same shard is not in the log. Shard names (as the game shows them when joining) come from a table of own screenshots and only hold for the game build they were recorded in; unknown shards show the id only.')}</p>`;}
 
 /* ---------- events ---------- */
 $z('pick').addEventListener('click',pick);

@@ -111,8 +111,8 @@ Ziel: Du siehst je Organisation, wie weit du vom nächsten Rang entfernt bist.
 
 1. Öffne den Reiter **Sitzungen** und klick **Log-Ordner laden …**.
 2. Wähle den Ordner `…\StarCitizen\LIVE` (oder `PTU`). Chrome fragt „Dateien hochladen?“; die Dateien bleiben trotzdem auf deinem Rechner.
-3. Oben steht die Karte **Zuletzt**, nach einem Absturz zusätzlich **Letzter Absturz**. Dort siehst du Shard, Region, Server, **Letzter Ort** und **Letztes Schiff**.
-4. Ist der letzte Ort ein unterstrichener Name, öffnet ein Klick diesen Ort im Fracht-Logbuch. **kopieren** kopiert den Shard-Namen.
+3. Oben steht die Karte **Zuletzt**, nach einem Absturz zusätzlich **Letzter Absturz**. Dort siehst du den Shard – mit dem Namen, den das Spiel beim Beitritt zeigt, falls er bekannt ist, darunter die ID –, Region, Server, **Letzter Ort** und **Letztes Schiff**.
+4. Ist der letzte Ort ein unterstrichener Name, öffnet ein Klick diesen Ort im Fracht-Logbuch. **kopieren** kopiert die Shard-ID.
 
 ### Warum muss ich den Log-Ordner jedes Mal neu laden?
 
