@@ -2,6 +2,14 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.26.0] – 2026-11-26
+
+### Hinzugefügt
+- **Fracht-Logbuch: Anschluss ans Cockpit.** Das Logbuch läuft jetzt auch im Bereich „Fracht“ des [SC Cockpits](https://jaegerfeld.github.io/sc-cockpit/). Dort zeigt es die **Merker am Ort**: Ein gewählter Ort listet unter „Hier zu erledigen“ die offenen Merker, die dorthin gehören, zum Beispiel Kaufmerker aus dem Komponenten-Planer mit Händler, Schiff und Preis; ein Schiff listet seine eigenen. Merker lassen sich dort abhaken und für den Ort oder das Schiff neu anlegen. Orte und Schiffe mit Merkern tragen in den Listen „☑ n Merker“, der Filter „nur mit Fracht oder Notiz“ zeigt sie mit an. Im Handels-Planer selbst gibt es keine Merker; hier ändert sich dadurch nichts.
+
+### Geändert
+- **Zwei Tabs, ein Logbuch:** Speichert ein anderer Tab (Handels-Planer oder Cockpit) das Logbuch, übernimmt das offene Logbuch diesen Stand, statt ihn beim nächsten Speichern mit dem älteren zu überschreiben. Die Auswahl des Tabs bleibt; „Rückgängig“ beginnt danach neu.
+
 ## [1.25.0] – 2026-11-26
 
 ### Hinzugefügt
