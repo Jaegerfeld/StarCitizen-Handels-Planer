@@ -71,6 +71,7 @@ Goal: you add your cargo ship, book in the commodity you bought and move it to a
 9. Enter the amount in the dialog, as **Containers** or in **SCU**, and click **Move**. Remove sold cargo with **Book out**.
 10. If your ship takes other container sizes, use **Repack …** in the same dialog, choose the **New container size** and click **Repack**.
 11. Unfold the **Journal** at the bottom. Every entry is listed there with its time.
+12. At the bottom of the middle column is the **Notes** field. It belongs to the selected place or ship, for example "buy here: 2 × cooler". With nothing selected you write **General notes**. The text is saved as you type; places and ships with a note carry the mark "📝 note" in the lists, and the filter **with cargo or a note only** includes them. The notes are also part of the exports and the storage file.
 
 ### Tips
 
