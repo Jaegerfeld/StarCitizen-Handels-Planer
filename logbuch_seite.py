@@ -134,6 +134,14 @@ LB_CSS = r"""
   .lb-memo textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   .lb-memostat{color:var(--muted);font-size:12.5px;margin-top:4px;min-height:1.3em}
   .lb-memoflag{display:block;color:var(--accent2,var(--accent));font-weight:700}
+  .lb-merk{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+  .lb-merk h3{font-family:var(--disp);font-size:15px;margin:0 0 6px}
+  .lb-merk ul{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+  .lb-merk li{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:2px 10px 6px}
+  .lb-merk li label{display:flex;gap:8px;align-items:flex-start;min-height:40px;padding-top:9px;cursor:pointer;overflow-wrap:anywhere}
+  .lb-merk li small{display:block;color:var(--muted);font-size:12.5px;padding-left:24px}
+  .lb-merkrow{display:flex;gap:6px} .lb-merkrow input{flex:1 1 auto;min-width:0;min-height:40px} .lb-merkrow .btn{min-height:40px;white-space:nowrap}
+  .lb-merk+.lb-memo{margin-top:0}
   .lb-mid h2{margin:0;font-size:22px}
   .lb-meta{color:var(--muted);font-size:13px;margin:2px 0 10px}
   .lb-acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
@@ -336,16 +344,43 @@ function fillBar(s,loc){const c=cap(s), u=used(loc), top=Math.max(c.max,u,1);
     <div class="lb-scu">${nf(u)} / ${nf(c.base)} SCU${over?` · <span class="lb-ow">⚠ ${T('überladen','overloaded')} +${nf(u-c.base)}</span>`:''}${s.ov&&!over?` · ${T('Überladen an','overload on')} (+${s.op||33} %)`:''}</div>`;}
 function renderShips(){const box=$l('ships');
   box.innerHTML=S.ships.length?S.ships.map(s=>{const loc='s:'+s.id;
-    return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${S.notes[loc]?memoFlag():''}${fillBar(s,loc)}</button>`}).join('')
+    return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${S.notes[loc]?memoFlag():''}${merkFlag(loc)}${fillBar(s,loc)}</button>`}).join('')
    :`<p class="lb-empty">${T('Noch kein Schiff. Lege deine Frachtschiffe an, dann siehst du ihren Laderaum.','No ship yet. Add your cargo ships to see their cargo space.')}</p>`;}
 function renderPlaces(){const q=($l('q').value||'').trim().toLowerCase(), sys=$l('sys').value, only=$l('only').checked;
   let html='', lastS='', lastB=null;
   for(const p of M.places){const loc='p:'+p.id, u=used(loc);
-    if(sys&&p.sys!==sys) continue; if(only&&!u&&!S.notes[loc]) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
+    if(sys&&p.sys!==sys) continue; if(only&&!u&&!S.notes[loc]&&!merkAt(loc).length) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
     if(p.sys!==lastS){html+=`<div class="lb-gsys">${esc(p.sys)}</div>`; lastS=p.sys; lastB=null;}
     if(p.body!==lastB){html+=`<div class="lb-gbody">${esc(p.body||T('im All','in space'))}</div>`; lastB=p.body;}
-    html+=`<button type="button" class="lb-place" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${u?`<span class="lb-badge">${nf(u)} SCU</span>`:''}<b>${esc(p.n)}</b>${p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${S.notes[loc]?memoFlag():''}</button>`;}
+    html+=`<button type="button" class="lb-place" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${u?`<span class="lb-badge">${nf(u)} SCU</span>`:''}<b>${esc(p.n)}</b>${p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}</button>`;}
   $l('places').innerHTML=html||`<p class="lb-empty">${T('Kein Ort passt zu Suche und Filter.','No place matches the search and filter.')}</p>`;}
+/* ---------- reminders of the cockpit (only where window.SCData exists) ---------- */
+// A reminder belongs to a place by its ledger location (loc) or, for purchase reminders of the component
+// planner, by its shop text ("Platinum Bay - Port Tressler (Stanton)"): the place of that star system whose
+// name is in the text, or starts with the text's last part ("ARC-L1", "Seraphim"); the longest name wins.
+const normS=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const SHOPLOC={};
+function shopPlace(shop){if(!shop) return null; if(shop in SHOPLOC) return SHOPLOC[shop];
+  const m=String(shop).match(/^(.*?)(?:\s*\(([^()]*)\))?$/), body=m[1], sys=m[2]||'', all=normS(body), last=normS(body.split(' - ').pop());
+  let best=null; for(const p of M.places){if(sys&&p.sys!==sys) continue; const n=normS(p.n); if(!n) continue;
+    if((all.includes(n)||(last.length>=4&&n.startsWith(last)))&&(!best||p.n.length>best.n.length)) best=p;}
+  return SHOPLOC[shop]=best?'p:'+best.id:null;}
+const merkLoc=m=>m.loc||shopPlace(m.shop);
+// Open reminders to deal with at a place, or belonging to a ship.
+function merkAt(loc){if(!window.SCData) return []; const ship=loc[0]==='s'?loc.slice(2):null;
+  return SCData.open().filter(m=>ship!==null?(m.ship===ship||m.loc===loc):merkLoc(m)===loc);}
+const merkFlag=loc=>{const n=merkAt(loc).length; return n?`<small class="lb-memoflag">☑ ${n} ${T('Merker',n===1?'reminder':'reminders')}</small>`:'';};
+function merkHtml(loc,isShip){if(!window.SCData) return ''; const list=merkAt(loc);
+  // The ledger only knows ships with cargo space; other ships of the fleet get their name from the shared fleet.
+  const shipName=id=>{const s=shipById(id); if(s) return s.n; const f=window.SCFleet?SCFleet.read().ships.find(x=>x.id===id):null; return f?(f.name||f.model):'';};
+  const rows=list.map(m=>{const meta=[isShip?(merkLoc(m)?'📍 '+esc(locName(merkLoc(m))):m.shop?'📍 '+esc(m.shop):''):(m.ship!=null&&shipName(m.ship)?'🚀 '+esc(shipName(m.ship)):''),
+      !isShip&&m.shop?esc(String(m.shop).split(' - ')[0]):'',m.price?`${nf(m.price*(m.n||1))} aUEC`:''].filter(Boolean).join(' · ');
+    return `<li><label><input type="checkbox" data-merk="${esc(m.id)}"> <span>${m.n>1?esc(m.n)+' × ':''}${esc(m.text)}</span></label>${meta?`<small>${meta}</small>`:''}</li>`;}).join('');
+  return `<section class="lb-merk"><h3>☑ ${isShip?T('Für dieses Schiff zu erledigen','To do for this ship'):T('Hier zu erledigen','To do here')}${list.length?` (${list.length})`:''}</h3>
+    ${list.length?`<ul>${rows}</ul>`:`<p class="lb-sell">${isShip?T('Kein offener Merker für dieses Schiff.','No open reminder for this ship.'):T('Kein offener Merker für diesen Ort.','No open reminder for this place.')}</p>`}
+    <form class="lb-merkadd" data-loc="${esc(loc)}"><label class="lb-f">${isShip?T('Neuer Merker für dieses Schiff','New reminder for this ship'):T('Neuer Merker für diesen Ort','New reminder for this place')}
+      <span class="lb-merkrow"><input type="text" maxlength="200" autocomplete="off"><button type="submit" class="btn">+ ${T('Merker','Reminder')}</button></span></label></form></section>`;}
+
 // Mark in the lists: this place or ship has a note (icon plus word).
 const memoFlag=()=>`<small class="lb-memoflag">📝 ${T('Notiz','note')}</small>`;
 // Notes box at the bottom of the middle column: free text for the shown place or ship, general notes otherwise.
@@ -376,10 +411,13 @@ function renderMid0(){const box=$l('mid'), loc=S.sel;
       <div class="lb-sell">${sellTxt}${ww.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(ww.pr)}`:''}${si?.src==='sh'?` <button type="button" class="lb-link" data-wares="${esc(si.name)}">${T('alle Verkaufsorte ↗','all sell places ↗')}</button>`:''}</div>
       <div class="lb-chips">${list.map(q=>
       `<button type="button" class="lb-chip" draggable="true" data-i="${S.stock.indexOf(q)}" title="${T('Klicken: verschieben oder ausbuchen · Ziehen: auf ein Schiff oder einen Ort','Click: move or book out · Drag: onto a ship or place')}">${q.z} SCU × ${q.n}<small>= ${nf(q.z*q.n)}${q.bp!=null?` · ${T('à','at')} ${nf(q.bp)}`:''}</small></button>`).join('')}</div></div>`;}
-  box.innerHTML=html+memoHtml(loc,isShip?s.n:p.n);}
+  box.innerHTML=html+merkHtml(loc,isShip)+memoHtml(loc,isShip?s.n:p.n);}
 function renderLog(){$l('jn').textContent=S.log.length?`(${S.log.length})`:'';
   $l('log').innerHTML=S.log.slice(0,200).map(e=>`<li><time>${new Date(e.t).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'})}</time>${esc(e.x)}</li>`).join('')||`<li>${T('Noch keine Buchung.','No entries yet.')}</li>`;}
-function render(){const sys=$l('sys'), cur=sys.value;
+// "To the phone" needs the phone module (HY) of the trade planner page; without it (cockpit) the button is
+// hidden. Checked on every draw, not at start: on that page HY is declared after this script runs first.
+function noPhone(){try{return typeof HY==='undefined';}catch(e){return false;}}
+function render(){const sys=$l('sys'), cur=sys.value; $l('handy').hidden=noPhone();
   sys.innerHTML=`<option value="">${T('alle Systeme','all systems')}</option>`+[...new Set(M.places.map(p=>p.sys))].map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('');
   $l('wlist').innerHTML=M.wares.map(w=>`<option value="${esc(w.n)}">`).join('');
   $l('slist').innerHTML=M.ships.map(s=>`<option value="${esc(s.n)}">${s.scu} SCU</option>`).join('');
@@ -554,7 +592,7 @@ function exportXlsx(){download(`SC_Fracht_Logbuch_${stamp()}.xlsx`,xlsx(ledgerSh
 const view=document.getElementById('view-ledger');
 view.addEventListener('click',e=>{const wl=e.target.closest('[data-wares]');
   // Jump to "All commodities" filtered to this commodity: there are all sell places with price and stock.
-  if(wl){showView('wares'); const i=document.getElementById('wQ'); i.value=wl.dataset.wares; i.dispatchEvent(new Event('input',{bubbles:true})); window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'}); return;}
+  if(wl){showView('wares'); const i=document.getElementById('wQ'); i.value=wl.dataset.wares; i.dispatchEvent(new Event('input',{bubbles:true})); window.scrollTo({top:tabsTop(),behavior:'smooth'}); return;}
   const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true)})[a.dataset.act](); return;}
   const c=e.target.closest('.lb-chip'); if(c){openMove(+c.dataset.i); return;}
   const l=e.target.closest('[data-loc]'); if(l) select(l.dataset.loc);});
@@ -567,6 +605,11 @@ view.addEventListener('input',e=>{const t=e.target; if(t.id!=='lb-memo') return;
   const st=$l('memostat'); if(st) st.textContent=T('Speichert …','Saving …');
   clearTimeout(memoTimer); memoTimer=setTimeout(memoFlush,500);});
 view.addEventListener('focusout',e=>{if(e.target.id==='lb-memo'&&memoTimer) memoFlush();});
+// Reminders at a place or ship: tick off, add a free one. The cockpit redraws the ledger after each change.
+view.addEventListener('change',e=>{const c=e.target.closest('input[data-merk]'); if(c&&window.SCData){SCData.toggle(c.dataset.merk,true); render();}});
+view.addEventListener('submit',e=>{const f=e.target.closest('.lb-merkadd'); if(!f||!window.SCData) return; e.preventDefault();
+  const i=f.querySelector('input'), loc=f.dataset.loc;
+  if(SCData.add(i.value,loc[0]==='s'?{ship:loc.slice(2)}:{loc})){render(); $l('mid').querySelector('.lb-merkadd input')?.focus({preventScroll:true});} else i.focus();});
 window.addEventListener('pagehide',()=>{if(memoTimer) memoFlush();});
 $l('addship').addEventListener('click',()=>openShip(false));
 $l('undo').addEventListener('click',undo);
@@ -593,11 +636,19 @@ view.addEventListener('drop',e=>{const t=e.target.closest('.lb-ship,.lb-place');
 document.addEventListener('keydown',e=>{if(view.classList.contains('hide')||$l('dlg').open) return;
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault(); undo();}});
 
+// Top of the view tabs of the trade planner page (0 where the ledger runs without that page).
+const tabsTop=()=>{const t=document.querySelector('.tabs'); return t?t.offsetTop-8:0;};
 load(); if(pullFleet()) save(); else pushFleet(); fsInit();
+// Another tab (trade planner or cockpit) saved the ledger: take its state over instead of overwriting it
+// with the older one here on the next save. The selection of this tab stays.
+window.addEventListener('storage',e=>{if(e.key!==KEY||$l('dlg').open||document.activeElement?.id==='lb-memo') return;
+  const sel=S.sel; load(); S.sel=sel; UNDO.length=0; render();});
 // Another tab (e.g. the component planner) changed the fleet: take it over and redraw.
 if(window.SCFleet) SCFleet.onChange(()=>{if(pullFleet()){save(); render();}});
 // Open a place in the ledger (used by the sessions tab).
-function openLoc(loc){S.sel=loc; save(); showView('ledger'); window.scrollTo({top:document.querySelector('.tabs').offsetTop-8,behavior:'smooth'});}
-return {render, openLoc, places:M.places, handyData, fromHandy, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};
+function openLoc(loc){S.sel=loc; save(); showView('ledger'); window.scrollTo({top:tabsTop(),behavior:'smooth'});}
+// Take over fleet changes made in this page by another module (cockpit: component planner).
+function sync(){if(pullFleet()) save();}
+return {render, openLoc, sync, places:M.places, handyData, fromHandy, shopPlace, _state:()=>S, _sheets:ledgerSheets, _xlsx:xlsx, _pack:pack};
 })();
 """
