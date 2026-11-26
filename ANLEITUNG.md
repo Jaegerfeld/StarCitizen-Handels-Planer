@@ -71,6 +71,7 @@ Ziel: Du trägst dein Frachtschiff ein, buchst gekaufte Ware ein und verschiebst
 9. Gib im Fenster die Menge an, als **Container** oder in **SCU**, und klick **Verschieben**. Verkaufte Ware entfernst du mit **Ausbuchen**.
 10. Hat dein Schiff andere Containergrößen, nimm im selben Fenster **Umpacken …**, wähle die **Neue Containergröße** und klick **Umpacken**.
 11. Klappe unten das **Journal** auf. Dort steht jede Buchung mit Uhrzeit.
+12. Unten in der Mitte steht das Feld **Notizen**. Es gehört zum gewählten Ort oder Schiff, zum Beispiel „hier kaufen: 2 × Kühler“. Ist nichts gewählt, schreibst du **Allgemeine Notizen**. Der Text wird beim Tippen gespeichert; Orte und Schiffe mit Notiz tragen in den Listen das Zeichen „📝 Notiz“, und der Filter **nur mit Fracht oder Notiz** zeigt sie mit an. Die Notizen stehen auch in den Exporten und in der Speicherdatei.
 
 ### Tipps
 

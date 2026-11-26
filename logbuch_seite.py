@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       18.11.2026
-# Geändert:       24.11.2026
+# Geändert:       26.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -69,7 +69,7 @@ LB_HTML = r"""
         <label class="lb-f"><span class="de">Suche</span><span class="en">Search</span><input type="search" id="lb-q" autocomplete="off"></label>
         <div class="lb-f2">
           <label class="lb-f"><span class="de">System</span><span class="en">System</span><select id="lb-sys"></select></label>
-          <label class="lb-chk"><input type="checkbox" id="lb-only"> <span class="de">nur mit Fracht</span><span class="en">with cargo only</span></label>
+          <label class="lb-chk"><input type="checkbox" id="lb-only"> <span class="de">nur mit Fracht oder Notiz</span><span class="en">with cargo or a note only</span></label>
         </div>
         <div id="lb-places" class="lb-places"></div>
       </aside>
@@ -126,7 +126,14 @@ LB_CSS = r"""
   .lb-gsys{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2);margin:10px 0 4px}
   .lb-gbody{font-size:12px;color:var(--muted);margin:6px 0 3px}
   .lb-badge{float:right;font-family:var(--disp);font-weight:700;font-size:12.5px;color:var(--accent)}
-  #view-ledger .lb-mid{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-height:340px}
+  #view-ledger .lb-mid{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-height:340px;display:flex;flex-direction:column}
+  /* Notes sit at the bottom of the middle column. */
+  .lb-memo{margin-top:auto;padding-top:14px}
+  .lb-memo label{display:block;font-family:var(--disp);font-weight:700;font-size:14px;margin:8px 0 6px;padding-top:12px;border-top:1px solid var(--line)}
+  .lb-memo textarea{display:block;width:100%;box-sizing:border-box;min-height:104px;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);font:inherit;font-size:15px;line-height:1.45}
+  .lb-memo textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .lb-memostat{color:var(--muted);font-size:12.5px;margin-top:4px;min-height:1.3em}
+  .lb-memoflag{display:block;color:var(--accent2,var(--accent));font-weight:700}
   .lb-mid h2{margin:0;font-size:22px}
   .lb-meta{color:var(--muted);font-size:13px;margin:2px 0 10px}
   .lb-acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
@@ -189,10 +196,13 @@ const WA={}; for(const w of M.wares) WA[w.id]=w;
 const SH={}; for(const s of M.ships) SH[s.id]=s;
 
 /* ---------- state ---------- */
-// The whole ledger: own ships, stock posts (location, commodity, container size, count), journal.
-let S={v:1,ships:[],stock:[],log:[],sel:null};
+// The whole ledger: own ships, stock posts (location, commodity, container size, count), journal,
+// free-text notes per location ('p:<id>', 's:<id>', '*' = general).
+let S={v:1,ships:[],stock:[],log:[],sel:null,notes:{}};
+const NOTE_ALL='*';
+const cleanNotes=o=>{const out={}; if(o&&typeof o==='object') for(const k in o) if(typeof o[k]==='string'&&o[k].trim()) out[k]=o[k].slice(0,4000); return out;};
 const UNDO=[];
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){} S.notes=cleanNotes(S.notes);}
 function save(){S.saved=new Date().toISOString(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} pushFleet(); if(FH&&FPERM) scheduleWrite();}
 
 /* ---------- shared fleet (flotte.py) ---------- */
@@ -209,7 +219,7 @@ function pullFleet(){if(!window.SCFleet) return false; const o=SCFleet.read(); l
     if(SH[f.uex]&&s.t!==f.uex){s.t=f.uex; ch=true;}
     const n=f.name||SH[s.t]?.n||s.n; if(s.n!==n){s.n=n; ch=true;}}
   for(const s of [...S.ships]) if(o.del.includes(s.id)&&!used('s:'+s.id)){
-    S.ships=S.ships.filter(x=>x!==s); if(S.sel==='s:'+s.id) S.sel=null; ch=true;}
+    S.ships=S.ships.filter(x=>x!==s); delete S.notes['s:'+s.id]; if(S.sel==='s:'+s.id) S.sel=null; ch=true;}
   return ch;}
 
 /* ---------- storage file (File System Access API: Chrome and Edge) ---------- */
@@ -221,11 +231,11 @@ let FH=null, FPERM=false, FLAST=0, FTIMER=null, FSTATE='';
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('scha_ledger_fs',1); r.onupgradeneeded=()=>r.result.createObjectStore('h'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
 async function idbSet(v){try{const db=await idb(); await new Promise((res,rej)=>{const tx=db.transaction('h','readwrite'); if(v) tx.objectStore('h').put(v,'file'); else tx.objectStore('h').delete('file'); tx.oncomplete=res; tx.onerror=()=>rej(tx.error);});}catch(e){}}
 async function idbGet(){try{const db=await idb(); return await new Promise(res=>{const r=db.transaction('h').objectStore('h').get('file'); r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null);});}catch(e){return null;}}
-const fileText=()=>JSON.stringify({app:'sc-fracht-logbuch',v:1,saved:S.saved,ships:S.ships,stock:S.stock,log:S.log},null,1);
+const fileText=()=>JSON.stringify({app:'sc-fracht-logbuch',v:1,saved:S.saved,ships:S.ships,stock:S.stock,log:S.log,notes:S.notes},null,1);
 async function readFile(h){const f=await h.getFile(); const txt=await f.text(); const o=txt.trim()?JSON.parse(txt):null;
   if(o&&(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock))) throw new Error('format');
   return {o,mod:f.lastModified};}
-function applyData(o){S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.saved) S.saved=o.saved;}
+function applyData(o){S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(o.saved) S.saved=o.saved;}
 async function writeFile(force){if(!FH||!FPERM) return;
   try{const f=await FH.getFile(); if(!force&&FLAST&&f.lastModified>FLAST+1000){FSTATE='conflict'; storeInfo(); return;}
     const w=await FH.createWritable(); await w.write(fileText()); await w.close(); FLAST=(await FH.getFile()).lastModified; FSTATE=''; storeInfo();}
@@ -233,7 +243,7 @@ async function writeFile(force){if(!FH||!FPERM) return;
 function scheduleWrite(){clearTimeout(FTIMER); FTIMER=setTimeout(()=>writeFile(false),400);}
 // Bring browser and file together: the newer one wins (by its "saved" time).
 async function syncFile(){try{const {o,mod}=await readFile(FH); FLAST=mod;
-    if(o&&(o.saved||'')>(S.saved||'')){snap(); applyData(o); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} log(T(`Aus Datei geladen: ${FH.name}`,`Loaded from file: ${FH.name}`)); render();}
+    if(o&&(o.saved||'')>(S.saved||'')){snap(true); applyData(o); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} log(T(`Aus Datei geladen: ${FH.name}`,`Loaded from file: ${FH.name}`)); render();}
     else await writeFile(true);
     FSTATE=''; storeInfo();}
   catch(e){FSTATE='err'; storeInfo();}}
@@ -250,7 +260,7 @@ async function fsOpen(){try{const [h]=await window.showOpenFilePicker(PICK); if(
     const {o,mod}=await readFile(h);
     if(o&&(S.ships.length||S.stock.length)&&!confirm(T(`Logbuch aus „${h.name}“ laden? Es ersetzt den Stand in diesem Browser (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Load the ledger from “${h.name}”? It replaces the state in this browser (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
     FH=h; FPERM=true; FLAST=mod; await idbSet(h);
-    if(o){snap(); applyData(o); log(T(`Aus Datei geladen: ${h.name}`,`Loaded from file: ${h.name}`));} save(); render(); if(!o) await writeFile(true);
+    if(o){snap(true); applyData(o); log(T(`Aus Datei geladen: ${h.name}`,`Loaded from file: ${h.name}`));} save(); render(); if(!o) await writeFile(true);
     toast(T(`Speicherdatei verknüpft: ${h.name}`,`Storage file linked: ${h.name}`));}
   catch(e){if(e.name!=='AbortError') toast(T('Datei nicht lesbar: keine Logbuch-JSON dieses Tools.','File not readable: not a ledger JSON of this tool.'));}}
 async function fsUnlink(){FH=null; FPERM=false; FSTATE=''; await idbSet(null); storeInfo(); toast(T('Verknüpfung gelöst. Das Logbuch bleibt im Browser; die Datei bleibt unverändert.','Link removed. The ledger stays in the browser; the file is left unchanged.'));}
@@ -266,10 +276,12 @@ function openStore(){
   dialog(T('Speicherort','Storage'),`<p class="lb-info">${cur}</p><p class="lb-hint">${T('Die Datei kann auf einem USB-Stick oder in einem geteilten Ordner liegen. Liegt dort schon ein Logbuch, nimm „Vorhandene Datei öffnen“. Im Browser bleibt immer eine Kopie.','The file can sit on a USB stick or in a shared folder. If a ledger is already there, use “Open existing file”. A copy always stays in the browser.')}</p>`,btns);
   dlgAct=b=>{closeDlg(); if(b==='new') fsNew(); else if(b==='open') fsOpen(); else if(b==='un') fsUnlink();};}
 // Remember the state before a change so it can be undone.
-function snap(){UNDO.push(JSON.stringify({ships:S.ships,stock:S.stock})); if(UNDO.length>50) UNDO.shift();}
+// Notes are typed text with their own saving; a snapshot only carries them where an action replaces
+// or removes notes (import, file, phone, removing a ship), so undo never eats text typed since.
+function snap(withNotes){UNDO.push(JSON.stringify({ships:S.ships,stock:S.stock,...(withNotes?{notes:S.notes}:{})})); if(UNDO.length>50) UNDO.shift();}
 function log(text){S.log.unshift({t:new Date().toISOString(),x:text}); if(S.log.length>500) S.log.length=500;}
 function commit(text,undoable=true){log(text); save(); render(); toastUndo(text,undoable);}
-function undo(){const u=UNDO.pop(); if(!u) return; const o=JSON.parse(u); S.ships=o.ships; S.stock=o.stock; log(T('Rückgängig gemacht','Undone')); save(); render(); toast(T('Rückgängig gemacht.','Undone.'));}
+function undo(){const u=UNDO.pop(); if(!u) return; const o=JSON.parse(u); S.ships=o.ships; S.stock=o.stock; if(o.notes) S.notes=o.notes; log(T('Rückgängig gemacht','Undone')); save(); render(); toast(T('Rückgängig gemacht.','Undone.'));}
 function toastUndo(text){toast(text+' · '+T('Rückgängig: Strg+Z oder Knopf oben','Undo: Ctrl+Z or button above'));}
 
 /* ---------- helpers ---------- */
@@ -324,20 +336,30 @@ function fillBar(s,loc){const c=cap(s), u=used(loc), top=Math.max(c.max,u,1);
     <div class="lb-scu">${nf(u)} / ${nf(c.base)} SCU${over?` · <span class="lb-ow">⚠ ${T('überladen','overloaded')} +${nf(u-c.base)}</span>`:''}${s.ov&&!over?` · ${T('Überladen an','overload on')} (+${s.op||33} %)`:''}</div>`;}
 function renderShips(){const box=$l('ships');
   box.innerHTML=S.ships.length?S.ships.map(s=>{const loc='s:'+s.id;
-    return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${fillBar(s,loc)}</button>`}).join('')
+    return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${S.notes[loc]?memoFlag():''}${fillBar(s,loc)}</button>`}).join('')
    :`<p class="lb-empty">${T('Noch kein Schiff. Lege deine Frachtschiffe an, dann siehst du ihren Laderaum.','No ship yet. Add your cargo ships to see their cargo space.')}</p>`;}
 function renderPlaces(){const q=($l('q').value||'').trim().toLowerCase(), sys=$l('sys').value, only=$l('only').checked;
   let html='', lastS='', lastB=null;
   for(const p of M.places){const loc='p:'+p.id, u=used(loc);
-    if(sys&&p.sys!==sys) continue; if(only&&!u) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
+    if(sys&&p.sys!==sys) continue; if(only&&!u&&!S.notes[loc]) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
     if(p.sys!==lastS){html+=`<div class="lb-gsys">${esc(p.sys)}</div>`; lastS=p.sys; lastB=null;}
     if(p.body!==lastB){html+=`<div class="lb-gbody">${esc(p.body||T('im All','in space'))}</div>`; lastB=p.body;}
-    html+=`<button type="button" class="lb-place" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${u?`<span class="lb-badge">${nf(u)} SCU</span>`:''}<b>${esc(p.n)}</b>${p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}</button>`;}
+    html+=`<button type="button" class="lb-place" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${u?`<span class="lb-badge">${nf(u)} SCU</span>`:''}<b>${esc(p.n)}</b>${p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${S.notes[loc]?memoFlag():''}</button>`;}
   $l('places').innerHTML=html||`<p class="lb-empty">${T('Kein Ort passt zu Suche und Filter.','No place matches the search and filter.')}</p>`;}
-function renderMid(){const box=$l('mid'), loc=S.sel;
-  if(!loc){box.innerHTML=`<div class="lb-empty"><h2>${T('Fracht-Logbuch','Cargo ledger')}</h2><p>${T('Wähle rechts einen Ort oder links ein Schiff. Dort buchst du Fracht ein und verschiebst sie per Klick oder Ziehen.','Pick a place on the right or a ship on the left. Book cargo in there and move it by click or drag.')}</p>${S.ships.length?'':`<button type="button" class="btn" data-act="addship">+ ${T('Erstes Schiff hinzufügen','Add your first ship')}</button>`}</div>`; return;}
+// Mark in the lists: this place or ship has a note (icon plus word).
+const memoFlag=()=>`<small class="lb-memoflag">📝 ${T('Notiz','note')}</small>`;
+// Notes box at the bottom of the middle column: free text for the shown place or ship, general notes otherwise.
+function memoHtml(key,name){return `<section class="lb-memo"><label for="lb-memo">📝 ${key===NOTE_ALL?T('Allgemeine Notizen','General notes'):T('Notizen zu','Notes on')+' '+esc(name)}</label>
+    <textarea id="lb-memo" data-key="${esc(key)}" rows="4" maxlength="4000" placeholder="${esc(T('z. B. hier kaufen: 2 × Kühler „Arctic“ …','e.g. buy here: 2 × “Arctic” cooler …'))}">${esc(S.notes[key]||'')}</textarea>
+    <div class="lb-memostat" id="lb-memostat" aria-live="polite">${T('Freitext. Wird beim Tippen gespeichert und mit exportiert.','Free text. Saved as you type and included in the exports.')}</div></section>`;}
+// Redraw the middle column; a note being typed keeps focus and caret.
+function renderMid(){const a=document.activeElement, keep=a&&a.id==='lb-memo'?[a.dataset.key,a.selectionStart,a.selectionEnd,a.scrollTop]:null;
+  renderMid0();
+  if(keep){const t=$l('memo'); if(t&&t.dataset.key===keep[0]){t.focus({preventScroll:true}); try{t.setSelectionRange(keep[1],keep[2]);}catch(e){} t.scrollTop=keep[3];}}}
+function renderMid0(){const box=$l('mid'), loc=S.sel;
+  if(!loc){box.innerHTML=`<div class="lb-empty"><h2>${T('Fracht-Logbuch','Cargo ledger')}</h2><p>${T('Wähle rechts einen Ort oder links ein Schiff. Dort buchst du Fracht ein und verschiebst sie per Klick oder Ziehen.','Pick a place on the right or a ship on the left. Book cargo in there and move it by click or drag.')}</p>${S.ships.length?'':`<button type="button" class="btn" data-act="addship">+ ${T('Erstes Schiff hinzufügen','Add your first ship')}</button>`}</div>`+memoHtml(NOTE_ALL); return;}
   const isShip=loc[0]==='s', s=isShip?shipById(loc.slice(2)):null, p=isShip?null:PL[loc.slice(2)];
-  if(isShip&&!s||!isShip&&!p){S.sel=null; renderMid(); return;}
+  if(isShip&&!s||!isShip&&!p){S.sel=null; renderMid0(); return;}
   const posts=S.stock.filter(q=>q.l===loc), byW={};
   for(const q of posts)(byW[q.w]=byW[q.w]||[]).push(q);
   const meta=isShip?`${esc(SH[s.t]?.n||'?')} · ${T('Container bis','containers up to')} ${SH[s.t]?.cs||'?'} SCU`:`${esc(p.sys)}${p.body?' · '+esc(p.body):''}${p.max?` · ${T('Aufzug bis','elevator up to')} ${p.max} SCU`:''}`;
@@ -354,7 +376,7 @@ function renderMid(){const box=$l('mid'), loc=S.sel;
       <div class="lb-sell">${sellTxt}${ww.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(ww.pr)}`:''}${si?.src==='sh'?` <button type="button" class="lb-link" data-wares="${esc(si.name)}">${T('alle Verkaufsorte ↗','all sell places ↗')}</button>`:''}</div>
       <div class="lb-chips">${list.map(q=>
       `<button type="button" class="lb-chip" draggable="true" data-i="${S.stock.indexOf(q)}" title="${T('Klicken: verschieben oder ausbuchen · Ziehen: auf ein Schiff oder einen Ort','Click: move or book out · Drag: onto a ship or place')}">${q.z} SCU × ${q.n}<small>= ${nf(q.z*q.n)}${q.bp!=null?` · ${T('à','at')} ${nf(q.bp)}`:''}</small></button>`).join('')}</div></div>`;}
-  box.innerHTML=html;}
+  box.innerHTML=html+memoHtml(loc,isShip?s.n:p.n);}
 function renderLog(){$l('jn').textContent=S.log.length?`(${S.log.length})`:'';
   $l('log').innerHTML=S.log.slice(0,200).map(e=>`<li><time>${new Date(e.t).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'})}</time>${esc(e.x)}</li>`).join('')||`<li>${T('Noch keine Buchung.','No entries yet.')}</li>`;}
 function render(){const sys=$l('sys'), cur=sys.value;
@@ -463,7 +485,7 @@ function openShip(edit){const s=edit?shipById(S.sel.slice(2)):null;
     if(edit&&s){const u=used('s:'+s.id); if(u) out.push(T(`Entfernen bucht ${nf(u)} SCU an Bord mit aus.`,`Removing also books out ${nf(u)} SCU on board.`));}
     return out;});
   dlgAct=b=>{if(b==='cx'){closeDlg();return;} const t=type();
-    if(b==='del'){snap(); const loc='s:'+s.id; S.stock=S.stock.filter(q=>q.l!==loc); S.ships=S.ships.filter(x=>x!==s); S.sel=null;
+    if(b==='del'){snap(true); const loc='s:'+s.id; S.stock=S.stock.filter(q=>q.l!==loc); S.ships=S.ships.filter(x=>x!==s); S.notes={...S.notes}; delete S.notes[loc]; S.sel=null;
       if(window.SCFleet) SCFleet.remove(s.id); closeDlg(); commit(T(`Schiff entfernt: ${s.n}`,`Ship removed: ${s.n}`)); return;}
     if(!t){$l('st').focus();return;}
     const name=($l('sn').value||'').trim()||t.n, ov=$l('so').checked, op=Math.max(1,Math.min(100,Math.round(+$l('sp').value||33)));
@@ -474,19 +496,19 @@ let dlgAct=null;
 /* ---------- export / import ---------- */
 function download(name,blob){const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);}
 const stamp=()=>new Date().toISOString().slice(0,10);
-function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
+function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log,notes:S.notes},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
 // Ships and cargo for the phone (no journal, it is not needed there).
-function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock};}
+function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock,notes:S.notes};}
 // Take over a ledger sent from the PC; asks before replacing a non-empty ledger.
 function fromHandy(d){if(!d||!Array.isArray(d.ships)||!Array.isArray(d.stock)) throw new Error('format');
   const when=new Date(d.t||Date.now()).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'});
   if((S.ships.length||S.stock.length)&&!confirm(T(`Logbuch vom PC (Stand ${when}) übernehmen? Es ersetzt den Stand auf diesem Gerät (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Take over the ledger from the PC (as of ${when})? It replaces the state on this device (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
-  snap(); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); S.sel=null;
+  snap(true); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); if(d.notes) S.notes=cleanNotes(d.notes); S.sel=null;
   commit(T(`Vom PC übernommen (Stand ${when}): ${S.ships.length} Schiffe, ${S.stock.length} Posten`,`Taken over from the PC (as of ${when}): ${S.ships.length} ships, ${S.stock.length} posts`));}
 function importJson(file){const r=new FileReader(); r.onload=()=>{try{const o=JSON.parse(r.result);
     if(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock)) throw new Error('format');
     if(!confirm(T(`Logbuch aus „${file.name}“ einlesen? Es ersetzt den Stand in diesem Browser (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Import the ledger from “${file.name}”? It replaces the state in this browser (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
-    snap(); S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; S.sel=null;
+    snap(true); S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); S.sel=null;
     commit(T(`Eingelesen: ${file.name} (${S.ships.length} Schiffe, ${S.stock.length} Posten)`,`Imported: ${file.name} (${S.ships.length} ships, ${S.stock.length} posts)`));}
   catch(e){toast(T('Datei nicht lesbar: keine Logbuch-JSON dieses Tools.','File not readable: not a ledger JSON of this tool.'));}}; r.readAsText(file);}
 // Minimal XLSX writer: OOXML parts in an uncompressed ZIP (no external library, works offline).
@@ -514,7 +536,7 @@ function xlsx(sheets){const ns='http://schemas.openxmlformats.org/', files=[
   {name:'xl/styles.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="${ns}spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="2"><xf xfId="0"/><xf fontId="1" applyFont="1" xfId="0"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`},
   ...sheets.map((s,i)=>({name:`xl/worksheets/sheet${i+1}.xml`,data:sheetXml(s.rows)}))];
   return zip(files);}
-// The three sheets: stock, ships, journal.
+// The four sheets: stock, ships, notes, journal.
 function ledgerSheets(){const locInfo=l=>{if(l[0]==='s'){const s=shipById(l.slice(2)); return [T('Schiff','Ship'),s?.n||'?','',''];} const p=PL[l.slice(2)]; return [T('Ort','Place'),p?.n||l.slice(2),p?.sys||'',p?.body||''];};
   const stock=[[T('Art','Kind'),T('Ort/Schiff','Place/ship'),'System',T('Planet/Mond','Planet/moon'),T('Ware','Commodity'),T('Containergröße (SCU)','Container size (SCU)'),T('Anzahl','Count'),'SCU',
       T('Einkaufspreis je SCU','Buy price per SCU'),T('Verkaufspreis je SCU','Sell price per SCU'),T('Bester Verkaufsort','Best sell place'),T('Wert (aUEC)','Value (aUEC)'),T('Gewinn (aUEC)','Profit (aUEC)')]]
@@ -523,7 +545,9 @@ function ledgerSheets(){const locInfo=l=>{if(l[0]==='s'){const s=shipById(l.slic
   const ships=[[T('Name','Name'),T('Typ','Type'),T('Laderaum (SCU)','Cargo (SCU)'),T('Überladen bis (SCU)','Overload up to (SCU)'),T('belegt (SCU)','used (SCU)')]]
     .concat(S.ships.map(s=>{const c=cap(s); return [s.n,SH[s.t]?.n||'?',c.base,c.max,used('s:'+s.id)];}));
   const journal=[[T('Zeit','Time'),T('Buchung','Entry')]].concat(S.log.map(e=>[new Date(e.t).toLocaleString(L()==='en'?'en-GB':'de-DE'),e.x]));
-  return [{name:T('Bestand','Stock'),rows:stock},{name:T('Schiffe','Ships'),rows:ships},{name:'Journal',rows:journal}];}
+  const notes=[[T('Art','Kind'),T('Ort/Schiff','Place/ship'),'System',T('Planet/Mond','Planet/moon'),T('Notiz','Note')]]
+    .concat(Object.keys(S.notes).sort().map(k=>[...(k===NOTE_ALL?[T('Allgemein','General'),'','','']:locInfo(k)),S.notes[k]]));
+  return [{name:T('Bestand','Stock'),rows:stock},{name:T('Schiffe','Ships'),rows:ships},{name:T('Notizen','Notes'),rows:notes},{name:'Journal',rows:journal}];}
 function exportXlsx(){download(`SC_Fracht_Logbuch_${stamp()}.xlsx`,xlsx(ledgerSheets())); toast(T('XLSX gespeichert.','XLSX saved.'));}
 
 /* ---------- events ---------- */
@@ -534,6 +558,16 @@ view.addEventListener('click',e=>{const wl=e.target.closest('[data-wares]');
   const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true)})[a.dataset.act](); return;}
   const c=e.target.closest('.lb-chip'); if(c){openMove(+c.dataset.i); return;}
   const l=e.target.closest('[data-loc]'); if(l) select(l.dataset.loc);});
+// Notes: every keystroke lands in the state; saving and the marks in the lists follow after a short pause.
+let memoTimer=0;
+function memoFlush(){clearTimeout(memoTimer); memoTimer=0; save(); renderShips(); renderPlaces();
+  const st=$l('memostat'); if(st) st.textContent=T('Gespeichert ✓','Saved ✓');}
+view.addEventListener('input',e=>{const t=e.target; if(t.id!=='lb-memo') return; const k=t.dataset.key;
+  if(t.value.trim()) S.notes[k]=t.value; else delete S.notes[k];
+  const st=$l('memostat'); if(st) st.textContent=T('Speichert …','Saving …');
+  clearTimeout(memoTimer); memoTimer=setTimeout(memoFlush,500);});
+view.addEventListener('focusout',e=>{if(e.target.id==='lb-memo'&&memoTimer) memoFlush();});
+window.addEventListener('pagehide',()=>{if(memoTimer) memoFlush();});
 $l('addship').addEventListener('click',()=>openShip(false));
 $l('undo').addEventListener('click',undo);
 $l('json').addEventListener('click',exportJson);
@@ -547,7 +581,7 @@ for(const id of ['q','sys','only']) $l(id).addEventListener(id==='q'?'input':'ch
 $l('fq').addEventListener('input',renderFound);
 $l('store').addEventListener('click',openStore);
 $l('storeinfo').addEventListener('click',e=>{const b=e.target.closest('[data-fs]'); if(!b) return; const a=b.dataset.fs;
-  if(a==='re') fsReconnect(); else if(a==='over'){writeFile(true);} else if(a==='load'){(async()=>{try{const {o,mod}=await readFile(FH); FLAST=mod; if(o){snap(); applyData(o); log(T(`Aus Datei geladen: ${FH.name}`,`Loaded from file: ${FH.name}`)); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(x){}} FSTATE=''; render(); storeInfo();}catch(x){FSTATE='err'; storeInfo();}})();}});
+  if(a==='re') fsReconnect(); else if(a==='over'){writeFile(true);} else if(a==='load'){(async()=>{try{const {o,mod}=await readFile(FH); FLAST=mod; if(o){snap(true); applyData(o); log(T(`Aus Datei geladen: ${FH.name}`,`Loaded from file: ${FH.name}`)); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(x){}} FSTATE=''; render(); storeInfo();}catch(x){FSTATE='err'; storeInfo();}})();}});
 $l('dbtn').addEventListener('click',e=>{const b=e.target.closest('[data-b]'); if(b&&dlgAct) dlgAct(b.dataset.b);});
 $l('form').addEventListener('submit',e=>{e.preventDefault(); if(dlgAct) dlgAct(dlgOk?.[0]?.id);});
 // Drag a post chip onto a ship or place; the drop opens the move dialog with that target.

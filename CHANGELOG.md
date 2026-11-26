@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.25.0] – 2026-11-26
+
+### Hinzugefügt
+- **Fracht-Logbuch: Notizen.** Unten in der Mitte steht ein Freitextfeld für den gewählten Ort oder das gewählte Schiff (z. B. „hier kaufen: 2 × Kühler“); ohne Auswahl sind es allgemeine Notizen. Der Text wird beim Tippen gespeichert. Orte und Schiffe mit Notiz tragen in den Listen „📝 Notiz“, der Filter heißt jetzt „nur mit Fracht oder Notiz“.
+  - Die Notizen stehen in Export JSON, in der Speicherdatei, im XLSX (neues Blatt „Notizen“) und im Paket „Aufs Handy“. Dateien aus älteren Versionen ohne Notizen lassen die Notizen im Browser unberührt.
+  - „Rückgängig“ lässt getippte Notizen in Ruhe; nur Einlesen, Datei laden, Übernahme vom PC und das Entfernen eines Schiffs nehmen den Notizstand mit zurück.
+
 ## [1.24.0] – 2026-11-25
 
 ### Hinzugefügt
