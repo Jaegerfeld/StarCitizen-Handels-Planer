@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.26.2] – 2026-11-26
+
+### Behoben
+- **Spielstand 4.10.3.** Kopfzeile, `data.json` und die Routen-Übersicht nannten noch „4.10.2-LIVE“, obwohl 4.10.3 seit dem 12.11.2026 live ist. Die Preise selbst waren aktuell (sie kommen täglich von star-head); falsch war nur die Angabe des Spielstands. Der Screenshot-Auswerter und das SC Cockpit übernehmen die Angabe mit ihrem nächsten Bau.
+
 ## [1.26.1] – 2026-11-26
 
 ### Geändert
