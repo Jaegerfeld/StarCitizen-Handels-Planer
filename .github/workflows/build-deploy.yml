@@ -35,7 +35,9 @@ jobs:
       - name: Pages-Verzeichnis vorbereiten
         run: |
           mkdir -p _site
-          cp SC_Handels_Planer.html _site/index.html
+          # Die Adresse leitet ins SC Cockpit weiter; die Seite selbst liegt als app.html daneben.
+          cp SC_Handels_Planer.html _site/app.html
+          cp weiterleitung.html _site/index.html
           cp data.json SC_Waren_Top_Handelsrouten.md SC_Waren_Handelsuebersicht.xlsx _site/
       - uses: actions/upload-pages-artifact@v3
         with:
