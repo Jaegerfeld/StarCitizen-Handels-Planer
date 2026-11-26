@@ -2,6 +2,12 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.26.1] – 2026-11-26
+
+### Geändert
+- **Die Adresse dieses Tools leitet ins SC Cockpit weiter.** Der Handels-Planer ist ins [SC Cockpit](https://jaegerfeld.github.io/sc-cockpit/) eingezogen: Fracht (Routen & Waren, Logbuch) und Pilot (Ruf, Sitzungen). Wer https://jaegerfeld.github.io/StarCitizen-Handels-Planer/ öffnet, landet dort im passenden Bereich; online sind deine Daten dieselben, weil Cockpit und Tool denselben Browser-Speicher nutzen. Links von „Aufs Handy“ (`#lb=…`, `#ruf=…`) kommen im Cockpit an.
+- Diese Seite selbst bleibt erreichbar: https://jaegerfeld.github.io/StarCitizen-Handels-Planer/app.html. Am Tool hat sich nichts geändert.
+
 ## [1.26.0] – 2026-11-26
 
 ### Hinzugefügt

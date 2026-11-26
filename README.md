@@ -4,7 +4,7 @@
 
 A standalone HTML tool (works offline) for commodity trading in Star Citizen: **top trade routes**, a **trade overview of every commodity** with all buy and sell locations, views **by sell and buy location** and a **cargo calculator** – same layout and handling as the [Blueprint Planner](https://github.com/Jaegerfeld/StarCitizen-Bauplan-Planer) and [Wikelo Planner](https://github.com/Jaegerfeld/StarCitizen-Wikelo-Planer).
 
-**🌐 Online version:** https://jaegerfeld.github.io/StarCitizen-Handels-Planer/
+**🌐 Online version:** in the SC Cockpit: https://jaegerfeld.github.io/sc-cockpit/#/fracht/handel · single page: https://jaegerfeld.github.io/StarCitizen-Handels-Planer/app.html
 
 ## Features
 

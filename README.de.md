@@ -2,7 +2,7 @@
 
 Ein Standalone-HTML-Tool (offline lauffähig) für den Warenhandel in Star Citizen: **Top-Handelsrouten**, die **Handelsübersicht aller Waren** mit allen Kauf- und Verkaufsorten, Ansichten **nach Verkaufs- und Kaufort** und ein **Laderaum-Rechner** – Layout und Bedienung wie beim [Bauplan-Planer](https://github.com/Jaegerfeld/StarCitizen-Bauplan-Planer) und [Wikelo-Planer](https://github.com/Jaegerfeld/StarCitizen-Wikelo-Planer).
 
-**🌐 Online-Version:** https://jaegerfeld.github.io/StarCitizen-Handels-Planer/
+**🌐 Online-Version:** im SC Cockpit: https://jaegerfeld.github.io/sc-cockpit/#/fracht/handel · Einzelseite: https://jaegerfeld.github.io/StarCitizen-Handels-Planer/app.html
 
 ## Funktionen
 
