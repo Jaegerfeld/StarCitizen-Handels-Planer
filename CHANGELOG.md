@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.31.0] – 2026-11-27
+
+### Hinzugefügt
+- **Lage der Orte.** Die Orte des Fracht-Logbuchs tragen jetzt Planet, Mond und Orbit, wie UEX sie nennt. Am Logbuch selbst ändert sich nichts; das SC Cockpit zeichnet daraus seine Systemkarte.
+
 ## [1.30.0] – 2026-11-27
 
 ### Hinzugefügt
