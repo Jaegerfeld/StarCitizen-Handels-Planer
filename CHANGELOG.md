@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.31.1] – 2026-11-27
+
+### Behoben
+- **Orte im Fracht-Logbuch.** „UEX Station“ ist kein Ort im Spiel, sondern ein Eintrag von UEX selbst (nicht im Live-Spiel), und fehlt jetzt in der Ortsliste. Covalex Distribution Centre S4DC05 liegt auf microTech; UEX nennt dafür keinen Planeten, das Logbuch trägt ihn jetzt selbst ein.
+
 ## [1.31.0] – 2026-11-27
 
 ### Hinzugefügt
