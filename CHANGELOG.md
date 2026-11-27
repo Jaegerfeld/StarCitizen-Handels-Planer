@@ -2,6 +2,17 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.29.0] – 2026-11-27
+
+### Hinzugefügt
+- **Homebase.** Ein Ort lässt sich als Homebase merken (Knopf **🏠 Als Homebase merken** am gewählten Ort, in der Fracht wie bei den Gegenständen). Die Homebase steht danach in der Ortsliste ganz oben, unabhängig von Suche und Filter, und in jeder Zielauswahl beim Verschieben direkt nach deinen Schiffen. Sie ist mit 🏠 markiert. Es gibt genau eine; **Homebase aufheben** nimmt die Markierung zurück. Rückgängig, Speicherdatei, Export und „Aufs Handy“ nehmen sie mit.
+
+### Geändert
+- **Gegenstände: Ortsauswahl wie beim Fracht-Logbuch.** Das Auswahlfeld „Ort oder Schiff“ ist weg. Stattdessen wählst du wie bei der Fracht links ein Schiff oder rechts einen Ort (mit Suche, Systemfilter und „nur mit Gegenständen“); die Mitte zeigt die Gegenstände dort und das Formular zum Eintragen. Ohne gewählten Ort zeigt die Mitte alle Gegenstände mit Suche und Gruppierung.
+  - Der gewählte Ort gilt für Fracht und Gegenstände. Ein Knopf am Ort wechselt zwischen beiden Ansichten.
+  - Die Ortsliste zeigt bei den Gegenständen die Zahl der Einträge je Ort, bei der Fracht einen Hinweis „🎖 n Gegenstände“.
+  - Verschieben geht über **Ändern**: Dort lässt sich der Ort des Eintrags umstellen.
+
 ## [1.28.0] – 2026-11-27
 
 ### Hinzugefügt

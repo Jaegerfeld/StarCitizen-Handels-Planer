@@ -73,30 +73,10 @@ LB_HTML = r"""
         <label class="lb-f"><span class="de">Suche</span><span class="en">Search</span><input type="search" id="lb-q" autocomplete="off"></label>
         <div class="lb-f2">
           <label class="lb-f"><span class="de">System</span><span class="en">System</span><select id="lb-sys"></select></label>
-          <label class="lb-chk"><input type="checkbox" id="lb-only"> <span class="de">nur mit Fracht oder Notiz</span><span class="en">with cargo or a note only</span></label>
+          <label class="lb-chk"><input type="checkbox" id="lb-only"> <span class="lb-o-c"><span class="de">nur mit Fracht oder Notiz</span><span class="en">with cargo or a note only</span></span><span class="lb-o-i"><span class="de">nur mit Gegenständen</span><span class="en">with items only</span></span></label>
         </div>
         <div id="lb-places" class="lb-places"></div>
       </aside>
-    </div>
-    <div class="lb-items" id="lb-items">
-      <form class="lb-iform" id="lb-iform" novalidate>
-        <h3 id="lb-ih"></h3>
-        <label class="lb-f lb-i-n"><span class="de">Gegenstand</span><span class="en">Item</span><input id="lb-in" list="lb-ilist" autocomplete="off" maxlength="80"></label>
-        <label class="lb-f lb-i-c"><span class="de">Stück</span><span class="en">Count</span><input id="lb-ic" inputmode="numeric" autocomplete="off" value="1"></label>
-        <label class="lb-f lb-i-q"><span class="de">Qualität (optional)</span><span class="en">Quality (optional)</span><input id="lb-iq" list="lb-qlist" autocomplete="off" maxlength="30"></label>
-        <label class="lb-f lb-i-l"><span class="de">Ort oder Schiff</span><span class="en">Place or ship</span><select id="lb-il"></select></label>
-        <label class="lb-f lb-i-x"><span class="de">Notiz (optional)</span><span class="en">Note (optional)</span><input id="lb-ix" autocomplete="off" maxlength="200"></label>
-        <div class="lb-ibtn"><button type="submit" class="btn primary" id="lb-iok"></button><button type="button" class="btn" id="lb-icancel" hidden><span class="de">Abbrechen</span><span class="en">Cancel</span></button></div>
-        <p class="lb-ierr" id="lb-ierr" role="alert"></p>
-      </form>
-      <div class="lb-itools">
-        <label class="lb-f"><span class="de">Gegenstände suchen (Name, Qualität, Ort)</span><span class="en">Search items (name, quality, place)</span><input type="search" id="lb-isq" autocomplete="off"></label>
-        <div class="lb-igrp" id="lb-igrp" role="group" aria-labelledby="lb-igl"><span id="lb-igl"><span class="de">Gruppieren nach:</span><span class="en">Group by:</span></span>
-          <button type="button" class="btn" data-grp="item"><span class="de">Gegenstand</span><span class="en">Item</span></button>
-          <button type="button" class="btn" data-grp="loc"><span class="de">Ort</span><span class="en">Place</span></button></div>
-        <span class="lb-isum" id="lb-isum" aria-live="polite"></span>
-      </div>
-      <div id="lb-ibox"></div>
     </div>
     <details class="lb-journal"><summary><span class="de">Journal</span><span class="en">Journal</span> <span id="lb-jn"></span></summary><ol id="lb-log"></ol></details>
   </section>
@@ -110,22 +90,22 @@ LB_CSS = r"""
   #view-ledger .lb-mode{display:flex;gap:8px;margin:0 0 10px}
   #view-ledger .lb-mode .btn{min-height:40px}
   #view-ledger .lb-mode .btn[aria-pressed="true"],#view-ledger .lb-igrp .btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
-  #view-ledger .lb-items{display:none}
-  #view-ledger.lb-items-on .lb-items{display:block}
-  #view-ledger.lb-items-on .lb-grid,#view-ledger.lb-items-on .lb-find,#view-ledger.lb-items-on #lb-found,#view-ledger.lb-items-on #lb-total{display:none}
-  #view-ledger .lb-iform{display:grid;grid-template-columns:minmax(180px,2fr) 90px minmax(120px,1fr) minmax(180px,2fr);gap:10px 12px;align-items:end;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 14px}
+  #view-ledger.lb-items-on .lb-find,#view-ledger.lb-items-on #lb-found,#view-ledger.lb-items-on #lb-total{display:none}
+  #view-ledger .lb-o-i,#view-ledger.lb-items-on .lb-o-c{display:none}
+  #view-ledger.lb-items-on .lb-o-i{display:inline}
+  #view-ledger .lb-iform{display:grid;grid-template-columns:minmax(0,2fr) 84px minmax(0,1fr);gap:10px 12px;align-items:end;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0 14px}
   #view-ledger .lb-iform h3{grid-column:1/-1;margin:0;font-size:16px}
   #view-ledger .lb-iform .lb-f{margin:0}
   #view-ledger .lb-iform input,#view-ledger .lb-iform select{width:100%;min-height:38px}
-  #view-ledger .lb-i-x{grid-column:1/4}
-  #view-ledger .lb-ibtn{display:flex;gap:8px;flex-wrap:wrap} #view-ledger .lb-ibtn .btn{min-height:40px}
+  #view-ledger .lb-i-x,#view-ledger .lb-i-l{grid-column:1/-1}
+  #view-ledger .lb-ibtn{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap} #view-ledger .lb-ibtn .btn{min-height:40px}
   #view-ledger .lb-ierr{grid-column:1/-1;margin:0;color:var(--bad,#c0392b);font-weight:600;min-height:0}
   #view-ledger .lb-ierr:empty{display:none}
   #view-ledger .lb-iform .bad{outline:2px solid var(--bad,#c0392b);outline-offset:1px}
-  #view-ledger .lb-itools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;margin:0 0 10px}
-  #view-ledger .lb-itools .lb-f{margin:0;flex:1 1 260px} #view-ledger .lb-itools input{width:100%;min-height:38px}
+  #view-ledger .lb-itools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;margin:12px 0 10px}
+  #view-ledger .lb-itools .lb-f{margin:0;flex:1 1 220px} #view-ledger .lb-itools input{width:100%;min-height:38px}
   #view-ledger .lb-igrp{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px} #view-ledger .lb-igrp .btn{min-height:36px}
-  #view-ledger .lb-isum{color:var(--muted);font-size:14px;margin-left:auto}
+  #view-ledger .lb-isum{color:var(--muted);font-size:14px;flex-basis:100%}
   #view-ledger .lb-itab{width:100%;border-collapse:collapse;background:var(--panel)}
   #view-ledger .lb-itab th,#view-ledger .lb-itab td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;font-size:14px}
   #view-ledger .lb-itab th{font-size:13px;color:var(--muted);background:var(--panel2)}
@@ -140,8 +120,11 @@ LB_CSS = r"""
   #view-ledger .lb-iq{display:inline-block;border:1px solid var(--line);border-radius:5px;padding:0 6px;font-size:12.5px;color:var(--muted)}
   #view-ledger .lb-iempty{color:var(--muted);padding:16px 6px}
   #view-ledger .lb-ihere{margin:12px 0 0}
-  @media (max-width:760px){#view-ledger .lb-iform{grid-template-columns:minmax(0,1fr) 90px} #view-ledger .lb-i-n,#view-ledger .lb-i-l,#view-ledger .lb-i-x{grid-column:1/-1}
-    #view-ledger .lb-itab .note-col{display:none}}
+  #view-ledger .lb-iback{margin:0 0 6px}
+  #view-ledger .lb-place.home{border-color:var(--accent2,var(--accent));background:var(--panel2)}
+  #view-ledger .lb-ghome{color:var(--accent2,var(--accent))}
+  #view-ledger .lb-homeflag{display:inline-flex;align-items:center;font-weight:700;color:var(--accent2,var(--accent));margin-right:4px}
+  @media (max-width:760px){#view-ledger .lb-itab .note-col{display:none}}
   #view-ledger .lb-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
   #view-ledger .lb-bar .btn{min-height:44px}
   #view-ledger .lb-sp{flex:1}
@@ -265,14 +248,16 @@ const SH={}; for(const s of M.ships) SH[s.id]=s;
 /* ---------- state ---------- */
 // The whole ledger: own ships, stock posts (location, commodity, container size, count), journal,
 // free-text notes per location ('p:<id>', 's:<id>', '*' = general).
-let S={v:1,ships:[],stock:[],log:[],sel:null,notes:{},items:[]};
+let S={v:1,ships:[],stock:[],log:[],sel:null,notes:{},items:[],home:null};
 const NOTE_ALL='*';
 const cleanNotes=o=>{const out={}; if(o&&typeof o==='object') for(const k in o) if(typeof o[k]==='string'&&o[k].trim()) out[k]=o[k].slice(0,4000); return out;};
 // Items (see "important items"): keep only complete entries, texts cut to a sane length.
 const cleanItems=a=>Array.isArray(a)?a.filter(x=>x&&typeof x.l==='string'&&typeof x.n==='string'&&x.n.trim()&&x.c>=1)
   .map(x=>({l:x.l,n:x.n.trim().slice(0,80),c:Math.floor(x.c),...(x.q?{q:String(x.q).slice(0,30)}:{}),...(x.x?{x:String(x.x).slice(0,200)}:{})})):[];
+// Home base: one place ('p:<id>') that leads every place list and target choice; unknown places are dropped.
+const cleanHome=h=>typeof h==='string'&&h.slice(0,2)==='p:'&&PL[h.slice(2)]?h:null;
 const UNDO=[];
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){} S.notes=cleanNotes(S.notes); S.items=cleanItems(S.items);}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){} S.notes=cleanNotes(S.notes); S.items=cleanItems(S.items); S.home=cleanHome(S.home);}
 function save(){S.saved=new Date().toISOString(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} pushFleet(); if(FH&&FPERM) scheduleWrite();}
 
 /* ---------- shared fleet (flotte.py) ---------- */
@@ -301,11 +286,11 @@ let FH=null, FPERM=false, FLAST=0, FTIMER=null, FSTATE='';
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('scha_ledger_fs',1); r.onupgradeneeded=()=>r.result.createObjectStore('h'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
 async function idbSet(v){try{const db=await idb(); await new Promise((res,rej)=>{const tx=db.transaction('h','readwrite'); if(v) tx.objectStore('h').put(v,'file'); else tx.objectStore('h').delete('file'); tx.oncomplete=res; tx.onerror=()=>rej(tx.error);});}catch(e){}}
 async function idbGet(){try{const db=await idb(); return await new Promise(res=>{const r=db.transaction('h').objectStore('h').get('file'); r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null);});}catch(e){return null;}}
-const fileText=()=>JSON.stringify({app:'sc-fracht-logbuch',v:1,saved:S.saved,ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items},null,1);
+const fileText=()=>JSON.stringify({app:'sc-fracht-logbuch',v:1,saved:S.saved,ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items,home:S.home},null,1);
 async function readFile(h){const f=await h.getFile(); const txt=await f.text(); const o=txt.trim()?JSON.parse(txt):null;
   if(o&&(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock))) throw new Error('format');
   return {o,mod:f.lastModified};}
-function applyData(o){S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if(o.saved) S.saved=o.saved;}
+function applyData(o){S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if('home' in o) S.home=cleanHome(o.home); if(o.saved) S.saved=o.saved;}
 async function writeFile(force){if(!FH||!FPERM) return;
   try{const f=await FH.getFile(); if(!force&&FLAST&&f.lastModified>FLAST+1000){FSTATE='conflict'; storeInfo(); return;}
     const w=await FH.createWritable(); await w.write(fileText()); await w.close(); FLAST=(await FH.getFile()).lastModified; FSTATE=''; storeInfo();}
@@ -348,10 +333,10 @@ function openStore(){
 // Remember the state before a change so it can be undone.
 // Notes are typed text with their own saving; a snapshot only carries them where an action replaces
 // or removes notes (import, file, phone, removing a ship), so undo never eats text typed since.
-function snap(withNotes){UNDO.push(JSON.stringify({ships:S.ships,stock:S.stock,items:S.items,...(withNotes?{notes:S.notes}:{})})); if(UNDO.length>50) UNDO.shift();}
+function snap(withNotes){UNDO.push(JSON.stringify({ships:S.ships,stock:S.stock,items:S.items,home:S.home,...(withNotes?{notes:S.notes}:{})})); if(UNDO.length>50) UNDO.shift();}
 function log(text){S.log.unshift({t:new Date().toISOString(),x:text}); if(S.log.length>500) S.log.length=500;}
 function commit(text,undoable=true){log(text); save(); render(); toastUndo(text,undoable);}
-function undo(){const u=UNDO.pop(); if(!u) return; const o=JSON.parse(u); S.ships=o.ships; S.stock=o.stock; if(o.items) S.items=o.items; if(o.notes) S.notes=o.notes; log(T('Rückgängig gemacht','Undone')); save(); render(); toast(T('Rückgängig gemacht.','Undone.'));}
+function undo(){const u=UNDO.pop(); if(!u) return; const o=JSON.parse(u); S.ships=o.ships; S.stock=o.stock; if(o.items) S.items=o.items; if('home' in o) S.home=o.home; if(o.notes) S.notes=o.notes; log(T('Rückgängig gemacht','Undone')); save(); render(); toast(T('Rückgängig gemacht.','Undone.'));}
 function toastUndo(text){toast(text+' · '+T('Rückgängig: Strg+Z oder Knopf oben','Undo: Ctrl+Z or button above'));}
 
 /* ---------- helpers ---------- */
@@ -406,16 +391,21 @@ function fillBar(s,loc){const c=cap(s), u=used(loc), top=Math.max(c.max,u,1);
     <div class="lb-scu">${nf(u)} / ${nf(c.base)} SCU${over?` · <span class="lb-ow">⚠ ${T('überladen','overloaded')} +${nf(u-c.base)}</span>`:''}${s.ov&&!over?` · ${T('Überladen an','overload on')} (+${s.op||33} %)`:''}</div>`;}
 function renderShips(){const box=$l('ships');
   box.innerHTML=S.ships.length?S.ships.map(s=>{const loc='s:'+s.id;
-    return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${S.notes[loc]?memoFlag():''}${merkFlag(loc)}${fillBar(s,loc)}</button>`}).join('')
+    return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${itemFlag(loc)}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}${fillBar(s,loc)}</button>`}).join('')
    :`<p class="lb-empty">${T('Noch kein Schiff. Lege deine Frachtschiffe an, dann siehst du ihren Laderaum.','No ship yet. Add your cargo ships to see their cargo space.')}</p>`;}
-function renderPlaces(){const q=($l('q').value||'').trim().toLowerCase(), sys=$l('sys').value, only=$l('only').checked;
-  let html='', lastS='', lastB=null;
-  for(const p of M.places){const loc='p:'+p.id, u=used(loc);
-    if(sys&&p.sys!==sys) continue; if(only&&!u&&!S.notes[loc]&&!merkAt(loc).length) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
+// Places: the home base first (whatever search and filter say), then by system and body. In the items view
+// the badge counts the entries of a place and the filter means "with items only".
+function renderPlaces(){const q=($l('q').value||'').trim().toLowerCase(), sys=$l('sys').value, only=$l('only').checked, items=MODE==='items';
+  const btn=(p,home)=>{const loc='p:'+p.id, u=used(loc), ni=itemsAt(loc).length;
+    return `<button type="button" class="lb-place${home?' home':''}" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${items?(ni?`<span class="lb-badge">🎖 ${nf(ni)}</span>`:''):(u?`<span class="lb-badge">${nf(u)} SCU</span>`:'')}<b>${home?'🏠 ':''}${esc(p.n)}</b>${home?`<small>${esc(p.sys)}${p.body?' · '+esc(p.body):''}</small>`:''}${!items&&p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${items?(u?`<small>${nf(u)} SCU ${T('Fracht','cargo')}</small>`:''):itemFlag(loc)}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}</button>`;};
+  const hp=S.home?PL[S.home.slice(2)]:null;
+  let html=hp?`<div class="lb-gsys lb-ghome">🏠 ${T('Homebase','Home base')}</div>`+btn(hp,true):'', n=0, lastS='', lastB=null;
+  for(const p of M.places){const loc='p:'+p.id, u=used(loc); if(p===hp) continue;
+    if(sys&&p.sys!==sys) continue; if(only&&(items?!itemsAt(loc).length:(!u&&!S.notes[loc]&&!merkAt(loc).length))) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
     if(p.sys!==lastS){html+=`<div class="lb-gsys">${esc(p.sys)}</div>`; lastS=p.sys; lastB=null;}
     if(p.body!==lastB){html+=`<div class="lb-gbody">${esc(p.body||T('im All','in space'))}</div>`; lastB=p.body;}
-    html+=`<button type="button" class="lb-place" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${u?`<span class="lb-badge">${nf(u)} SCU</span>`:''}<b>${esc(p.n)}</b>${p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}</button>`;}
-  $l('places').innerHTML=html||`<p class="lb-empty">${T('Kein Ort passt zu Suche und Filter.','No place matches the search and filter.')}</p>`;}
+    html+=btn(p,false); n++;}
+  $l('places').innerHTML=html+(n?'':`<p class="lb-empty">${hp?T('Kein weiterer Ort passt zu Suche und Filter.','No other place matches the search and filter.'):T('Kein Ort passt zu Suche und Filter.','No place matches the search and filter.')}</p>`);}
 /* ---------- reminders of the cockpit (only where window.SCData exists) ---------- */
 // A reminder belongs to a place by its ledger location (loc) or, for purchase reminders of the component
 // planner, by its shop text ("Platinum Bay - Port Tressler (Stanton)"): the place of that star system whose
@@ -453,7 +443,7 @@ function memoHtml(key,name){return `<section class="lb-memo"><label for="lb-memo
 function renderMid(){const a=document.activeElement, keep=a&&a.id==='lb-memo'?[a.dataset.key,a.selectionStart,a.selectionEnd,a.scrollTop]:null;
   renderMid0();
   if(keep){const t=$l('memo'); if(t&&t.dataset.key===keep[0]){t.focus({preventScroll:true}); try{t.setSelectionRange(keep[1],keep[2]);}catch(e){} t.scrollTop=keep[3];}}}
-function renderMid0(){const box=$l('mid'), loc=S.sel;
+function renderMid0(){if(MODE==='items'){renderMidItems(); return;} const box=$l('mid'), loc=S.sel;
   if(!loc){box.innerHTML=`<div class="lb-empty"><h2>${T('Fracht-Logbuch','Cargo ledger')}</h2><p>${T('Wähle rechts einen Ort oder links ein Schiff. Dort buchst du Fracht ein und verschiebst sie per Klick oder Ziehen.','Pick a place on the right or a ship on the left. Book cargo in there and move it by click or drag.')}</p>${S.ships.length?'':`<button type="button" class="btn" data-act="addship">+ ${T('Erstes Schiff hinzufügen','Add your first ship')}</button>`}</div>`+memoHtml(NOTE_ALL); return;}
   const isShip=loc[0]==='s', s=isShip?shipById(loc.slice(2)):null, p=isShip?null:PL[loc.slice(2)];
   if(isShip&&!s||!isShip&&!p){S.sel=null; renderMid0(); return;}
@@ -461,9 +451,9 @@ function renderMid0(){const box=$l('mid'), loc=S.sel;
   for(const q of posts)(byW[q.w]=byW[q.w]||[]).push(q);
   const meta=isShip?`${esc(SH[s.t]?.n||'?')} · ${T('Container bis','containers up to')} ${SH[s.t]?.cs||'?'} SCU`:`${esc(p.sys)}${p.body?' · '+esc(p.body):''}${p.max?` · ${T('Aufzug bis','elevator up to')} ${p.max} SCU`:''}`;
   const wv=worth(posts);
-  let html=`<h2>${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}</div>${isShip?fillBar(s,loc):''}
+  let html=`<h2>${isHome(loc)?'🏠 ':''}${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}</div>${isShip?fillBar(s,loc):''}
     ${wv.known?`<div class="lb-val">${T('Lagerwert','Cargo value')} ≈ ${nf(wv.v)} aUEC${wv.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(wv.pr)}`:''}${missTxt(wv.unknown)}</div>`:''}
-    <div class="lb-acts"><button type="button" class="btn pri" data-act="in">+ ${T('Fracht einbuchen','Book cargo in')}</button>${isShip?`<button type="button" class="btn" data-act="editship">✎ ${T('Schiff bearbeiten','Edit ship')}</button>`:''}</div>`;
+    <div class="lb-acts"><button type="button" class="btn pri" data-act="in">+ ${T('Fracht einbuchen','Book cargo in')}</button>${isShip?`<button type="button" class="btn" data-act="editship">✎ ${T('Schiff bearbeiten','Edit ship')}</button>`:homeBtn(loc)}</div>`;
   const ws=Object.keys(byW).sort((a,b)=>(WA[a]?.n||'').localeCompare(WA[b]?.n||''));
   if(!ws.length) html+=`<p class="lb-empty">${T('Hier liegt nichts. Buche Fracht ein oder ziehe einen Posten von einem anderen Ort hierher.','Nothing here. Book cargo in or drag a post here from another place.')}</p>`;
   for(const w of ws){const list=byW[w].sort((a,b)=>b.z-a.z||(a.bp??-1)-(b.bp??-1)), tot=list.reduce((a,q)=>a+q.z*q.n,0), si=sell(+w), ww=worth(list);
@@ -483,7 +473,7 @@ function render(){const sys=$l('sys'), cur=sys.value; $l('handy').hidden=noPhone
   sys.innerHTML=`<option value="">${T('alle Systeme','all systems')}</option>`+[...new Set(M.places.map(p=>p.sys))].map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('');
   $l('wlist').innerHTML=M.wares.map(w=>`<option value="${esc(w.n)}">`).join('');
   $l('slist').innerHTML=M.ships.map(s=>`<option value="${esc(s.n)}">${s.scu} SCU</option>`).join('');
-  renderShips(); renderPlaces(); renderMid(); renderLog(); renderFound(); storeInfo(); $l('undo').disabled=!UNDO.length; itemsHere(); if(MODE==='items') renderItems();
+  renderShips(); renderPlaces(); renderMid(); renderLog(); renderFound(); storeInfo(); $l('undo').disabled=!UNDO.length; itemLists(); if(MODE!=='items') itemsHere();
   const all=worth(S.stock), scu=S.stock.reduce((a,p)=>a+p.z*p.n,0);
   $l('total').innerHTML=scu?`${T('Gesamt','Total')}: ${nf(scu)} SCU${all.known?` · ≈ ${nf(all.v)} aUEC`:''}`:'';}
 // Where is a commodity? Every place and ship holding it, with container sizes; a click selects it.
@@ -499,6 +489,8 @@ function select(loc){S.sel=loc; save(); render(); if(matchMedia('(max-width:900p
 
 /* ---------- important items (medals, scrip, resources with a quality): what lies where ---------- */
 // One entry {l:place or ship ('p:…' / 's:…' as for cargo), n:name, c:count, q:quality (free text), x:note}.
+// The items view uses the ledger's own selection: ships on the left, places on the right; the middle shows
+// the items of the selected place with the form to add one, or all items with a search when nothing is selected.
 // Suggestions only help typing; any name can be entered. M.wikelo: the ingredients of Wikelo's trades
 // (from the Wikelo-Planer's published data at build time); they are marked as such in the list.
 const ITEM_SUG=['MG Scrip','Council Scrip','Wikelo Favor','Polaris Bit','ASD Secure Drive','ASD Lab Sample',
@@ -506,69 +498,107 @@ const ITEM_SUG=['MG Scrip','Council Scrip','Wikelo Favor','Polaris Bit','ASD Sec
   'UNE Gold Ingot','UNE Silver Ingot','Large Artifact Fragment','Medium Artifact Fragment','Small Artifact Fragment',
   'Carinite','Carinite (Pure)','Jaclium','Saldynium','Sadaryx','Irradiated Valakkar Pearl','Irradiated Valakkar Fang','Yormandi Eye','Yormandi Tongue'];
 const QUAL_SUG=['Pristine','Worn','Flawed','Damaged','Grade AAA','Grade AA','Grade A','Grade B','Grade C'];
-let MODE='cargo', IGRP='item', IEDIT=null;
+// IKEEP: keep what is typed in the form across a redraw (false right after a submit, an edit or a cancel).
+let MODE='cargo', IGRP='item', IEDIT=null, ISQ='', IKEEP=true;
 const iKey=(l,n,q)=>l+'|'+String(n).toLowerCase()+'|'+String(q||'').toLowerCase();
 const parseCount=v=>{const d=String(v??'').replace(/[^\d]/g,''); return d?parseInt(d,10):NaN;};
 const itemsAt=loc=>S.items.filter(x=>x.l===loc);
 const pcs=n=>`${nf(n)} ${T('Stück',n===1?'piece':'pieces')}`;
-// Switch between cargo and items; the host page (cockpit) follows the event with its own tabs.
-function mode(m){MODE=m==='items'?'items':'cargo'; view.classList.toggle('lb-items-on',MODE==='items');
+const itemFlag=loc=>{const n=itemsAt(loc).length; return n?`<small class="lb-memoflag">🎖 ${n} ${T(n===1?'Gegenstand':'Gegenstände',n===1?'item':'items')}</small>`:'';};
+/* home base */
+const isHome=loc=>!!S.home&&S.home===loc;
+function homeBtn(loc){if(!loc||loc[0]!=='p') return '';
+  return isHome(loc)?`<span class="lb-homeflag">🏠 ${T('Homebase','Home base')}</span><button type="button" class="btn" data-act="unhome">${T('Homebase aufheben','Unset home base')}</button>`
+    :`<button type="button" class="btn" data-act="home">🏠 ${T('Als Homebase merken','Set as home base')}</button>`;}
+function setHome(loc){const old=S.home; if((loc||null)===(old||null)) return; snap(); S.home=loc&&loc[0]==='p'?loc:null;
+  commit(S.home?T(`Homebase: ${locName(S.home)}`,`Home base: ${locName(S.home)}`):T(`Homebase aufgehoben (${locName(old)})`,`Home base unset (${locName(old)})`));}
+// Switch between cargo and items; the selected place stays. The host page (cockpit) follows the event with its own tabs.
+// Setting the view that is already shown changes nothing (the cockpit sets it on every redraw of its area,
+// which must not throw away an entry being edited).
+function mode(m){const next=m==='items'?'items':'cargo', ch=next!==MODE; MODE=next; if(ch){IEDIT=null; IKEEP=false;}
+  view.classList.toggle('lb-items-on',MODE==='items');
   for(const b of $l('mode').querySelectorAll('button')) b.setAttribute('aria-pressed',String(b.dataset.mode===MODE));
-  if(MODE==='items') renderItems(); view.dispatchEvent(new CustomEvent('lb-mode',{detail:MODE,bubbles:true}));}
-function itemForm(){const sel=$l('il'), was=sel.value, e=IEDIT!=null?S.items[IEDIT]:null;
-  sel.innerHTML=`<option value="">${T('– wählen –','– choose –')}</option>`+targetOptions(null);
-  sel.value=e?e.l:(was||S.sel||''); if(!sel.value) sel.value='';
-  $l('ih').textContent=e?T('Eintrag ändern','Change entry'):T('Gegenstand eintragen','Add an item');
-  $l('iok').textContent=e?T('Speichern','Save'):T('Eintragen','Add'); $l('icancel').hidden=!e;}
-function itemEdit(i){IEDIT=i; const e=S.items[i]; if(!e){IEDIT=null; return;} itemForm();
-  $l('in').value=e.n; $l('ic').value=e.c; $l('iq').value=e.q||''; $l('ix').value=e.x||''; $l('ierr').textContent='';
-  $l('iform').scrollIntoView({behavior:'smooth',block:'nearest'}); $l('in').focus({preventScroll:true});}
-function itemReset(keepLoc){IEDIT=null; $l('in').value=''; $l('ic').value='1'; $l('iq').value=''; $l('ix').value=''; $l('ierr').textContent='';
-  for(const id of ['in','ic','il']) $l(id).classList.remove('bad'); if(!keepLoc) $l('il').value=''; itemForm();}
+  if(ch){render(); view.dispatchEvent(new CustomEvent('lb-mode',{detail:MODE,bubbles:true}));}}
+function itemLists(){const wk=M.wikelo||[], wkSet=new Set(wk.map(n=>n.toLowerCase())), seen=new Set();
+  $l('ilist').innerHTML=[...S.items.map(x=>x.n),...wk,...ITEM_SUG,...M.wares.map(w=>w.n)].filter(n=>{const k=n.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true;})
+    .map(n=>`<option value="${esc(n)}">${wkSet.has(n.toLowerCase())?T('Wikelo-Zutat','Wikelo ingredient'):''}</option>`).join('');
+  $l('qlist').innerHTML=[...new Set([...QUAL_SUG,...S.items.map(x=>x.q).filter(Boolean)])].map(n=>`<option value="${esc(n)}">`).join('');}
+// Form at the selected place: add an item there, or change one (then with the place, to move it).
+function itemFormHtml(){const e=IEDIT!=null?S.items[IEDIT]:null;
+  return `<form class="lb-iform" id="lb-iform" novalidate>
+    <h3>${e?T('Eintrag ändern','Change entry'):T('Gegenstand hier eintragen','Add an item here')}</h3>
+    <label class="lb-f lb-i-n">${T('Gegenstand','Item')}<input id="lb-in" list="lb-ilist" autocomplete="off" maxlength="80" value="${esc(e?e.n:'')}"></label>
+    <label class="lb-f lb-i-c">${T('Stück','Count')}<input id="lb-ic" inputmode="numeric" autocomplete="off" value="${e?e.c:1}"></label>
+    <label class="lb-f lb-i-q">${T('Qualität (optional)','Quality (optional)')}<input id="lb-iq" list="lb-qlist" autocomplete="off" maxlength="30" value="${esc(e&&e.q||'')}"></label>
+    <label class="lb-f lb-i-x">${T('Notiz (optional)','Note (optional)')}<input id="lb-ix" autocomplete="off" maxlength="200" value="${esc(e&&e.x||'')}"></label>
+    ${e?`<label class="lb-f lb-i-l">${T('Liegt an (zum Verschieben ändern)','Is at (change it to move the item)')}<select id="lb-il">${targetOptions(null)}</select></label>`:''}
+    <div class="lb-ibtn"><button type="submit" class="btn pri">${e?T('Speichern','Save'):T('Eintragen','Add')}</button>${e?`<button type="button" class="btn" id="lb-icancel">${T('Abbrechen','Cancel')}</button>`:''}</div>
+    <p class="lb-ierr" id="lb-ierr" role="alert"></p></form>`;}
+const qual=x=>x.q?`<span class="lb-iq">${esc(x.q)}</span>`:'<span class="note">–</span>';
+const itemAct=r=>`<td class="act"><button type="button" class="btn" data-iedit="${r.i}" aria-label="${esc(T('Ändern','Change')+': '+r.x.n)}">${T('Ändern','Change')}</button><button type="button" class="btn lb-idel" data-idel="${r.i}" aria-label="${esc(T('Entfernen','Remove')+': '+r.x.n)}">${T('Entfernen','Remove')}</button></td>`;
+// All items, grouped by item or by place; the home base leads where places are ordered.
+function itemOverview(){const q=ISQ.trim().toLowerCase();
+  const rows=S.items.map((x,i)=>({x,i,ln:locName(x.l)})).filter(r=>!q||[r.x.n,r.x.q||'',r.ln,r.x.x||''].join(' ').toLowerCase().includes(q));
+  if(!rows.length) return `<p class="lb-iempty">${T('Kein Eintrag passt zu dieser Suche.','No entry matches this search.')}</p>`;
+  const byItem=IGRP==='item', gk=r=>byItem?r.x.n.toLowerCase():r.x.l, groups=new Map(), hf=l=>isHome(l)?0:1;
+  for(const r of rows){const k=gk(r); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(r);}
+  const order=[...groups.values()].sort((a,b)=>byItem?a[0].x.n.localeCompare(b[0].x.n):hf(a[0].x.l)-hf(b[0].x.l)||a[0].ln.localeCompare(b[0].ln));
+  const locBtn=r=>`<button type="button" class="lb-iloc" data-goloc="${esc(r.x.l)}">${isHome(r.x.l)?'🏠 ':r.x.l[0]==='s'?'🚀 ':'📍 '}${esc(r.ln)}</button>`;
+  const body=order.map(g=>{const sum=g.reduce((a,r)=>a+r.x.c,0), np=new Set(g.map(r=>r.x.l)).size;
+    g.sort((a,b)=>byItem?hf(a.x.l)-hf(b.x.l)||a.ln.localeCompare(b.ln)||String(a.x.q||'').localeCompare(String(b.x.q||'')):a.x.n.localeCompare(b.x.n)||String(a.x.q||'').localeCompare(String(b.x.q||'')));
+    const head=byItem?`${esc(g[0].x.n)}<small>${pcs(sum)} · ${nf(np)} ${T(np===1?'Ort':'Orte',np===1?'place':'places')}</small>`
+      :`${locBtn(g[0])}<small>${nf(g.length)} ${T(g.length===1?'Eintrag':'Einträge',g.length===1?'entry':'entries')} · ${pcs(sum)}</small>`;
+    return `<tr class="grp"><td colspan="5">${head}</td></tr>`+g.map(r=>`<tr><td>${byItem?locBtn(r):esc(r.x.n)}</td><td>${qual(r.x)}</td><td class="num">${nf(r.x.c)}</td><td class="note-col">${esc(r.x.x||'')}</td>${itemAct(r)}</tr>`).join('');}).join('');
+  return `<div class="tablewrap"><table class="lb-itab"><thead><tr><th>${byItem?T('Ort','Place'):T('Gegenstand','Item')}</th><th>${T('Qualität','Quality')}</th><th class="num">${T('Stück','Count')}</th><th class="note-col">${T('Notiz','Note')}</th><th></th></tr></thead><tbody>${body}</tbody></table></div>`;}
+// Middle column of the items view.
+function renderMidItems(){const box=$l('mid'), loc=S.sel, a=document.activeElement;
+  const keep=IKEEP&&$l('iform')?{v:['in','ic','iq','ix'].map(i=>$l(i)?.value),loc,ed:IEDIT}:null, foc=IKEEP&&a&&a.id&&box.contains(a)?a.id:null; IKEEP=true;
+  if(loc){const isShip=loc[0]==='s', s=isShip?shipById(loc.slice(2)):null, p=isShip?null:PL[loc.slice(2)];
+    if(isShip&&!s||!isShip&&!p){S.sel=null; renderMidItems(); return;}
+    const list=S.items.map((x,i)=>({x,i})).filter(r=>r.x.l===loc).sort((u,v)=>u.x.n.localeCompare(v.x.n)||String(u.x.q||'').localeCompare(String(v.x.q||''))), sum=list.reduce((n,r)=>n+r.x.c,0);
+    const meta=isShip?esc(SH[s.t]?.n||'?'):`${esc(p.sys)}${p.body?' · '+esc(p.body):''}`, u=used(loc);
+    box.innerHTML=`<p class="lb-iback"><button type="button" class="lb-link" data-iall>← ${T('Alle Gegenstände','All items')}</button></p>
+      <h2>${isHome(loc)?'🏠 ':''}${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}${list.length?` · ${nf(list.length)} ${T(list.length===1?'Eintrag':'Einträge',list.length===1?'entry':'entries')}, ${pcs(sum)}`:''}</div>
+      <div class="lb-acts">${homeBtn(loc)}<button type="button" class="btn" data-mode2="cargo">📦 ${u?`${nf(u)} SCU `:''}${T('Fracht an diesem Ort','Cargo at this place')} →</button></div>
+      ${itemFormHtml()}
+      ${list.length?`<div class="tablewrap"><table class="lb-itab"><thead><tr><th>${T('Gegenstand','Item')}</th><th>${T('Qualität','Quality')}</th><th class="num">${T('Stück','Count')}</th><th class="note-col">${T('Notiz','Note')}</th><th></th></tr></thead><tbody>${list.map(r=>`<tr><td><b>${esc(r.x.n)}</b></td><td>${qual(r.x)}</td><td class="num">${nf(r.x.c)}</td><td class="note-col">${esc(r.x.x||'')}</td>${itemAct(r)}</tr>`).join('')}</tbody></table></div>`
+        :`<p class="lb-empty">${T('Hier liegt noch kein Gegenstand. Trag oben ein, was du hier abgelegt hast.','No item here yet. Enter above what you stored here.')}</p>`}`;
+    const e=IEDIT!=null?S.items[IEDIT]:null; if(e&&$l('il')) $l('il').value=e.l;
+    if(keep&&keep.loc===loc&&keep.ed===IEDIT) ['in','ic','iq','ix'].forEach((i,k)=>{if($l(i)&&keep.v[k]!=null) $l(i).value=keep.v[k];});
+  } else {
+    const all=S.items.reduce((n,x)=>n+x.c,0);
+    box.innerHTML=`<div class="lb-empty"><h2>${T('Gegenstände','Items')}</h2><p>${T('Wähle rechts einen Ort oder links ein Schiff, um dort einen Gegenstand einzutragen: Medaillen, Scrips, Tauschware, Ressourcen mit Qualität.','Pick a place on the right or a ship on the left to add an item there: medals, scrip, trade goods, resources with a quality.')}</p></div>
+      ${S.items.length?`<div class="lb-itools"><label class="lb-f">${T('Gegenstände suchen (Name, Qualität, Ort)','Search items (name, quality, place)')}<input type="search" id="lb-isq" autocomplete="off" value="${esc(ISQ)}"></label>
+        <div class="lb-igrp" role="group" aria-label="${T('Gruppieren nach','Group by')}"><span>${T('Gruppieren nach:','Group by:')}</span>
+          <button type="button" class="btn" data-grp="item" aria-pressed="${IGRP==='item'}">${T('Gegenstand','Item')}</button><button type="button" class="btn" data-grp="loc" aria-pressed="${IGRP==='loc'}">${T('Ort','Place')}</button></div>
+        <span class="lb-isum">${nf(new Set(S.items.map(x=>x.n.toLowerCase())).size)} ${T(new Set(S.items.map(x=>x.n.toLowerCase())).size===1?'Gegenstand':'Gegenstände',new Set(S.items.map(x=>x.n.toLowerCase())).size===1?'item':'items')} · ${pcs(all)} · ${nf(new Set(S.items.map(x=>x.l)).size)} ${T(new Set(S.items.map(x=>x.l)).size===1?'Ort':'Orte',new Set(S.items.map(x=>x.l)).size===1?'place':'places')}</span></div>
+        <div id="lb-ibox">${itemOverview()}</div>`
+       :`<p class="lb-iempty">${T('Noch kein Gegenstand eingetragen.','No item entered yet.')}</p>`}`;
+  }
+  if(foc){const el=document.getElementById(foc); if(el){el.focus({preventScroll:true}); if(foc==='lb-isq'){try{el.setSelectionRange(el.value.length,el.value.length);}catch(e){}}}}}
+function itemEdit(i){const e=S.items[i]; if(!e) return; IEDIT=i; IKEEP=false; S.sel=e.l; save(); render();
+  $l('iform')?.scrollIntoView({behavior:'smooth',block:'nearest'}); $l('in')?.focus({preventScroll:true});}
 // Add or change an entry. An entry with the same item, quality and place is added up instead of listed twice.
-function itemSubmit(){const n=$l('in').value.trim().replace(/\s+/g,' '), c=parseCount($l('ic').value), q=$l('iq').value.trim(), l=$l('il').value, x=$l('ix').value.trim();
+function itemSubmit(){const ed=IEDIT!=null&&S.items[IEDIT]?IEDIT:null;
+  const n=$l('in').value.trim().replace(/\s+/g,' '), c=parseCount($l('ic').value), q=$l('iq').value.trim(), x=$l('ix').value.trim(), l=ed!=null?$l('il').value:S.sel;
   const bad=[]; if(!n) bad.push(['in',T('Trag ein, um welchen Gegenstand es geht.','Enter which item it is.')]);
   if(!(c>=1)) bad.push(['ic',T('Die Stückzahl muss mindestens 1 sein.','The count must be at least 1.')]);
   if(!l) bad.push(['il',T('Wähl den Ort oder das Schiff, wo der Gegenstand liegt.','Choose the place or ship where the item is.')]);
-  for(const id of ['in','ic','il']) $l(id).classList.toggle('bad',bad.some(b=>b[0]===id));
-  if(bad.length){$l('ierr').textContent=bad.map(b=>b[1]).join(' '); $l(bad[0][0]).focus(); return;}
-  $l('ierr').textContent=''; snap(); const e={l,n,c,...(q?{q}:{}),...(x?{x}:{})};
-  if(IEDIT!=null&&S.items[IEDIT]){const dup=S.items.findIndex((y,i)=>i!==IEDIT&&iKey(y.l,y.n,y.q)===iKey(l,n,q));
-    if(dup>=0){S.items[dup].c+=c; if(x) S.items[dup].x=x; S.items.splice(IEDIT,1);} else S.items[IEDIT]=e;
-    itemReset(true); commit(T(`Geändert: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`,`Changed: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`)); return;}
+  for(const id of ['in','ic','il']) $l(id)?.classList.toggle('bad',bad.some(b=>b[0]===id));
+  if(bad.length){$l('ierr').textContent=bad.map(b=>b[1]).join(' '); $l(bad[0][0])?.focus(); return;}
+  snap(); const e={l,n,c,...(q?{q}:{}),...(x?{x}:{})}; IKEEP=false;
+  if(ed!=null){const dup=S.items.findIndex((y,i)=>i!==ed&&iKey(y.l,y.n,y.q)===iKey(l,n,q));
+    if(dup>=0){S.items[dup].c+=c; if(x) S.items[dup].x=x; S.items.splice(ed,1);} else S.items[ed]=e;
+    IEDIT=null; commit(T(`Geändert: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`,`Changed: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`)); return;}
   const old=S.items.find(y=>iKey(y.l,y.n,y.q)===iKey(l,n,q)); if(old){old.c+=c; if(x) old.x=x;} else S.items.push(e);
-  itemReset(true); commit(T(`Eingetragen: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`,`Added: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`)); $l('in').focus({preventScroll:true});}
-function itemDel(i){const e=S.items[i]; if(!e) return; snap(); S.items.splice(i,1); if(IEDIT!=null) itemReset(true);
+  commit(T(`Eingetragen: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`,`Added: ${pcs(c)} ${n}${q?` (${q})`:''} · ${locName(l)}`)); $l('in')?.focus({preventScroll:true});}
+function itemDel(i){const e=S.items[i]; if(!e) return; snap(); S.items.splice(i,1); IEDIT=null; IKEEP=false;
   commit(T(`Entfernt: ${pcs(e.c)} ${e.n}${e.q?` (${e.q})`:''} · ${locName(e.l)}`,`Removed: ${pcs(e.c)} ${e.n}${e.q?` (${e.q})`:''} · ${locName(e.l)}`));}
-function renderItems(){if(!$l('ibox')) return;
-  const wk=M.wikelo||[], wkSet=new Set(wk.map(n=>n.toLowerCase())), seen=new Set();
-  $l('ilist').innerHTML=[...S.items.map(x=>x.n),...wk,...ITEM_SUG,...M.wares.map(w=>w.n)].filter(n=>{const k=n.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true;})
-    .map(n=>`<option value="${esc(n)}">${wkSet.has(n.toLowerCase())?T('Wikelo-Zutat','Wikelo ingredient'):''}</option>`).join('');
-  $l('qlist').innerHTML=[...new Set([...QUAL_SUG,...S.items.map(x=>x.q).filter(Boolean)])].map(n=>`<option value="${esc(n)}">`).join('');
-  itemForm(); for(const b of $l('igrp').querySelectorAll('button')) b.setAttribute('aria-pressed',String(b.dataset.grp===IGRP));
-  const box=$l('ibox'), q=($l('isq').value||'').trim().toLowerCase();
-  if(!S.items.length){$l('isum').textContent=''; box.innerHTML=`<p class="lb-iempty">${T('Noch kein Gegenstand eingetragen. Trag oben ein, was du wo abgelegt hast, zum Beispiel „MG Scrip“ in deinem Hangar oder eine Medaille an Bord eines Schiffs.','No item entered yet. Enter above what you stored where, for example “MG Scrip” in your hangar or a medal aboard a ship.')}</p>`; return;}
-  const rows=S.items.map((x,i)=>({x,i,ln:locName(x.l)})).filter(r=>!q||[r.x.n,r.x.q||'',r.ln,r.x.x||''].join(' ').toLowerCase().includes(q));
-  const all=S.items.reduce((a,x)=>a+x.c,0);
-  $l('isum').textContent=`${nf(new Set(S.items.map(x=>x.n.toLowerCase())).size)} ${T('Gegenstände','items')} · ${pcs(all)} · ${nf(new Set(S.items.map(x=>x.l)).size)} ${T('Orte','places')}`;
-  if(!rows.length){box.innerHTML=`<p class="lb-iempty">${T('Kein Eintrag passt zu dieser Suche.','No entry matches this search.')}</p>`; return;}
-  const byItem=IGRP==='item', gk=r=>byItem?r.x.n.toLowerCase():r.x.l, groups=new Map();
-  for(const r of rows){const k=gk(r); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(r);}
-  const order=[...groups.values()].sort((a,b)=>(byItem?a[0].x.n.localeCompare(b[0].x.n):a[0].ln.localeCompare(b[0].ln)));
-  const qual=x=>x.q?`<span class="lb-iq">${esc(x.q)}</span>`:'<span class="note">–</span>';
-  const locBtn=r=>`<button type="button" class="lb-iloc" data-goloc="${esc(r.x.l)}">${r.x.l[0]==='s'?'🚀 ':'📍 '}${esc(r.ln)}</button>`;
-  const act=r=>`<td class="act"><button type="button" class="btn" data-iedit="${r.i}" aria-label="${esc(T('Ändern','Change')+': '+r.x.n)}">${T('Ändern','Change')}</button><button type="button" class="btn lb-idel" data-idel="${r.i}" aria-label="${esc(T('Entfernen','Remove')+': '+r.x.n)}">${T('Entfernen','Remove')}</button></td>`;
-  const body=order.map(g=>{const sum=g.reduce((a,r)=>a+r.x.c,0);
-    g.sort((a,b)=>byItem?a.ln.localeCompare(b.ln)||String(a.x.q||'').localeCompare(String(b.x.q||'')):a.x.n.localeCompare(b.x.n)||String(a.x.q||'').localeCompare(String(b.x.q||'')));
-    const head=byItem?`${esc(g[0].x.n)}<small>${pcs(sum)} · ${nf(new Set(g.map(r=>r.x.l)).size)} ${T(new Set(g.map(r=>r.x.l)).size===1?'Ort':'Orte',new Set(g.map(r=>r.x.l)).size===1?'place':'places')}</small>`
-      :`${locBtn(g[0])}<small>${nf(g.length)} ${T(g.length===1?'Eintrag':'Einträge',g.length===1?'entry':'entries')} · ${pcs(sum)}</small>`;
-    return `<tr class="grp"><td colspan="5">${head}</td></tr>`+g.map(r=>`<tr><td>${byItem?locBtn(r):esc(r.x.n)}</td><td>${qual(r.x)}</td><td class="num">${nf(r.x.c)}</td><td class="note-col">${esc(r.x.x||'')}</td>${act(r)}</tr>`).join('');}).join('');
-  box.innerHTML=`<div class="tablewrap"><table class="lb-itab"><thead><tr><th>${byItem?T('Ort','Place'):T('Gegenstand','Item')}</th><th>${T('Qualität','Quality')}</th><th class="num">${T('Stück','Count')}</th><th class="note-col">${T('Notiz','Note')}</th><th></th></tr></thead><tbody>${body}</tbody></table></div>`;}
-// In the cargo view: say how many items lie at the selected place, with a jump to them.
+// In the cargo view: the way to the items of the selected place.
 function itemsHere(){const box=$l('mid'); if(!box) return; box.querySelector('.lb-ihere')?.remove(); const loc=S.sel; if(!loc) return; const n=itemsAt(loc).length;
-  box.insertAdjacentHTML('beforeend',`<p class="lb-ihere"><button type="button" class="btn" data-ihere="${esc(loc)}">🎖 ${n?T(`${n} ${n===1?'Gegenstand':'Gegenstände'} hier`,`${n} ${n===1?'item':'items'} here`):T('Gegenstand hier eintragen','Add an item here')} →</button></p>`);}
-// Show the items filtered by a text (used by the jump from the cargo view and by the cockpit).
-function findItem(q){$l('isq').value=q||''; mode('items');}
+  box.insertAdjacentHTML('beforeend',`<p class="lb-ihere"><button type="button" class="btn" data-mode2="items">🎖 ${n?T(`${n} ${n===1?'Gegenstand':'Gegenstände'} hier`,`${n} ${n===1?'item':'items'} here`):T('Gegenstand hier eintragen','Add an item here')} →</button></p>`);}
+// Show all items filtered by a text (used by the cockpit's jump from an item's name).
+function findItem(q){ISQ=q||''; S.sel=null; IEDIT=null; IKEEP=false; if(MODE==='items') render(); else mode('items');}
 
 /* ---------- dialogs ---------- */
 let dlgOk=null;
@@ -579,9 +609,11 @@ function dialog(title,body,buttons,onInput){const d=$l('dlg'); $l('dt').textCont
   dlgOk=buttons; const upd=()=>{if(onInput){const w=onInput(); $l('dw').innerHTML=w.map(x=>typeof x==='object'?`<p>ℹ ${esc(x.i)}</p>`:`<p>⚠ ${esc(x)}</p>`).join('');}};
   $l('db').oninput=upd; $l('db').onchange=upd; upd(); d.showModal(); const f=d.querySelector('input,select'); if(f) f.focus();}
 function closeDlg(){$l('dlg').close();}
-function targetOptions(except){const sh=S.ships.map(s=>`<option value="s:${s.id}"${'s:'+s.id===except?' disabled':''}>${esc(s.n)}</option>`).join('');
-  let pl='',ls=''; for(const p of M.places){if(p.sys!==ls){pl+=(ls?'</optgroup>':'')+`<optgroup label="${esc(p.sys)}">`; ls=p.sys;} pl+=`<option value="p:${esc(p.id)}"${'p:'+p.id===except?' disabled':''}>${esc(p.n)}${p.body?' · '+esc(p.body):''}</option>`;}
-  return (sh?`<optgroup label="${T('Meine Schiffe','My ships')}">${sh}</optgroup>`:'')+pl+'</optgroup>';}
+// Targets of a move: my ships, then the home base, then all places by system.
+function targetOptions(except){const hp=S.home?PL[S.home.slice(2)]:null; const sh=S.ships.map(s=>`<option value="s:${s.id}"${'s:'+s.id===except?' disabled':''}>${esc(s.n)}</option>`).join('');
+  let pl='',ls=''; for(const p of M.places){if(p===hp) continue; if(p.sys!==ls){pl+=(ls?'</optgroup>':'')+`<optgroup label="${esc(p.sys)}">`; ls=p.sys;} pl+=`<option value="p:${esc(p.id)}"${'p:'+p.id===except?' disabled':''}>${esc(p.n)}${p.body?' · '+esc(p.body):''}</option>`;}
+  const ho=hp?`<optgroup label="🏠 ${T('Homebase','Home base')}"><option value="p:${esc(hp.id)}"${'p:'+hp.id===except?' disabled':''}>${esc(hp.n)}${hp.body?' · '+esc(hp.body):''}</option></optgroup>`:'';
+  return (sh?`<optgroup label="${T('Meine Schiffe','My ships')}">${sh}</optgroup>`:'')+ho+pl+(pl?'</optgroup>':'');}
 // Move (or book out) part of a post; target preset when dropped onto a ship or place.
 function openMove(i,target){const p=S.stock[i]; if(!p) return; const w=WA[p.w];
   if(target&&target===p.l) return;
@@ -669,19 +701,19 @@ let dlgAct=null;
 /* ---------- export / import ---------- */
 function download(name,blob){const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);}
 const stamp=()=>new Date().toISOString().slice(0,10);
-function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
+function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items,home:S.home},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
 // Ships and cargo for the phone (no journal, it is not needed there).
-function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock,notes:S.notes,items:S.items};}
+function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock,notes:S.notes,items:S.items,home:S.home};}
 // Take over a ledger sent from the PC; asks before replacing a non-empty ledger.
 function fromHandy(d){if(!d||!Array.isArray(d.ships)||!Array.isArray(d.stock)) throw new Error('format');
   const when=new Date(d.t||Date.now()).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'});
   if((S.ships.length||S.stock.length)&&!confirm(T(`Logbuch vom PC (Stand ${when}) übernehmen? Es ersetzt den Stand auf diesem Gerät (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Take over the ledger from the PC (as of ${when})? It replaces the state on this device (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
-  snap(true); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); if(d.notes) S.notes=cleanNotes(d.notes); if(Array.isArray(d.items)) S.items=cleanItems(d.items); S.sel=null;
+  snap(true); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); if(d.notes) S.notes=cleanNotes(d.notes); if(Array.isArray(d.items)) S.items=cleanItems(d.items); if('home' in d) S.home=cleanHome(d.home); S.sel=null;
   commit(T(`Vom PC übernommen (Stand ${when}): ${S.ships.length} Schiffe, ${S.stock.length} Posten`,`Taken over from the PC (as of ${when}): ${S.ships.length} ships, ${S.stock.length} posts`));}
 function importJson(file){const r=new FileReader(); r.onload=()=>{try{const o=JSON.parse(r.result);
     if(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock)) throw new Error('format');
     if(!confirm(T(`Logbuch aus „${file.name}“ einlesen? Es ersetzt den Stand in diesem Browser (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Import the ledger from “${file.name}”? It replaces the state in this browser (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
-    snap(true); S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); S.sel=null;
+    snap(true); S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if('home' in o) S.home=cleanHome(o.home); S.sel=null;
     commit(T(`Eingelesen: ${file.name} (${S.ships.length} Schiffe, ${S.stock.length} Posten)`,`Imported: ${file.name} (${S.ships.length} ships, ${S.stock.length} posts)`));}
   catch(e){toast(T('Datei nicht lesbar: keine Logbuch-JSON dieses Tools.','File not readable: not a ledger JSON of this tool.'));}}; r.readAsText(file);}
 // Minimal XLSX writer: OOXML parts in an uncompressed ZIP (no external library, works offline).
@@ -730,7 +762,7 @@ const view=document.getElementById('view-ledger');
 view.addEventListener('click',e=>{const wl=e.target.closest('[data-wares]');
   // Jump to "All commodities" filtered to this commodity: there are all sell places with price and stock.
   if(wl){showView('wares'); const i=document.getElementById('wQ'); i.value=wl.dataset.wares; i.dispatchEvent(new Event('input',{bubbles:true})); window.scrollTo({top:tabsTop(),behavior:'smooth'}); return;}
-  const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true)})[a.dataset.act](); return;}
+  const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true),home:()=>setHome(S.sel),unhome:()=>setHome(null)})[a.dataset.act](); return;}
   const c=e.target.closest('.lb-chip'); if(c){openMove(+c.dataset.i); return;}
   const l=e.target.closest('[data-loc]'); if(l) select(l.dataset.loc);});
 // Notes: every keystroke lands in the state; saving and the marks in the lists follow after a short pause.
@@ -773,17 +805,18 @@ view.addEventListener('drop',e=>{const t=e.target.closest('.lb-ship,.lb-place');
 document.addEventListener('keydown',e=>{if(view.classList.contains('hide')||$l('dlg').open) return;
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault(); undo();}});
 
-// Items: mode switch, form, list actions, jumps between the two views.
+// Items: view switch, form, list actions, jumps. The middle column is drawn anew, so these listen on the panel.
 $l('mode').addEventListener('click',e=>{const b=e.target.closest('button[data-mode]'); if(b) mode(b.dataset.mode);});
-$l('iform').addEventListener('submit',e=>{e.preventDefault(); itemSubmit();});
-$l('icancel').addEventListener('click',()=>itemReset(true));
-$l('isq').addEventListener('input',renderItems);
-$l('igrp').addEventListener('click',e=>{const b=e.target.closest('button[data-grp]'); if(!b) return; IGRP=b.dataset.grp; renderItems();});
-$l('ibox').addEventListener('click',e=>{const ed=e.target.closest('[data-iedit]'); if(ed){itemEdit(+ed.dataset.iedit); return;}
-  const dl=e.target.closest('[data-idel]'); if(dl){itemDel(+dl.dataset.idel); return;}
-  const g=e.target.closest('[data-goloc]'); if(g){mode('cargo'); select(g.dataset.goloc);}});
-$l('mid').addEventListener('click',e=>{const b=e.target.closest('[data-ihere]'); if(!b) return; const loc=b.dataset.ihere;
-  if(itemsAt(loc).length) findItem(locName(loc)); else{$l('isq').value=''; mode('items'); $l('il').value=loc; $l('in').focus({preventScroll:true});}});
+view.addEventListener('submit',e=>{if(e.target.id==='lb-iform'){e.preventDefault(); itemSubmit();}});
+view.addEventListener('input',e=>{if(e.target.id!=='lb-isq') return; ISQ=e.target.value; const b=$l('ibox'); if(b) b.innerHTML=itemOverview();});
+view.addEventListener('click',e=>{const t=e.target;
+  if(t.closest('#lb-icancel')){IEDIT=null; IKEEP=false; render(); return;}
+  const ed=t.closest('[data-iedit]'); if(ed){itemEdit(+ed.dataset.iedit); return;}
+  const dl=t.closest('[data-idel]'); if(dl){itemDel(+dl.dataset.idel); return;}
+  const g=t.closest('[data-grp]'); if(g){IGRP=g.dataset.grp; render(); return;}
+  if(t.closest('[data-iall]')){S.sel=null; IEDIT=null; IKEEP=false; save(); render(); return;}
+  const m2=t.closest('[data-mode2]'); if(m2){mode(m2.dataset.mode2); return;}
+  const go=t.closest('[data-goloc]'); if(go){IEDIT=null; IKEEP=false; select(go.dataset.goloc);}});
 
 // Top of the view tabs of the trade planner page (0 where the ledger runs without that page).
 const tabsTop=()=>{const t=document.querySelector('.tabs'); return t?t.offsetTop-8:0;};

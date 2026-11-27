@@ -77,11 +77,12 @@ Ziel: Du trägst dein Frachtschiff ein, buchst gekaufte Ware ein und verschiebst
 ### Tipps
 
 - **Ware im Logbuch suchen** zeigt, wo eine Ware überall liegt. Ein Klick auf einen Treffer öffnet den Ort.
-- **Gegenstände** (Umschalter über dem Logbuch) ist das Buch für alles, was keine Container-Fracht ist: Medaillen, MG Scrip, Tauschware, Ressourcen mit Qualität. Trag Gegenstand, Stückzahl und Ort ein; Qualität und Notiz sind freiwillig. Beim Tippen schlägt das Feld Namen vor, darunter die Zutaten der Tauschangebote aus dem Wikelo-Planer (mit „Wikelo-Zutat“ markiert); jeder andere Name geht auch. Die Suche findet einen Gegenstand an allen Orten, **Gruppieren nach** ordnet die Liste nach Gegenstand oder Ort. Ein Klick auf einen Ort öffnet ihn in der Frachtansicht.
+- **Gegenstände** (Umschalter über dem Logbuch) ist das Buch für alles, was keine Container-Fracht ist: Medaillen, MG Scrip, Tauschware, Ressourcen mit Qualität. Wähl wie bei der Fracht links ein Schiff oder rechts einen Ort und trag in der Mitte Gegenstand und Stückzahl ein; Qualität und Notiz sind freiwillig. Beim Tippen schlägt das Feld Namen vor, darunter die Zutaten der Tauschangebote aus dem Wikelo-Planer (mit „Wikelo-Zutat“ markiert); jeder andere Name geht auch. Die Suche findet einen Gegenstand an allen Orten, **Gruppieren nach** ordnet die Liste nach Gegenstand oder Ort. Ein Klick auf einen Ort öffnet ihn in der Frachtansicht.
 - Warnungen (Laderaum voll, Container zu groß, illegal, verdirbt) sperren nie. Sie weisen dich nur darauf hin.
 - **alle Verkaufsorte ↗** springt zu **Alle Waren** mit dieser Ware.
 - Sichere dein Logbuch mit **Export JSON** und lies es mit **JSON einlesen** wieder ein. **Export XLSX** erzeugt eine Excel-Datei.
 - In Chrome und Edge legt **Speicherort …** das Logbuch zusätzlich in eine Datei, z. B. auf einem USB-Stick.
+- **🏠 Als Homebase merken** am gewählten Ort stellt diesen Ort in allen Ortslisten und Zielauswahlen an den Anfang. **Homebase aufheben** nimmt das zurück.
 - **Aufs Handy …** zeigt einen QR-Code. Das Handy übernimmt damit Schiffe, Fracht und Gegenstände als sein Logbuch.
 
 ## Tutorial: Ruf abgleichen
