@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.28.0] – 2026-11-27
+
+### Hinzugefügt
+- **Gegenstände: Vorschlagsliste aus dem Wikelo-Planer.** Beim Eintragen schlägt das Buch jetzt die Zutaten aller Tauschangebote von Wikelo vor, so wie sie der [Wikelo-Planer](https://jaegerfeld.github.io/StarCitizen-Wikelo-Planer/app.html) führt; in der Liste steht „Wikelo-Zutat“ daneben. Die Namen kommen beim täglichen Bau aus dessen veröffentlichten Daten und ändern sich mit ihnen. Ist die Datei beim Bau nicht erreichbar, entsteht die Seite ohne diese Vorschläge; die feste Liste und die Warennamen bleiben. Jeder andere Name lässt sich weiter eintragen.
+
 ## [1.27.0] – 2026-11-27
 
 ### Hinzugefügt

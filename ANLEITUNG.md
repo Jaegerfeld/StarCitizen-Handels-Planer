@@ -77,7 +77,7 @@ Ziel: Du trägst dein Frachtschiff ein, buchst gekaufte Ware ein und verschiebst
 ### Tipps
 
 - **Ware im Logbuch suchen** zeigt, wo eine Ware überall liegt. Ein Klick auf einen Treffer öffnet den Ort.
-- **Gegenstände** (Umschalter über dem Logbuch) ist das Buch für alles, was keine Container-Fracht ist: Medaillen, MG Scrip, Tauschware, Ressourcen mit Qualität. Trag Gegenstand, Stückzahl und Ort ein; Qualität und Notiz sind freiwillig. Die Suche findet einen Gegenstand an allen Orten, **Gruppieren nach** ordnet die Liste nach Gegenstand oder Ort. Ein Klick auf einen Ort öffnet ihn in der Frachtansicht.
+- **Gegenstände** (Umschalter über dem Logbuch) ist das Buch für alles, was keine Container-Fracht ist: Medaillen, MG Scrip, Tauschware, Ressourcen mit Qualität. Trag Gegenstand, Stückzahl und Ort ein; Qualität und Notiz sind freiwillig. Beim Tippen schlägt das Feld Namen vor, darunter die Zutaten der Tauschangebote aus dem Wikelo-Planer (mit „Wikelo-Zutat“ markiert); jeder andere Name geht auch. Die Suche findet einen Gegenstand an allen Orten, **Gruppieren nach** ordnet die Liste nach Gegenstand oder Ort. Ein Klick auf einen Ort öffnet ihn in der Frachtansicht.
 - Warnungen (Laderaum voll, Container zu groß, illegal, verdirbt) sperren nie. Sie weisen dich nur darauf hin.
 - **alle Verkaufsorte ↗** springt zu **Alle Waren** mit dieser Ware.
 - Sichere dein Logbuch mit **Export JSON** und lies es mit **JSON einlesen** wieder ein. **Export XLSX** erzeugt eine Excel-Datei.

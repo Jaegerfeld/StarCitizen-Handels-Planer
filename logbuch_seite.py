@@ -499,7 +499,8 @@ function select(loc){S.sel=loc; save(); render(); if(matchMedia('(max-width:900p
 
 /* ---------- important items (medals, scrip, resources with a quality): what lies where ---------- */
 // One entry {l:place or ship ('p:…' / 's:…' as for cargo), n:name, c:count, q:quality (free text), x:note}.
-// Suggestions only help typing; any name can be entered.
+// Suggestions only help typing; any name can be entered. M.wikelo: the ingredients of Wikelo's trades
+// (from the Wikelo-Planer's published data at build time); they are marked as such in the list.
 const ITEM_SUG=['MG Scrip','Council Scrip','Wikelo Favor','Polaris Bit','ASD Secure Drive','ASD Lab Sample',
   'Government Cartography Agency Medal','Tevarin War Service Marker','UEE 6th Platoon Medal','UNE Unification War Medal',
   'UNE Gold Ingot','UNE Silver Ingot','Large Artifact Fragment','Medium Artifact Fragment','Small Artifact Fragment',
@@ -540,7 +541,9 @@ function itemSubmit(){const n=$l('in').value.trim().replace(/\s+/g,' '), c=parse
 function itemDel(i){const e=S.items[i]; if(!e) return; snap(); S.items.splice(i,1); if(IEDIT!=null) itemReset(true);
   commit(T(`Entfernt: ${pcs(e.c)} ${e.n}${e.q?` (${e.q})`:''} · ${locName(e.l)}`,`Removed: ${pcs(e.c)} ${e.n}${e.q?` (${e.q})`:''} · ${locName(e.l)}`));}
 function renderItems(){if(!$l('ibox')) return;
-  $l('ilist').innerHTML=[...new Set([...ITEM_SUG,...S.items.map(x=>x.n),...M.wares.map(w=>w.n)])].map(n=>`<option value="${esc(n)}">`).join('');
+  const wk=M.wikelo||[], wkSet=new Set(wk.map(n=>n.toLowerCase())), seen=new Set();
+  $l('ilist').innerHTML=[...S.items.map(x=>x.n),...wk,...ITEM_SUG,...M.wares.map(w=>w.n)].filter(n=>{const k=n.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true;})
+    .map(n=>`<option value="${esc(n)}">${wkSet.has(n.toLowerCase())?T('Wikelo-Zutat','Wikelo ingredient'):''}</option>`).join('');
   $l('qlist').innerHTML=[...new Set([...QUAL_SUG,...S.items.map(x=>x.q).filter(Boolean)])].map(n=>`<option value="${esc(n)}">`).join('');
   itemForm(); for(const b of $l('igrp').querySelectorAll('button')) b.setAttribute('aria-pressed',String(b.dataset.grp===IGRP));
   const box=$l('ibox'), q=($l('isq').value||'').trim().toLowerCase();
