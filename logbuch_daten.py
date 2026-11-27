@@ -3,7 +3,7 @@
 # Repository:     https://github.com/Jaegerfeld/StarCitizen-Handels-Planer
 # KI-Unterstützung: Erstellt mit Unterstützung von Claude (Anthropic)
 # Erstellt:       18.11.2026
-# Geändert:       19.11.2026
+# Geändert:       27.11.2026
 # Lizenz:         BSD-3-Clause (siehe LICENSE)
 #
 # Fachliche Funktion:
@@ -16,6 +16,10 @@
 #   zusammengefasst (größte Containergröße des Aufzugs je Ort mitgeführt).
 #   Schiffe: alle mit Laderaum (SCU > 0), ohne reine Konzepte, mit den erlaubten
 #   Containergrößen. Waren: alle sichtbaren, mit Hinweisen illegal/flüchtig.
+#   Wikelo-Zutaten: die Namen aller Zutaten aus den Tauschangeboten, wie sie der
+#   Wikelo-Planer veröffentlicht (dessen data.json); sie dienen dem Buch für
+#   wichtige Gegenstände als Vorschlagsliste. Ist die Datei nicht erreichbar,
+#   bleibt die Liste leer und die Seite entsteht trotzdem.
 # =============================================================================
 """Master data for the cargo ledger tab (places, commodities, ships) from UEX API 2.0."""
 from __future__ import annotations
@@ -32,6 +36,8 @@ API = "https://api.uexcorp.space/2.0"
 UA = {"User-Agent": "sc-tools-handels-planer (github.com/Jaegerfeld)"}
 #: Local cache for ``--cache`` builds (gitignored).
 CACHE = HERE / "logbuch_cache.json"
+#: Published data of the Wikelo-Planer (built daily); its recipes name the ingredients.
+WIKELO_URL = "https://jaegerfeld.github.io/StarCitizen-Wikelo-Planer/data.json"
 #: Planet codes the game uses in internal station names (RR_<code>_L<n>, RR_<code>_LEO).
 RR_STANTON = {"ArcCorp": "ARC", "Crusader": "CRU", "Hurston": "HUR", "MicroTech": "MIC"}
 RR_PYRO = {"Pyro I": 1, "Monox": 2, "Bloom": 3, "Pyro IV": 4, "Pyro V": 5, "Pyro VI": 6, "Terminus": 6}
@@ -48,6 +54,17 @@ def _get(endpoint: str) -> list[dict]:
         return json.load(r)["data"]
 
 
+def _wikelo() -> dict | None:
+    """Fetch the published data of the Wikelo-Planer; None if it cannot be had."""
+    try:
+        req = urllib.request.Request(WIKELO_URL, headers=UA)
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.load(r)
+    except (OSError, ValueError) as e:
+        print(f"WARNUNG: Wikelo-Zutaten nicht verfügbar ({e}); die Vorschlagsliste bleibt ohne sie.")
+        return None
+
+
 def load_raw(use_cache: bool) -> dict:
     """Terminals, commodities and vehicles from UEX, or from the cache (valid one day).
 
@@ -55,14 +72,48 @@ def load_raw(use_cache: bool) -> dict:
         use_cache: Read ``logbuch_cache.json`` if it is younger than one day.
 
     Returns:
-        ``{"terminals": [...], "commodities": [...], "vehicles": [...]}``.
+        ``{"terminals": [...], "commodities": [...], "vehicles": [...], "wikelo": {...} | None}``.
     """
     if use_cache and CACHE.exists() and time.time() - CACHE.stat().st_mtime < 86400:
-        return json.loads(CACHE.read_text(encoding="utf-8"))
+        raw = json.loads(CACHE.read_text(encoding="utf-8"))
+        if "wikelo" in raw:
+            return raw
+        # A cache written before the Wikelo list existed: add it once, keep the UEX part.
+        raw["wikelo"] = _wikelo()
+        CACHE.write_text(json.dumps(raw), encoding="utf-8")
+        return raw
     raw = {k: _get(k) for k in ("terminals", "commodities", "vehicles")}
+    raw["wikelo"] = _wikelo()
     if use_cache:
         CACHE.write_text(json.dumps(raw), encoding="utf-8")
     return raw
+
+
+def wikelo_items(data: dict | None) -> list[str]:
+    """Names of everything Wikelo's trades ask for or pay with, sorted, each once.
+
+    The Wikelo-Planer keeps a trade's ingredients as text (``"3x Wikelo Favor; 1x Carinite (Pure)"``).
+    Counts are dropped; a quality in the name (``... (Grade AA)``) stays, it is part of the item.
+
+    Args:
+        data: Published ``data.json`` of the Wikelo-Planer, or None.
+
+    Returns:
+        Ingredient names, plus what the currency exchanges pay out (e.g. ``Wikelo Favor``).
+    """
+    w = (data or {}).get("wikelo") or {}
+    trades = list(w.get("ships") or []) + list(w.get("items") or []) + list(w.get("currency_exchanges") or [])
+    if isinstance(w.get("intro_mission"), dict):
+        trades.append(w["intro_mission"])
+    texts = [t.get("recipe") or "" for t in trades if isinstance(t, dict)]
+    texts += [t.get("reward") or "" for t in w.get("currency_exchanges") or [] if isinstance(t, dict)]
+    names: dict[str, str] = {}
+    for text in texts:
+        for part in str(text).split(";"):
+            name = re.sub(r"^\s*\d+(?:[.,]\d+)?\s*x\s+", "", part, flags=re.IGNORECASE).strip()
+            if name:
+                names.setdefault(name.lower(), name)
+    return sorted(names.values(), key=str.lower)
 
 
 def rr_code(t: dict) -> str | None:
@@ -164,7 +215,7 @@ def build(use_cache: bool = False) -> dict:
         use_cache: Use the local cache (development); CI always fetches fresh.
 
     Returns:
-        ``{"places", "wares", "ships", "sizes", "built"}``.
+        ``{"places", "wares", "ships", "sizes", "wikelo", "built"}``.
 
     Raises:
         OSError, ValueError, KeyError: If UEX is unreachable or answers unexpectedly;
@@ -172,5 +223,5 @@ def build(use_cache: bool = False) -> dict:
     """
     raw = load_raw(use_cache)
     return {"places": places(raw["terminals"]), "wares": wares(raw["commodities"]),
-            "ships": ships(raw["vehicles"]), "sizes": SIZES,
+            "ships": ships(raw["vehicles"]), "sizes": SIZES, "wikelo": wikelo_items(raw.get("wikelo")),
             "built": time.strftime("%d.%m.%Y")}

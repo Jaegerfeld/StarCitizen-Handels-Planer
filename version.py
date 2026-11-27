@@ -14,6 +14,6 @@
 # =============================================================================
 """Central version numbers of the StarCitizen trade planner."""
 #: Tool version (SemVer), shown in the page header and written to data.json.
-VERSION = "1.27.0"
+VERSION = "1.28.0"
 #: Game version the price data refers to (update on each new live patch).
 PATCH = "4.10.3-LIVE"   # Spielstand, auf den sich die Daten beziehen (bei neuem Patch anpassen)

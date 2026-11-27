@@ -77,7 +77,7 @@ Goal: you add your cargo ship, book in the commodity you bought and move it to a
 ### Tips
 
 - **Find a commodity in the ledger** shows everywhere a commodity sits. Click a result to open that place.
-- **Items** (switch above the ledger) is the book for everything that is not container cargo: medals, MG Scrip, trade goods, resources with a quality. Enter item, count and place; quality and note are optional. The search finds an item at all places, **Group by** orders the list by item or by place. A click on a place opens it in the cargo view.
+- **Items** (switch above the ledger) is the book for everything that is not container cargo: medals, MG Scrip, trade goods, resources with a quality. Enter item, count and place; quality and note are optional. While typing, the field suggests names, among them the ingredients of the trades from the Wikelo planner (marked “Wikelo ingredient”); any other name works too. The search finds an item at all places, **Group by** orders the list by item or by place. A click on a place opens it in the cargo view.
 - Warnings (hold full, container too big, illegal, decays) never block you. They only point things out.
 - **all sell places ↗** jumps to **All commodities** with this commodity.
 - Back up your ledger with **Export JSON** and read it back with **Import JSON**. **Export XLSX** creates an Excel file.
