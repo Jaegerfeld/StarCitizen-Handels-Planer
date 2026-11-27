@@ -146,6 +146,10 @@ def rr_code(t: dict) -> str | None:
     return f"RR_{code}_LEO" if st in RR_LEO else None
 
 
+#: Where UEX gives a place no planet although it lies on one (checked in the game): id -> planet.
+PLACE_PLANET = {"Stanton|S4DC05": "MicroTech"}
+
+
 def places(terminals: list[dict]) -> list[dict]:
     """Stations, cities and outposts where cargo can be stored, one entry per place.
 
@@ -164,7 +168,8 @@ def places(terminals: list[dict]) -> list[dict]:
         # commodity terminal or a cargo center also counts as a place where cargo can be stored.
         storable = (t.get("has_freight_elevator") or t.get("is_cargo_center")
                     or t.get("type") in ("commodity", "commodity_raw"))
-        if not storable or not t.get("is_available"):
+        # "UEX Station" is UEX's own entry (code UEXST, not live), not a place in the game.
+        if not storable or not t.get("is_available") or t.get("code") == "UEXST":
             continue
         name = (t.get("space_station_name") or t.get("city_name") or t.get("outpost_name")
                 or t.get("nickname") or t.get("name"))
@@ -181,6 +186,11 @@ def places(terminals: list[dict]) -> list[dict]:
         rr = rr_code(t)
         if rr:
             p["rr"] = rr
+    for p in out.values():
+        pl = PLACE_PLANET.get(p["id"])
+        if pl and not p.get("pl"):
+            p["pl"] = pl
+            p["body"] = p["body"] or pl
     # Stanton first (the home system), then the others alphabetically.
     return sorted(out.values(), key=lambda p: (p["sys"] != "Stanton", p["sys"], p["body"], p["n"]))
 
