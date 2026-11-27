@@ -73,7 +73,7 @@ LB_HTML = r"""
         <label class="lb-f"><span class="de">Suche</span><span class="en">Search</span><input type="search" id="lb-q" autocomplete="off"></label>
         <div class="lb-f2">
           <label class="lb-f"><span class="de">System</span><span class="en">System</span><select id="lb-sys"></select></label>
-          <label class="lb-chk"><input type="checkbox" id="lb-only"> <span class="lb-o-c"><span class="de">nur mit Fracht oder Notiz</span><span class="en">with cargo or a note only</span></span><span class="lb-o-i"><span class="de">nur mit Gegenständen</span><span class="en">with items only</span></span></label>
+          <label class="lb-chk"><input type="checkbox" id="lb-only"> <span class="lb-o-c"><span class="de">nur mit Fracht, Schiff oder Notiz</span><span class="en">with cargo, a ship or a note only</span></span><span class="lb-o-i"><span class="de">nur mit Gegenständen</span><span class="en">with items only</span></span></label>
         </div>
         <div id="lb-places" class="lb-places"></div>
       </aside>
@@ -123,6 +123,18 @@ LB_CSS = r"""
   #view-ledger .lb-iback{margin:0 0 6px}
   #view-ledger .lb-place.home{border-color:var(--accent2,var(--accent));background:var(--panel2)}
   #view-ledger .lb-ghome{color:var(--accent2,var(--accent))}
+  #view-ledger .lb-place.fav{border-color:var(--accent)}
+  #view-ledger .lb-gfav{color:var(--accent)}
+  #view-ledger .lb-park{margin:14px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+  #view-ledger .lb-park h3{margin:0 0 6px;font-size:15px}
+  #view-ledger .lb-park ul{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+  #view-ledger .lb-park li{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between}
+  #view-ledger .lb-park li small{color:var(--muted)}
+  #view-ledger .lb-park .btn{min-height:36px;padding:4px 10px;font-size:13px}
+  #view-ledger .lb-park form{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+  #view-ledger .lb-park select{min-height:36px;max-width:100%}
+  #view-ledger .lb-at{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:8px 0 0}
+  #view-ledger .lb-at select{min-height:36px;max-width:100%}
   #view-ledger .lb-homeflag{display:inline-flex;align-items:center;font-weight:700;color:var(--accent2,var(--accent));margin-right:4px}
   @media (max-width:760px){#view-ledger .lb-itab .note-col{display:none}}
   #view-ledger .lb-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
@@ -248,7 +260,7 @@ const SH={}; for(const s of M.ships) SH[s.id]=s;
 /* ---------- state ---------- */
 // The whole ledger: own ships, stock posts (location, commodity, container size, count), journal,
 // free-text notes per location ('p:<id>', 's:<id>', '*' = general).
-let S={v:1,ships:[],stock:[],log:[],sel:null,notes:{},items:[],home:null};
+let S={v:1,ships:[],stock:[],log:[],sel:null,notes:{},items:[],home:null,fav:[],at:{}};
 const NOTE_ALL='*';
 const cleanNotes=o=>{const out={}; if(o&&typeof o==='object') for(const k in o) if(typeof o[k]==='string'&&o[k].trim()) out[k]=o[k].slice(0,4000); return out;};
 // Items (see "important items"): keep only complete entries, texts cut to a sane length.
@@ -256,8 +268,12 @@ const cleanItems=a=>Array.isArray(a)?a.filter(x=>x&&typeof x.l==='string'&&typeo
   .map(x=>({l:x.l,n:x.n.trim().slice(0,80),c:Math.floor(x.c),...(x.q?{q:String(x.q).slice(0,30)}:{}),...(x.x?{x:String(x.x).slice(0,200)}:{})})):[];
 // Home base: one place ('p:<id>') that leads every place list and target choice; unknown places are dropped.
 const cleanHome=h=>typeof h==='string'&&h.slice(0,2)==='p:'&&PL[h.slice(2)]?h:null;
+// Favourite places: known places only, each once, in the order they were marked.
+const cleanFav=a=>Array.isArray(a)?[...new Set(a.filter(h=>cleanHome(h)))]:[];
+// Where a ship of the fleet is parked: {fleetId:{l:'p:<id>', t:ISO date}}; unknown places are dropped.
+const cleanAt=o=>{const out={}; if(o&&typeof o==='object') for(const k in o){const v=o[k]; if(v&&cleanHome(v.l)) out[String(k)]={l:v.l,t:typeof v.t==='string'?v.t:''};} return out;};
 const UNDO=[];
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){} S.notes=cleanNotes(S.notes); S.items=cleanItems(S.items); S.home=cleanHome(S.home);}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.v===1) S=Object.assign(S,s);}catch(e){} S.notes=cleanNotes(S.notes); S.items=cleanItems(S.items); S.home=cleanHome(S.home); S.fav=cleanFav(S.fav); S.at=cleanAt(S.at);}
 function save(){S.saved=new Date().toISOString(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} pushFleet(); if(FH&&FPERM) scheduleWrite();}
 
 /* ---------- shared fleet (flotte.py) ---------- */
@@ -286,11 +302,11 @@ let FH=null, FPERM=false, FLAST=0, FTIMER=null, FSTATE='';
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('scha_ledger_fs',1); r.onupgradeneeded=()=>r.result.createObjectStore('h'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
 async function idbSet(v){try{const db=await idb(); await new Promise((res,rej)=>{const tx=db.transaction('h','readwrite'); if(v) tx.objectStore('h').put(v,'file'); else tx.objectStore('h').delete('file'); tx.oncomplete=res; tx.onerror=()=>rej(tx.error);});}catch(e){}}
 async function idbGet(){try{const db=await idb(); return await new Promise(res=>{const r=db.transaction('h').objectStore('h').get('file'); r.onsuccess=()=>res(r.result||null); r.onerror=()=>res(null);});}catch(e){return null;}}
-const fileText=()=>JSON.stringify({app:'sc-fracht-logbuch',v:1,saved:S.saved,ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items,home:S.home},null,1);
+const fileText=()=>JSON.stringify({app:'sc-fracht-logbuch',v:1,saved:S.saved,ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items,home:S.home,fav:S.fav,at:S.at},null,1);
 async function readFile(h){const f=await h.getFile(); const txt=await f.text(); const o=txt.trim()?JSON.parse(txt):null;
   if(o&&(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock))) throw new Error('format');
   return {o,mod:f.lastModified};}
-function applyData(o){S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if('home' in o) S.home=cleanHome(o.home); if(o.saved) S.saved=o.saved;}
+function applyData(o){S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if('home' in o) S.home=cleanHome(o.home); if('fav' in o) S.fav=cleanFav(o.fav); if('at' in o) S.at=cleanAt(o.at); if(o.saved) S.saved=o.saved;}
 async function writeFile(force){if(!FH||!FPERM) return;
   try{const f=await FH.getFile(); if(!force&&FLAST&&f.lastModified>FLAST+1000){FSTATE='conflict'; storeInfo(); return;}
     const w=await FH.createWritable(); await w.write(fileText()); await w.close(); FLAST=(await FH.getFile()).lastModified; FSTATE=''; storeInfo();}
@@ -333,10 +349,10 @@ function openStore(){
 // Remember the state before a change so it can be undone.
 // Notes are typed text with their own saving; a snapshot only carries them where an action replaces
 // or removes notes (import, file, phone, removing a ship), so undo never eats text typed since.
-function snap(withNotes){UNDO.push(JSON.stringify({ships:S.ships,stock:S.stock,items:S.items,home:S.home,...(withNotes?{notes:S.notes}:{})})); if(UNDO.length>50) UNDO.shift();}
+function snap(withNotes){UNDO.push(JSON.stringify({ships:S.ships,stock:S.stock,items:S.items,home:S.home,fav:S.fav,at:S.at,...(withNotes?{notes:S.notes}:{})})); if(UNDO.length>50) UNDO.shift();}
 function log(text){S.log.unshift({t:new Date().toISOString(),x:text}); if(S.log.length>500) S.log.length=500;}
 function commit(text,undoable=true){log(text); save(); render(); toastUndo(text,undoable);}
-function undo(){const u=UNDO.pop(); if(!u) return; const o=JSON.parse(u); S.ships=o.ships; S.stock=o.stock; if(o.items) S.items=o.items; if('home' in o) S.home=o.home; if(o.notes) S.notes=o.notes; log(T('Rückgängig gemacht','Undone')); save(); render(); toast(T('Rückgängig gemacht.','Undone.'));}
+function undo(){const u=UNDO.pop(); if(!u) return; const o=JSON.parse(u); S.ships=o.ships; S.stock=o.stock; if(o.items) S.items=o.items; if('home' in o) S.home=o.home; if(o.fav) S.fav=o.fav; if(o.at) S.at=o.at; if(o.notes) S.notes=o.notes; log(T('Rückgängig gemacht','Undone')); save(); render(); toast(T('Rückgängig gemacht.','Undone.'));}
 function toastUndo(text){toast(text+' · '+T('Rückgängig: Strg+Z oder Knopf oben','Undo: Ctrl+Z or button above'));}
 
 /* ---------- helpers ---------- */
@@ -393,19 +409,22 @@ function renderShips(){const box=$l('ships');
   box.innerHTML=S.ships.length?S.ships.map(s=>{const loc='s:'+s.id;
     return `<button type="button" class="lb-ship" data-loc="${loc}" aria-current="${S.sel===loc}"><b>${esc(s.n)}</b><small>${esc(SH[s.t]?.n||'?')}</small>${itemFlag(loc)}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}${fillBar(s,loc)}</button>`}).join('')
    :`<p class="lb-empty">${T('Noch kein Schiff. Lege deine Frachtschiffe an, dann siehst du ihren Laderaum.','No ship yet. Add your cargo ships to see their cargo space.')}</p>`;}
-// Places: the home base first (whatever search and filter say), then by system and body. In the items view
-// the badge counts the entries of a place and the filter means "with items only".
+// Places: the home base first, then the favourites (both whatever search and filter say), then by system and
+// body. In the items view the badge counts the entries of a place and the filter means "with items only".
 function renderPlaces(){const q=($l('q').value||'').trim().toLowerCase(), sys=$l('sys').value, only=$l('only').checked, items=MODE==='items';
-  const btn=(p,home)=>{const loc='p:'+p.id, u=used(loc), ni=itemsAt(loc).length;
-    return `<button type="button" class="lb-place${home?' home':''}" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${items?(ni?`<span class="lb-badge">🎖 ${nf(ni)}</span>`:''):(u?`<span class="lb-badge">${nf(u)} SCU</span>`:'')}<b>${home?'🏠 ':''}${esc(p.n)}</b>${home?`<small>${esc(p.sys)}${p.body?' · '+esc(p.body):''}</small>`:''}${!items&&p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${items?(u?`<small>${nf(u)} SCU ${T('Fracht','cargo')}</small>`:''):itemFlag(loc)}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}</button>`;};
+  const btn=(p,kind)=>{const loc='p:'+p.id, u=used(loc), ni=itemsAt(loc).length, top=!!kind;
+    return `<button type="button" class="lb-place${kind?' '+kind:''}" data-loc="${esc(loc)}" aria-current="${S.sel===loc}">${items?(ni?`<span class="lb-badge">🎖 ${nf(ni)}</span>`:''):(u?`<span class="lb-badge">${nf(u)} SCU</span>`:'')}<b>${kind==='home'?'🏠 ':kind==='fav'?'★ ':''}${esc(p.n)}</b>${top?`<small>${esc(p.sys)}${p.body?' · '+esc(p.body):''}</small>`:''}${parkFlag(loc)}${!items&&p.max?`<small>${T('Aufzug bis','elevator up to')} ${p.max} SCU</small>`:''}${items?(u?`<small>${nf(u)} SCU ${T('Fracht','cargo')}</small>`:''):itemFlag(loc)}${S.notes[loc]?memoFlag():''}${merkFlag(loc)}</button>`;};
   const hp=S.home?PL[S.home.slice(2)]:null;
-  let html=hp?`<div class="lb-gsys lb-ghome">🏠 ${T('Homebase','Home base')}</div>`+btn(hp,true):'', n=0, lastS='', lastB=null;
-  for(const p of M.places){const loc='p:'+p.id, u=used(loc); if(p===hp) continue;
-    if(sys&&p.sys!==sys) continue; if(only&&(items?!itemsAt(loc).length:(!u&&!S.notes[loc]&&!merkAt(loc).length))) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
+  const fv=favList();
+  let html=(hp?`<div class="lb-gsys lb-ghome">🏠 ${T('Homebase','Home base')}</div>`+btn(hp,'home'):'')
+    +(fv.length?`<div class="lb-gsys lb-gfav">★ ${T('Favoriten','Favourites')}</div>`+fv.map(f=>btn(f,'fav')).join(''):''), n=0, lastS='', lastB=null;
+  const top=new Set([hp,...fv]);
+  for(const p of M.places){const loc='p:'+p.id, u=used(loc); if(top.has(p)) continue;
+    if(sys&&p.sys!==sys) continue; if(only&&(items?!itemsAt(loc).length:(!u&&!S.notes[loc]&&!merkAt(loc).length&&!shipsAt(loc).length))) continue; if(q&&!(p.n+' '+p.body+' '+p.sys).toLowerCase().includes(q)) continue;
     if(p.sys!==lastS){html+=`<div class="lb-gsys">${esc(p.sys)}</div>`; lastS=p.sys; lastB=null;}
     if(p.body!==lastB){html+=`<div class="lb-gbody">${esc(p.body||T('im All','in space'))}</div>`; lastB=p.body;}
     html+=btn(p,false); n++;}
-  $l('places').innerHTML=html+(n?'':`<p class="lb-empty">${hp?T('Kein weiterer Ort passt zu Suche und Filter.','No other place matches the search and filter.'):T('Kein Ort passt zu Suche und Filter.','No place matches the search and filter.')}</p>`);}
+  $l('places').innerHTML=html+(n?'':`<p class="lb-empty">${hp||fv.length?T('Kein weiterer Ort passt zu Suche und Filter.','No other place matches the search and filter.'):T('Kein Ort passt zu Suche und Filter.','No place matches the search and filter.')}</p>`);}
 /* ---------- reminders of the cockpit (only where window.SCData exists) ---------- */
 // A reminder belongs to a place by its ledger location (loc) or, for purchase reminders of the component
 // planner, by its shop text ("Platinum Bay - Port Tressler (Stanton)"): the place of that star system whose
@@ -451,9 +470,9 @@ function renderMid0(){if(MODE==='items'){renderMidItems(); return;} const box=$l
   for(const q of posts)(byW[q.w]=byW[q.w]||[]).push(q);
   const meta=isShip?`${esc(SH[s.t]?.n||'?')} · ${T('Container bis','containers up to')} ${SH[s.t]?.cs||'?'} SCU`:`${esc(p.sys)}${p.body?' · '+esc(p.body):''}${p.max?` · ${T('Aufzug bis','elevator up to')} ${p.max} SCU`:''}`;
   const wv=worth(posts);
-  let html=`<h2>${isHome(loc)?'🏠 ':''}${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}</div>${isShip?fillBar(s,loc):''}
+  let html=`<h2>${isHome(loc)?'🏠 ':isFav(loc)?'★ ':''}${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}</div>${isShip?fillBar(s,loc):''}
     ${wv.known?`<div class="lb-val">${T('Lagerwert','Cargo value')} ≈ ${nf(wv.v)} aUEC${wv.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(wv.pr)}`:''}${missTxt(wv.unknown)}</div>`:''}
-    <div class="lb-acts"><button type="button" class="btn pri" data-act="in">+ ${T('Fracht einbuchen','Book cargo in')}</button>${isShip?`<button type="button" class="btn" data-act="editship">✎ ${T('Schiff bearbeiten','Edit ship')}</button>`:homeBtn(loc)}</div>`;
+    <div class="lb-acts"><button type="button" class="btn pri" data-act="in">+ ${T('Fracht einbuchen','Book cargo in')}</button>${isShip?`<button type="button" class="btn" data-act="editship">✎ ${T('Schiff bearbeiten','Edit ship')}</button>`:homeBtn(loc)}</div>${isShip?atHtml(s.id):''}`;
   const ws=Object.keys(byW).sort((a,b)=>(WA[a]?.n||'').localeCompare(WA[b]?.n||''));
   if(!ws.length) html+=`<p class="lb-empty">${T('Hier liegt nichts. Buche Fracht ein oder ziehe einen Posten von einem anderen Ort hierher.','Nothing here. Book cargo in or drag a post here from another place.')}</p>`;
   for(const w of ws){const list=byW[w].sort((a,b)=>b.z-a.z||(a.bp??-1)-(b.bp??-1)), tot=list.reduce((a,q)=>a+q.z*q.n,0), si=sell(+w), ww=worth(list);
@@ -463,7 +482,7 @@ function renderMid0(){if(MODE==='items'){renderMidItems(); return;} const box=$l
       <div class="lb-sell">${sellTxt}${ww.hasBp?` · ${T('Gewinn','profit')} ≈ ${profitTxt(ww.pr)}`:''}${si?.src==='sh'?` <button type="button" class="lb-link" data-wares="${esc(si.name)}">${T('alle Verkaufsorte ↗','all sell places ↗')}</button>`:''}</div>
       <div class="lb-chips">${list.map(q=>
       `<button type="button" class="lb-chip" draggable="true" data-i="${S.stock.indexOf(q)}" title="${T('Klicken: verschieben oder ausbuchen · Ziehen: auf ein Schiff oder einen Ort','Click: move or book out · Drag: onto a ship or place')}">${q.z} SCU × ${q.n}<small>= ${nf(q.z*q.n)}${q.bp!=null?` · ${T('à','at')} ${nf(q.bp)}`:''}</small></button>`).join('')}</div></div>`;}
-  box.innerHTML=html+merkHtml(loc,isShip)+memoHtml(loc,isShip?s.n:p.n);}
+  box.innerHTML=html+(isShip?'':parkHtml(loc))+merkHtml(loc,isShip)+memoHtml(loc,isShip?s.n:p.n);}
 function renderLog(){$l('jn').textContent=S.log.length?`(${S.log.length})`:'';
   $l('log').innerHTML=S.log.slice(0,200).map(e=>`<li><time>${new Date(e.t).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'})}</time>${esc(e.x)}</li>`).join('')||`<li>${T('Noch keine Buchung.','No entries yet.')}</li>`;}
 // "To the phone" needs the phone module (HY) of the trade planner page; without it (cockpit) the button is
@@ -508,8 +527,39 @@ const itemFlag=loc=>{const n=itemsAt(loc).length; return n?`<small class="lb-mem
 /* home base */
 const isHome=loc=>!!S.home&&S.home===loc;
 function homeBtn(loc){if(!loc||loc[0]!=='p') return '';
-  return isHome(loc)?`<span class="lb-homeflag">🏠 ${T('Homebase','Home base')}</span><button type="button" class="btn" data-act="unhome">${T('Homebase aufheben','Unset home base')}</button>`
-    :`<button type="button" class="btn" data-act="home">🏠 ${T('Als Homebase merken','Set as home base')}</button>`;}
+  return (isHome(loc)?`<span class="lb-homeflag">🏠 ${T('Homebase','Home base')}</span><button type="button" class="btn" data-act="unhome">${T('Homebase aufheben','Unset home base')}</button>`
+    :`<button type="button" class="btn" data-act="home">🏠 ${T('Als Homebase merken','Set as home base')}</button>`+favBtn(loc));}
+/* favourite places: after the home base in every place list and target choice */
+const isFav=loc=>S.fav.includes(loc);
+const favList=()=>S.fav.filter(l=>l!==S.home).map(l=>PL[l.slice(2)]).filter(Boolean);
+const favBtn=loc=>isFav(loc)?`<button type="button" class="btn" data-act="unfav" aria-pressed="true">★ ${T('Favorit – entfernen','Favourite – remove')}</button>`
+  :`<button type="button" class="btn" data-act="fav" aria-pressed="false">☆ ${T('Als Favorit merken','Add to favourites')}</button>`;
+function setFav(loc,on){if(!loc||loc[0]!=='p'||on===isFav(loc)) return; snap(); S.fav=on?[...S.fav,loc]:S.fav.filter(l=>l!==loc);
+  commit(on?T(`Favorit: ${locName(loc)}`,`Favourite: ${locName(loc)}`):T(`Kein Favorit mehr: ${locName(loc)}`,`No longer a favourite: ${locName(loc)}`));}
+/* where ships are parked: any ship of the shared fleet, also those without cargo space */
+const fleetAll=()=>window.SCFleet?SCFleet.read().ships:S.ships.map(s=>({id:s.id,name:s.n,model:defName(s)}));
+const fleetName=f=>f.name||f.model||'?';
+const shipsAt=loc=>fleetAll().filter(f=>S.at[f.id]&&S.at[f.id].l===loc);
+const parkFlag=loc=>{const n=shipsAt(loc).length; return n?`<small class="lb-memoflag">🚀 ${n} ${T(n===1?'Schiff':'Schiffe',n===1?'ship':'ships')}</small>`:'';};
+const dateTxt=s=>{const d=new Date(s); return s&&!isNaN(d)?d.toLocaleDateString(L()==='en'?'en-GB':'de-DE'):'';};
+function park(id,loc){const f=fleetAll().find(x=>x.id===id); if(!f) return; const old=S.at[id]?.l||null; if((loc||null)===old) return; snap();
+  if(loc) S.at[id]={l:loc,t:new Date().toISOString()}; else delete S.at[id];
+  commit(loc?T(`${fleetName(f)} steht an ${locName(loc)}`,`${fleetName(f)} is parked at ${locName(loc)}`):T(`${fleetName(f)}: Standort gelöscht`,`${fleetName(f)}: location cleared`));}
+// Place view: the ships parked here, and a choice to park one more here.
+function parkHtml(loc){const here=shipsAt(loc), rest=fleetAll().filter(f=>!(S.at[f.id]&&S.at[f.id].l===loc));
+  return `<section class="lb-park" aria-labelledby="lb-parkh"><h3 id="lb-parkh">🚀 ${T('Schiffe hier','Ships here')}</h3>
+    ${here.length?`<ul>${here.map(f=>`<li><span><b>${shipById(f.id)?`<button type="button" class="lb-iloc" data-loc="s:${esc(f.id)}">${esc(fleetName(f))}</button>`:esc(fleetName(f))}</b>${f.name&&f.model?` <small>${esc(f.model)}</small>`:''} <small>· ${T('seit','since')} ${dateTxt(S.at[f.id].t)}</small></span><button type="button" class="btn" data-unpark="${esc(f.id)}" aria-label="${esc(T('Standort löschen','Clear location')+': '+fleetName(f))}">${T('Steht nicht mehr hier','Not here any more')}</button></li>`).join('')}</ul>`
+      :`<p class="lb-empty">${T('Hier steht kein Schiff.','No ship parked here.')}</p>`}
+    ${rest.length?`<form class="lb-parkadd" data-loc="${esc(loc)}"><label class="lb-f">${T('Schiff hier abstellen','Park a ship here')}<select id="lb-parksel">${rest.map(f=>`<option value="${esc(f.id)}">${esc(fleetName(f))}${S.at[f.id]?` (${T('jetzt','now')}: ${esc(locName(S.at[f.id].l))})`:''}</option>`).join('')}</select></label><button type="submit" class="btn">${T('Abstellen','Park')}</button></form>`
+      :fleetAll().length?'':`<p class="lb-empty">${T('Noch kein Schiff in deiner Flotte.','No ship in your fleet yet.')}</p>`}</section>`;}
+// Ship view: where this ship stands.
+function atHtml(id){const cur=S.at[id]?.l||'';
+  return `<div class="lb-at"><label class="lb-f">📍 ${T('Steht an','Parked at')} <select data-park="${esc(id)}"><option value="">${T('– unbekannt –','– unknown –')}</option>${placeOptions(cur)}</select></label>${cur?`<button type="button" class="lb-iloc" data-loc="${esc(cur)}">${T('zum Ort','to the place')} →</button> <small class="note">${T('seit','since')} ${dateTxt(S.at[id].t)}</small>`:''}</div>`;}
+// Places for a choice: home base, favourites, then all places by system.
+function placeOptions(selected){const hp=S.home?PL[S.home.slice(2)]:null, fv=favList(), top=new Set([hp,...fv]), o=p=>`<option value="p:${esc(p.id)}"${'p:'+p.id===selected?' selected':''}>${esc(p.n)}${p.body?' · '+esc(p.body):''}</option>`;
+  let out=(hp?`<optgroup label="🏠 ${T('Homebase','Home base')}">${o(hp)}</optgroup>`:'')+(fv.length?`<optgroup label="★ ${T('Favoriten','Favourites')}">${fv.map(o).join('')}</optgroup>`:''), ls='';
+  for(const p of M.places){if(top.has(p)) continue; if(p.sys!==ls){out+=(ls?'</optgroup>':'')+`<optgroup label="${esc(p.sys)}">`; ls=p.sys;} out+=o(p);}
+  return out+(ls?'</optgroup>':'');}
 function setHome(loc){const old=S.home; if((loc||null)===(old||null)) return; snap(); S.home=loc&&loc[0]==='p'?loc:null;
   commit(S.home?T(`Homebase: ${locName(S.home)}`,`Home base: ${locName(S.home)}`):T(`Homebase aufgehoben (${locName(old)})`,`Home base unset (${locName(old)})`));}
 // Switch between cargo and items; the selected place stays. The host page (cockpit) follows the event with its own tabs.
@@ -558,7 +608,7 @@ function renderMidItems(){const box=$l('mid'), loc=S.sel, a=document.activeEleme
     const list=S.items.map((x,i)=>({x,i})).filter(r=>r.x.l===loc).sort((u,v)=>u.x.n.localeCompare(v.x.n)||String(u.x.q||'').localeCompare(String(v.x.q||''))), sum=list.reduce((n,r)=>n+r.x.c,0);
     const meta=isShip?esc(SH[s.t]?.n||'?'):`${esc(p.sys)}${p.body?' · '+esc(p.body):''}`, u=used(loc);
     box.innerHTML=`<p class="lb-iback"><button type="button" class="lb-link" data-iall>← ${T('Alle Gegenstände','All items')}</button></p>
-      <h2>${isHome(loc)?'🏠 ':''}${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}${list.length?` · ${nf(list.length)} ${T(list.length===1?'Eintrag':'Einträge',list.length===1?'entry':'entries')}, ${pcs(sum)}`:''}</div>
+      <h2>${isHome(loc)?'🏠 ':isFav(loc)?'★ ':''}${esc(isShip?s.n:p.n)}</h2><div class="lb-meta">${meta}${list.length?` · ${nf(list.length)} ${T(list.length===1?'Eintrag':'Einträge',list.length===1?'entry':'entries')}, ${pcs(sum)}`:''}</div>
       <div class="lb-acts">${homeBtn(loc)}<button type="button" class="btn" data-mode2="cargo">📦 ${u?`${nf(u)} SCU `:''}${T('Fracht an diesem Ort','Cargo at this place')} →</button></div>
       ${itemFormHtml()}
       ${list.length?`<div class="tablewrap"><table class="lb-itab"><thead><tr><th>${T('Gegenstand','Item')}</th><th>${T('Qualität','Quality')}</th><th class="num">${T('Stück','Count')}</th><th class="note-col">${T('Notiz','Note')}</th><th></th></tr></thead><tbody>${list.map(r=>`<tr><td><b>${esc(r.x.n)}</b></td><td>${qual(r.x)}</td><td class="num">${nf(r.x.c)}</td><td class="note-col">${esc(r.x.x||'')}</td>${itemAct(r)}</tr>`).join('')}</tbody></table></div>`
@@ -609,11 +659,12 @@ function dialog(title,body,buttons,onInput){const d=$l('dlg'); $l('dt').textCont
   dlgOk=buttons; const upd=()=>{if(onInput){const w=onInput(); $l('dw').innerHTML=w.map(x=>typeof x==='object'?`<p>ℹ ${esc(x.i)}</p>`:`<p>⚠ ${esc(x)}</p>`).join('');}};
   $l('db').oninput=upd; $l('db').onchange=upd; upd(); d.showModal(); const f=d.querySelector('input,select'); if(f) f.focus();}
 function closeDlg(){$l('dlg').close();}
-// Targets of a move: my ships, then the home base, then all places by system.
-function targetOptions(except){const hp=S.home?PL[S.home.slice(2)]:null; const sh=S.ships.map(s=>`<option value="s:${s.id}"${'s:'+s.id===except?' disabled':''}>${esc(s.n)}</option>`).join('');
-  let pl='',ls=''; for(const p of M.places){if(p===hp) continue; if(p.sys!==ls){pl+=(ls?'</optgroup>':'')+`<optgroup label="${esc(p.sys)}">`; ls=p.sys;} pl+=`<option value="p:${esc(p.id)}"${'p:'+p.id===except?' disabled':''}>${esc(p.n)}${p.body?' · '+esc(p.body):''}</option>`;}
+// Targets of a move: my ships, then the home base, the favourites, then all places by system.
+function targetOptions(except){const hp=S.home?PL[S.home.slice(2)]:null, fv=favList(), top=new Set([hp,...fv]); const sh=S.ships.map(s=>`<option value="s:${s.id}"${'s:'+s.id===except?' disabled':''}>${esc(s.n)}</option>`).join('');
+  let pl='',ls=''; for(const p of M.places){if(top.has(p)) continue; if(p.sys!==ls){pl+=(ls?'</optgroup>':'')+`<optgroup label="${esc(p.sys)}">`; ls=p.sys;} pl+=`<option value="p:${esc(p.id)}"${'p:'+p.id===except?' disabled':''}>${esc(p.n)}${p.body?' · '+esc(p.body):''}</option>`;}
   const ho=hp?`<optgroup label="🏠 ${T('Homebase','Home base')}"><option value="p:${esc(hp.id)}"${'p:'+hp.id===except?' disabled':''}>${esc(hp.n)}${hp.body?' · '+esc(hp.body):''}</option></optgroup>`:'';
-  return (sh?`<optgroup label="${T('Meine Schiffe','My ships')}">${sh}</optgroup>`:'')+ho+pl+(pl?'</optgroup>':'');}
+  const fo=fv.length?`<optgroup label="★ ${T('Favoriten','Favourites')}">${fv.map(f=>`<option value="p:${esc(f.id)}"${'p:'+f.id===except?' disabled':''}>${esc(f.n)}${f.body?' · '+esc(f.body):''}</option>`).join('')}</optgroup>`:'';
+  return (sh?`<optgroup label="${T('Meine Schiffe','My ships')}">${sh}</optgroup>`:'')+ho+fo+pl+(pl?'</optgroup>':'');}
 // Move (or book out) part of a post; target preset when dropped onto a ship or place.
 function openMove(i,target){const p=S.stock[i]; if(!p) return; const w=WA[p.w];
   if(target&&target===p.l) return;
@@ -701,19 +752,19 @@ let dlgAct=null;
 /* ---------- export / import ---------- */
 function download(name,blob){const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);}
 const stamp=()=>new Date().toISOString().slice(0,10);
-function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items,home:S.home},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
+function exportJson(){download(`SC_Fracht_Logbuch_${stamp()}.json`,new Blob([JSON.stringify({app:'sc-fracht-logbuch',v:1,exported:new Date().toISOString(),ships:S.ships,stock:S.stock,log:S.log,notes:S.notes,items:S.items,home:S.home,fav:S.fav,at:S.at},null,1)],{type:'application/json'})); toast(T('JSON gespeichert.','JSON saved.'));}
 // Ships and cargo for the phone (no journal, it is not needed there).
-function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock,notes:S.notes,items:S.items,home:S.home};}
+function handyData(){return {t:new Date().toISOString(),ships:S.ships,stock:S.stock,notes:S.notes,items:S.items,home:S.home,fav:S.fav,at:S.at};}
 // Take over a ledger sent from the PC; asks before replacing a non-empty ledger.
 function fromHandy(d){if(!d||!Array.isArray(d.ships)||!Array.isArray(d.stock)) throw new Error('format');
   const when=new Date(d.t||Date.now()).toLocaleString(L()==='en'?'en-GB':'de-DE',{dateStyle:'short',timeStyle:'short'});
   if((S.ships.length||S.stock.length)&&!confirm(T(`Logbuch vom PC (Stand ${when}) übernehmen? Es ersetzt den Stand auf diesem Gerät (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Take over the ledger from the PC (as of ${when})? It replaces the state on this device (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
-  snap(true); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); if(d.notes) S.notes=cleanNotes(d.notes); if(Array.isArray(d.items)) S.items=cleanItems(d.items); if('home' in d) S.home=cleanHome(d.home); S.sel=null;
+  snap(true); S.ships=d.ships; S.stock=d.stock.filter(p=>p&&p.l&&p.n>0); if(d.notes) S.notes=cleanNotes(d.notes); if(Array.isArray(d.items)) S.items=cleanItems(d.items); if('home' in d) S.home=cleanHome(d.home); if('fav' in d) S.fav=cleanFav(d.fav); if('at' in d) S.at=cleanAt(d.at); S.sel=null;
   commit(T(`Vom PC übernommen (Stand ${when}): ${S.ships.length} Schiffe, ${S.stock.length} Posten`,`Taken over from the PC (as of ${when}): ${S.ships.length} ships, ${S.stock.length} posts`));}
 function importJson(file){const r=new FileReader(); r.onload=()=>{try{const o=JSON.parse(r.result);
     if(o.app!=='sc-fracht-logbuch'||o.v!==1||!Array.isArray(o.ships)||!Array.isArray(o.stock)) throw new Error('format');
     if(!confirm(T(`Logbuch aus „${file.name}“ einlesen? Es ersetzt den Stand in diesem Browser (${S.ships.length} Schiffe, ${S.stock.length} Posten). Rückgängig ist möglich.`,`Import the ledger from “${file.name}”? It replaces the state in this browser (${S.ships.length} ships, ${S.stock.length} posts). Undo is possible.`))) return;
-    snap(true); S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if('home' in o) S.home=cleanHome(o.home); S.sel=null;
+    snap(true); S.ships=o.ships; S.stock=o.stock.filter(p=>p&&p.l&&p.n>0); S.log=Array.isArray(o.log)?o.log:[]; if(o.notes) S.notes=cleanNotes(o.notes); if(Array.isArray(o.items)) S.items=cleanItems(o.items); if('home' in o) S.home=cleanHome(o.home); if('fav' in o) S.fav=cleanFav(o.fav); if('at' in o) S.at=cleanAt(o.at); S.sel=null;
     commit(T(`Eingelesen: ${file.name} (${S.ships.length} Schiffe, ${S.stock.length} Posten)`,`Imported: ${file.name} (${S.ships.length} ships, ${S.stock.length} posts)`));}
   catch(e){toast(T('Datei nicht lesbar: keine Logbuch-JSON dieses Tools.','File not readable: not a ledger JSON of this tool.'));}}; r.readAsText(file);}
 // Minimal XLSX writer: OOXML parts in an uncompressed ZIP (no external library, works offline).
@@ -762,7 +813,7 @@ const view=document.getElementById('view-ledger');
 view.addEventListener('click',e=>{const wl=e.target.closest('[data-wares]');
   // Jump to "All commodities" filtered to this commodity: there are all sell places with price and stock.
   if(wl){showView('wares'); const i=document.getElementById('wQ'); i.value=wl.dataset.wares; i.dispatchEvent(new Event('input',{bubbles:true})); window.scrollTo({top:tabsTop(),behavior:'smooth'}); return;}
-  const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true),home:()=>setHome(S.sel),unhome:()=>setHome(null)})[a.dataset.act](); return;}
+  const a=e.target.closest('[data-act]'); if(a){({in:openIn,addship:()=>openShip(false),editship:()=>openShip(true),home:()=>setHome(S.sel),unhome:()=>setHome(null),fav:()=>setFav(S.sel,true),unfav:()=>setFav(S.sel,false)})[a.dataset.act](); return;}
   const c=e.target.closest('.lb-chip'); if(c){openMove(+c.dataset.i); return;}
   const l=e.target.closest('[data-loc]'); if(l) select(l.dataset.loc);});
 // Notes: every keystroke lands in the state; saving and the marks in the lists follow after a short pause.
@@ -807,12 +858,15 @@ document.addEventListener('keydown',e=>{if(view.classList.contains('hide')||$l('
 
 // Items: view switch, form, list actions, jumps. The middle column is drawn anew, so these listen on the panel.
 $l('mode').addEventListener('click',e=>{const b=e.target.closest('button[data-mode]'); if(b) mode(b.dataset.mode);});
-view.addEventListener('submit',e=>{if(e.target.id==='lb-iform'){e.preventDefault(); itemSubmit();}});
+view.addEventListener('submit',e=>{if(e.target.id==='lb-iform'){e.preventDefault(); itemSubmit();}
+  if(e.target.classList.contains('lb-parkadd')){e.preventDefault(); const s=$l('parksel'); if(s&&s.value) park(s.value,e.target.dataset.loc);}});
+view.addEventListener('change',e=>{const s=e.target.closest('select[data-park]'); if(s) park(s.dataset.park,s.value||null);});
 view.addEventListener('input',e=>{if(e.target.id!=='lb-isq') return; ISQ=e.target.value; const b=$l('ibox'); if(b) b.innerHTML=itemOverview();});
 view.addEventListener('click',e=>{const t=e.target;
   if(t.closest('#lb-icancel')){IEDIT=null; IKEEP=false; render(); return;}
   const ed=t.closest('[data-iedit]'); if(ed){itemEdit(+ed.dataset.iedit); return;}
   const dl=t.closest('[data-idel]'); if(dl){itemDel(+dl.dataset.idel); return;}
+  const up=t.closest('[data-unpark]'); if(up){park(up.dataset.unpark,null); return;}
   const g=t.closest('[data-grp]'); if(g){IGRP=g.dataset.grp; render(); return;}
   if(t.closest('[data-iall]')){S.sel=null; IEDIT=null; IKEEP=false; save(); render(); return;}
   const m2=t.closest('[data-mode2]'); if(m2){mode(m2.dataset.mode2); return;}

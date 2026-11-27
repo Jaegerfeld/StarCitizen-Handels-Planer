@@ -82,6 +82,8 @@ Goal: you add your cargo ship, book in the commodity you bought and move it to a
 - **all sell places ↗** jumps to **All commodities** with this commodity.
 - Back up your ledger with **Export JSON** and read it back with **Import JSON**. **Export XLSX** creates an Excel file.
 - In Chrome and Edge, **Storage …** also keeps the ledger in a file, e.g. on a USB stick.
+- **☆ Add to favourites** puts a place right after the home base in all place lists.
+- **🚀 Ships here** at the selected place: **Park a ship here** remembers where a ship stands (any ship of the fleet); for cargo ships this also works in their own view under **Parked at**.
 - **🏠 Set as home base** at the selected place puts that place first in all place lists and target choices. **Unset home base** takes it back.
 - **To the phone …** shows a QR code. The phone takes over your ships, cargo and items as its ledger.
 
