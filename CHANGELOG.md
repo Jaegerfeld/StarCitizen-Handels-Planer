@@ -2,6 +2,16 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.27.0] – 2026-11-27
+
+### Hinzugefügt
+- **Fracht-Logbuch: Buch für wichtige Gegenstände.** Über dem Logbuch steht jetzt der Umschalter **Fracht | Gegenstände**. Unter „Gegenstände“ hältst du fest, was wo liegt, wenn es keine Fracht in Containern ist: Medaillen, MG Scrip, Tauschware für Wikelo, Ressourcen in ihren Qualitätsstufen.
+  - Ein Eintrag hat Gegenstand, Stückzahl, Qualität (frei: Zahl oder Stufe wie „Pristine“ oder „Grade AAA“), Ort oder Schiff und eine Notiz. Pflicht sind nur Gegenstand und Ort. Derselbe Gegenstand in gleicher Qualität am selben Ort wird zusammengezählt; verschiedene Qualitäten bleiben getrennte Einträge.
+  - Die Orte und Schiffe sind die des Logbuchs. Am gewählten Ort zeigt die Frachtansicht, wie viele Gegenstände dort liegen, und springt hin.
+  - Suche über Name, Qualität, Ort und Notiz; die Liste lässt sich nach Gegenstand (mit Summe und Zahl der Orte) oder nach Ort gruppieren.
+  - Rückgängig, Journal, Speicherdatei, Export JSON, Export XLSX (eigenes Blatt „Gegenstände“) und „Aufs Handy“ nehmen die Gegenstände mit.
+- Die Vorschlagsliste beim Eintragen ist eine feste Liste gängiger Gegenstände plus die Warennamen. Sie ist nicht an den Wikelo-Planer angebunden; jeder andere Name lässt sich eintragen.
+
 ## [1.26.2] – 2026-11-26
 
 ### Behoben
