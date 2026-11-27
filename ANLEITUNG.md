@@ -82,6 +82,8 @@ Ziel: Du trägst dein Frachtschiff ein, buchst gekaufte Ware ein und verschiebst
 - **alle Verkaufsorte ↗** springt zu **Alle Waren** mit dieser Ware.
 - Sichere dein Logbuch mit **Export JSON** und lies es mit **JSON einlesen** wieder ein. **Export XLSX** erzeugt eine Excel-Datei.
 - In Chrome und Edge legt **Speicherort …** das Logbuch zusätzlich in eine Datei, z. B. auf einem USB-Stick.
+- **☆ Als Favorit merken** stellt einen Ort direkt nach der Homebase in alle Ortslisten.
+- **🚀 Schiffe hier** am gewählten Ort: Mit **Schiff hier abstellen** merkst du dir, wo ein Schiff steht (jedes Schiff der Flotte); bei Frachtschiffen geht das auch in ihrer Ansicht unter **Steht an**.
 - **🏠 Als Homebase merken** am gewählten Ort stellt diesen Ort in allen Ortslisten und Zielauswahlen an den Anfang. **Homebase aufheben** nimmt das zurück.
 - **Aufs Handy …** zeigt einen QR-Code. Das Handy übernimmt damit Schiffe, Fracht und Gegenstände als sein Logbuch.
 

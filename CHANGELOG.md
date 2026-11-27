@@ -2,6 +2,14 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.30.0] – 2026-11-27
+
+### Hinzugefügt
+- **Favoriten.** Neben der Homebase lassen sich beliebig viele Orte als Favorit merken (**☆ Als Favorit merken** am gewählten Ort). Sie stehen in der Ortsliste direkt nach der Homebase unter „★ Favoriten“, unabhängig von Suche und Filter, und ebenso in jeder Ortsauswahl.
+- **Wo steht welches Schiff?** Am Ort zeigt der Block **🚀 Schiffe hier**, welche Schiffe dort abgestellt sind; mit **Schiff hier abstellen** kommt eines dazu, **Steht nicht mehr hier** löscht den Standort. Abstellen lässt sich jedes Schiff der Flotte, auch eines ohne Laderaum. Bei einem Frachtschiff steht der Standort zusätzlich in seiner Ansicht (**Steht an**). Ein Schiff steht an genau einem Ort; das Datum zeigt, seit wann.
+- Die Ortsliste zeigt „🚀 n Schiffe“ an Orten mit abgestellten Schiffen. Der Filter heißt jetzt „nur mit Fracht, Schiff oder Notiz“.
+- Favoriten und Standorte gehen mit Rückgängig, Speicherdatei, Export JSON und „Aufs Handy“ mit.
+
 ## [1.29.0] – 2026-11-27
 
 ### Hinzugefügt
