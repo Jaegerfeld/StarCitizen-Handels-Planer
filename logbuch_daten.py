@@ -154,7 +154,9 @@ def places(terminals: list[dict]) -> list[dict]:
 
     Returns:
         Places sorted by system, body and name: id (``system|name``), name, system, body,
-        largest container and, for stations, the internal name used in game logs (``rr``).
+        largest container, for stations the internal name used in game logs (``rr``), and where
+        the place lies as UEX names it: planet (``pl``), moon (``mo``) and orbit (``orb``), each
+        left out when UEX gives none. The cockpit's system map is drawn from these.
     """
     out: dict = {}
     for t in terminals:
@@ -173,6 +175,9 @@ def places(terminals: list[dict]) -> list[dict]:
                                  "body": t.get("moon_name") or t.get("planet_name") or "",
                                  "max": 0})
         p["max"] = max(p["max"], t.get("max_container_size") or 0)
+        for k, f in (("pl", "planet_name"), ("mo", "moon_name"), ("orb", "orbit_name")):
+            if t.get(f) and k not in p:
+                p[k] = t[f]
         rr = rr_code(t)
         if rr:
             p["rr"] = rr
